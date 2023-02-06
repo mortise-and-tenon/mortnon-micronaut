@@ -5,3 +5,22 @@ netty:
   default:
     allocator:
       max-order: 3
+r2dbc:
+  datasources:
+    default:
+      driver: mysql
+      host: ${MYSQL_HOST:localhost}
+      port: ${MYSQL_PORT:3306}
+      username: ${MYSQL_USERNAME:root}
+      password: ${MYSQL_PASSWORD:123456}
+      database: mortnon
+datasources:
+  default:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/mortnon
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:123456}
+    driverClassName: com.mysql.cj.jdbc.Driver
+flyway:
+  datasources:
+    default:
+      enabled: true
