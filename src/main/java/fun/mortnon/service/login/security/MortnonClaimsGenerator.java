@@ -1,0 +1,50 @@
+package fun.mortnon.service.login.security;
+
+import com.nimbusds.jwt.JWTClaimsSet;
+import io.micronaut.context.annotation.Replaces;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.runtime.ApplicationConfiguration;
+import io.micronaut.security.authentication.Authentication;
+import io.micronaut.security.token.config.TokenConfiguration;
+import io.micronaut.security.token.jwt.generator.claims.ClaimsAudienceProvider;
+import io.micronaut.security.token.jwt.generator.claims.JWTClaimsSetGenerator;
+import io.micronaut.security.token.jwt.generator.claims.JwtIdGenerator;
+import jakarta.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
+
+/**
+ * JWT 生成器
+ *
+ * @author dev2007
+ * @date 2023/2/7
+ */
+@Replaces(JWTClaimsSetGenerator.class)
+@Singleton
+@Slf4j
+public class MortnonClaimsGenerator extends JWTClaimsSetGenerator {
+
+    /**
+     * @param tokenConfiguration       Token Configuration
+     * @param jwtIdGenerator           Generator which creates unique JWT ID
+     * @param claimsAudienceProvider   Provider which identifies the recipients that the JWT is intended for.
+     * @param applicationConfiguration The application configuration
+     */
+    public MortnonClaimsGenerator(TokenConfiguration tokenConfiguration, @Nullable JwtIdGenerator jwtIdGenerator, @Nullable ClaimsAudienceProvider claimsAudienceProvider, @Nullable ApplicationConfiguration applicationConfiguration) {
+        super(tokenConfiguration, jwtIdGenerator, claimsAudienceProvider, applicationConfiguration);
+    }
+
+    @Override
+    public Map<String, Object> generateClaims(Authentication authentication, @Nullable Integer expiration) {
+        JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+        populateIat(builder);
+        populateExp(builder, expiration);
+        populateJti(builder);
+        populateIss(builder);
+        populateAud(builder);
+        populateNbf(builder);
+        populateSub(builder, authentication);
+        return builder.build().getClaims();
+    }
+}

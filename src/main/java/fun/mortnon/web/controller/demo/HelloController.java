@@ -11,13 +11,15 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Produces;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
 import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotBlank;
-import java.net.URI;
 import java.util.Optional;
 
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/hello")
 public class HelloController {
     @Inject

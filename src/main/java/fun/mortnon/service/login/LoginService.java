@@ -1,8 +1,7 @@
 package fun.mortnon.service.login;
 
-import fun.mortnon.service.login.enums.LoginType;
-import fun.mortnon.service.login.model.JwtToken;
 import fun.mortnon.service.login.model.LoginUser;
+import io.micronaut.security.authentication.AuthenticationRequest;
 
 /**
  * @author dongfangzan
@@ -13,9 +12,8 @@ public interface LoginService {
     /**
      * 认证后的登录，调用该方法完成最后的登录流程
      *
-     * @param authorizedUser 已经认证过后的用户
-     * @param loginType      登录类型
-     * @return               token
+     * @param authenticationRequest 认证数据
+     * @return 是否认证通过
      */
-    JwtToken login(LoginUser authorizedUser, LoginType loginType);
+    boolean authenticate(AuthenticationRequest<?, ?> authenticationRequest);
 }

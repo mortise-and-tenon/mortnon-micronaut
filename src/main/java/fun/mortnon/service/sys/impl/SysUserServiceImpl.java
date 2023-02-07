@@ -33,8 +33,6 @@ public class SysUserServiceImpl implements SysUserService {
         sysUser.setPassword(sysUserVo.getPassword());
         sysUser.setSalt(sysUserVo.getSalt());
         sysUser.setSex(sysUserVo.getSex());
-        sysUser.setGmtCreate(new Date());
-        sysUser.setGmtModify(new Date());
         return sysUserMapper.save(sysUser);
     }
 

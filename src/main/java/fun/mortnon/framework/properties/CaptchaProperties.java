@@ -1,9 +1,17 @@
 package fun.mortnon.framework.properties;
 
+import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.context.annotation.Context;
+import io.micronaut.context.annotation.EachProperty;
+import lombok.Data;
+
 /**
  * @author dongfangzan
  * @date 30.4.21 10:21 上午
  */
+@Data
+@Context
+@ConfigurationProperties(value="mortnon.captcha")
 public class CaptchaProperties {
 
     private boolean enable = true;

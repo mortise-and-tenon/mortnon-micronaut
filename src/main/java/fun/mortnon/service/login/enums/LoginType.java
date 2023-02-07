@@ -1,5 +1,6 @@
 package fun.mortnon.service.login.enums;
 
+import fun.mortnon.framework.constants.LoginTypeConstants;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -12,9 +13,8 @@ import java.util.Arrays;
  * @date 27.4.21 3:11 下午
  */
 public enum LoginType {
-
     /** 用户名密码 */
-    PASSWORD("password", "用户名密码登录"),
+    PASSWORD(LoginTypeConstants.PASSWORD, "用户名密码登录"),
 
     /** 手机验证码 */
     PHONE("phone", "手机验证码登录"),
