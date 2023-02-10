@@ -2,6 +2,7 @@ package fun.mortnon.service.login;
 
 import fun.mortnon.service.login.model.LoginUser;
 import io.micronaut.security.authentication.AuthenticationRequest;
+import reactor.core.publisher.Mono;
 
 /**
  * @author dongfangzan
@@ -15,5 +16,5 @@ public interface LoginService {
      * @param authenticationRequest 认证数据
      * @return 是否认证通过
      */
-    boolean authenticate(AuthenticationRequest<?, ?> authenticationRequest);
+    Mono<Boolean> authenticate(AuthenticationRequest<?, ?> authenticationRequest);
 }

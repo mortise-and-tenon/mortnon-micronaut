@@ -1,4 +1,4 @@
-package fun.mortnon.dal.sys.domain;
+package fun.mortnon.dal.sys.entity;
 
 import fun.mortnon.dal.base.entity.BaseEntity;
 import io.micronaut.core.annotation.NonNull;

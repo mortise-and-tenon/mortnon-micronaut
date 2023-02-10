@@ -1,12 +1,16 @@
 package fun.mortnon.dal.sys.repository;
 
-import fun.mortnon.dal.sys.domain.SysUser;
-import fun.mortnon.web.entity.SysUserVo;
+import fun.mortnon.dal.sys.entity.SysUser;
+import fun.mortnon.service.sys.vo.SysUserDTO;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
+import io.micronaut.data.model.Slice;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.r2dbc.annotation.R2dbcRepository;
 import io.micronaut.data.repository.reactive.ReactorPageableRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -27,4 +31,6 @@ public interface UserRepository extends ReactorPageableRepository<SysUser, Long>
      * @return
      */
     Mono<SysUser> findByUserName(String userName);
+
+
 }

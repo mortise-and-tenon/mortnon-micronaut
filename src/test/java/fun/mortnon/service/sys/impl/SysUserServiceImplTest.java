@@ -1,6 +1,6 @@
 package fun.mortnon.service.sys.impl;
 
-import fun.mortnon.dal.sys.domain.SysUser;
+import fun.mortnon.dal.sys.entity.SysUser;
 import fun.mortnon.service.sys.SysUserService;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
@@ -18,7 +18,7 @@ class SysUserServiceImplTest {
 
     @Test
     void getUserByUsername() {
-        SysUser admin = sysUserService.getUserByUsername("admin");
+        SysUser admin = sysUserService.getUserByUsername("admin").block();
         Assertions.assertNotNull(admin);
     }
 }
