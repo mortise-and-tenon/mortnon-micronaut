@@ -1,12 +1,16 @@
 package fun.mortnon.service.login.security.impl;
 
 import fun.mortnon.framework.properties.JwtProperties;
+import fun.mortnon.service.login.LoginStorageService;
 import fun.mortnon.service.login.security.TokenListener;
+import io.lettuce.core.cluster.RedisClusterClient;
 import io.micronaut.security.token.event.AccessTokenGeneratedEvent;
+import io.micronaut.security.token.jwt.generator.AccessTokenConfigurationProperties;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,16 +23,21 @@ import java.util.List;
 @Singleton
 @Slf4j
 public class TokenPersistence implements TokenListener {
-    private List<String> storage = new ArrayList<>();
-
     @Inject
     private JwtProperties jwtProperties;
+
+    @Inject
+    private AccessTokenConfigurationProperties accessTokenConfigurationProperties;
+
+    @Inject
+    private LoginStorageService loginStorageService;
 
     @Override
     public void eventTask(AccessTokenGeneratedEvent event) {
         log.info("create token:{}", event.getSource());
         if (jwtProperties.isConsistency()) {
-            storage.add((String) event.getSource());
+            Integer expiration = accessTokenConfigurationProperties.getExpiration();
+            loginStorageService.saveToken((String) event.getSource(), expiration);
         }
     }
 
@@ -40,7 +49,7 @@ public class TokenPersistence implements TokenListener {
      */
     public boolean isExists(String accessToken) {
         if (jwtProperties.isConsistency()) {
-            return storage.contains(accessToken);
+            return loginStorageService.tokenIsExists(accessToken);
         }
 
         return true;

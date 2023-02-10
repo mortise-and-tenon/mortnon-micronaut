@@ -19,6 +19,15 @@
     <release.version>11</release.version>
     <micronaut.version>3.8.3</micronaut.version>
     <micronaut.runtime>netty</micronaut.runtime>
+    <micronaut.jdbc.hikari>2.2.6</micronaut.jdbc.hikari>
+    <micronaut.serde.api>1.5.0</micronaut.serde.api>
+    <guava.version>31.1-jre</guava.version>
+    <commons.collection.version>4.4</commons.collection.version>
+    <commons.codec.version>1.15</commons.codec.version>
+    <commons.io.version>2.11.0</commons.io.version>
+    <commons.lang3.version>3.12.0</commons.lang3.version>
+    <easy.captcha.version>1.6.2</easy.captcha.version>
+    <nashorn.version>15.4</nashorn.version>
     <exec.mainClass>fun.mortnon.Application</exec.mainClass>
   </properties>
 
@@ -56,21 +65,30 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
-      <scope>compile</scope>
+      <groupId>io.micronaut.serde</groupId>
+      <artifactId>micronaut-serde-api</artifactId>
+      <version>${micronaut.serde.api}</version>
     </dependency>
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <scope>runtime</scope>
+      <groupId>io.micronaut.security</groupId>
+      <artifactId>micronaut-security-jwt</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.micronaut.security</groupId>
+      <artifactId>micronaut-security-session</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>io.micronaut.configuration</groupId>
       <artifactId>micronaut-jdbc-hikari</artifactId>
-      <version>2.2.6</version>
+      <version>${micronaut.jdbc.hikari}</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>8.0.32</version>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>io.micronaut.data</groupId>
       <artifactId>micronaut-data-r2dbc</artifactId>
@@ -91,84 +109,66 @@
       <artifactId>flyway-mysql</artifactId>
       <scope>runtime</scope>
     </dependency>
+
     <dependency>
-      <groupId>io.micronaut.serde</groupId>
-      <artifactId>micronaut-serde-api</artifactId>
-      <version>1.5.0</version>
-    </dependency>
-    <dependency>
-      <groupId>io.micronaut.security</groupId>
-      <artifactId>micronaut-security-jwt</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.micronaut.security</groupId>
-      <artifactId>micronaut-security-session</artifactId>
+      <groupId>io.micronaut.redis</groupId>
+      <artifactId>micronaut-redis-lettuce</artifactId>
     </dependency>
 
     <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.24</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
+      <version>${commons.lang3.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.11.0</version>
+      <version>${commons.io.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.15</version>
+      <version>${commons.codec.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
-      <version>4.4</version>
+      <version>${commons.collection.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>31.1-jre</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.auth0</groupId>
-      <artifactId>java-jwt</artifactId>
-      <version>4.2.2</version>
+      <version>${guava.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.ehcache</groupId>
-      <artifactId>ehcache</artifactId>
-      <version>3.10.8</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.glassfish.jaxb</groupId>
-          <artifactId>jaxb-runtime</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>com.github.whvcse</groupId>
+      <artifactId>easy-captcha</artifactId>
+      <version>${easy.captcha.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.glassfish.jaxb</groupId>
-      <artifactId>jaxb-runtime</artifactId>
-      <version>4.0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.mysql</groupId>
-      <artifactId>mysql-connector-j</artifactId>
-      <version>8.0.32</version>
-      <scope>runtime</scope>
+      <groupId>org.openjdk.nashorn</groupId>
+      <artifactId>nashorn-core</artifactId>
+      <version>${nashorn.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.reactivestreams</groupId>
       <artifactId>reactive-streams</artifactId>
-      <version>1.0.4</version>
     </dependency>
 
     <dependency>

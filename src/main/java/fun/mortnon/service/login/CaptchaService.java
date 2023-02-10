@@ -7,6 +7,12 @@ import fun.mortnon.service.login.model.MortnonCaptcha;
  * @date 30.4.21 10:26 上午
  */
 public interface CaptchaService {
+    /**
+     * 是否启用验证码
+     *
+     * @return
+     */
+    boolean isEnabled();
 
     /**
      * 生成验证码

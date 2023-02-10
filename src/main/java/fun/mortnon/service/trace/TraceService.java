@@ -1,11 +1,17 @@
 package fun.mortnon.service.trace;
 
+import fun.mortnon.framework.utils.IpUtil;
+import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+
+import java.net.URI;
+import java.time.Instant;
+import java.util.concurrent.Callable;
 
 /**
  * Trace Request 服务
@@ -16,6 +22,8 @@ import reactor.core.scheduler.Schedulers;
 @Singleton
 @Slf4j
 public class TraceService {
+    private static final String TRACE_FORMAT = "[{};{}][{} - {}]";
+
     /**
      * 记录请求
      *
@@ -23,10 +31,14 @@ public class TraceService {
      * @return
      */
     public Publisher<Boolean> trace(HttpRequest<?> request) {
-        return Mono.fromCallable(() -> {
-                    log.info("Request:{}", request.getUri());
-                    return true;
-                }).subscribeOn(Schedulers.boundedElastic())
-                .flux();
+        Callable<Boolean> callable = () -> {
+            HttpMethod method = request.getMethod();
+            String ip = IpUtil.getRequestIp(request);
+            URI uri = request.getUri();
+            log.info(TRACE_FORMAT, Instant.now(), ip, method, uri);
+            return true;
+        };
+
+        return Mono.fromCallable(callable).subscribeOn(Schedulers.boundedElastic()).flux();
     }
 }

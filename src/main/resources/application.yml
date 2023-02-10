@@ -5,6 +5,9 @@ micronaut:
     authentication: bearer
     redirect:
       enabled: false
+    endpoints:
+      login:
+        enabled: false
     token:
       jwt:
         bearer:
@@ -42,6 +45,11 @@ flyway:
   datasources:
     default:
       enabled: true
+redis:
+  uri: redis://${REDIS_HOST:localhost}:${REDIS_PORT:6379}
+  io-thread-pool-size: 5
+  computation-thread-pool-size: 4
+  timeout: 30s
 mortnon:
   captcha:
     enable: true

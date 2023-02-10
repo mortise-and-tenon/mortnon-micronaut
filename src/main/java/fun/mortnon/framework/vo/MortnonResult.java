@@ -64,7 +64,7 @@ public class MortnonResult<T> implements Serializable {
     }
 
     public static MortnonResult fail(ErrorCodeEnum errorCodeEnum) {
-        return fail(errorCodeEnum, "");
+        return fail(errorCodeEnum, errorCodeEnum.getDescription());
     }
 
     public static MortnonResult fail(ErrorCodeEnum errorCodeEnum, String message) {

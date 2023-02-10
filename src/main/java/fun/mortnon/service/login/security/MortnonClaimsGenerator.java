@@ -25,6 +25,8 @@ import java.util.Map;
 @Slf4j
 public class MortnonClaimsGenerator extends JWTClaimsSetGenerator {
 
+    private static final String PROJECT = "project";
+
     /**
      * @param tokenConfiguration       Token Configuration
      * @param jwtIdGenerator           Generator which creates unique JWT ID
@@ -44,7 +46,13 @@ public class MortnonClaimsGenerator extends JWTClaimsSetGenerator {
         populateIss(builder);
         populateAud(builder);
         populateNbf(builder);
-        populateSub(builder, authentication);
+        populateWithAuthentication(builder, authentication);
+        populateProject(builder, authentication);
         return builder.build().getClaims();
+    }
+
+    private void populateProject(JWTClaimsSet.Builder builder, Authentication authentication) {
+        Map<String, Object> attributes = authentication.getAttributes();
+        builder.claim(PROJECT, attributes.getOrDefault(PROJECT, ""));
     }
 }

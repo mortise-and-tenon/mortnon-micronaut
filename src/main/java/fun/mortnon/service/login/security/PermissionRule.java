@@ -19,6 +19,7 @@ import io.micronaut.security.rules.SecurityRuleResult;
 import io.micronaut.web.router.RouteMatch;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -58,12 +59,15 @@ public class PermissionRule implements SecurityRule {
         }
 
         Collection<String> roles = authentication.getRoles();
+        if (CollectionUtils.isEmpty(roles)) {
+            return Mono.just(SecurityRuleResult.REJECTED);
+        }
 
         Predicate<SysApiPermission> predicate = p -> pathMatcher.matches(p.getApi(), path)
                 && httpMethod.equals(p.getMethod());
 
-//        Flux.fromIterable(roles)
-        return roleRepository.findByIdentifier("ROLE_SYS")
+        return Flux.fromIterable(roles)
+                .flatMap(roleIdentifier -> roleRepository.findByIdentifier(roleIdentifier))
                 .flatMap(role -> rolePermissionRepository.findByRoleId(role.getId()))
                 .map(SysRolePermission::getPermissionId)
                 .flatMap(pId -> permissionRepository.findById(pId))
