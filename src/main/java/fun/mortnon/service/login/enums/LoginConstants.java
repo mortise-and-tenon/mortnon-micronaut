@@ -6,9 +6,9 @@ package fun.mortnon.service.login.enums;
  */
 public class LoginConstants {
 
-    public static final String REDIS = "redis";
+    public static final String REDIS = "Redis";
 
-    public static final String LOCAL = "local";
+    public static final String LOCAL = "Local";
 
     /**
      * 登录用户token信息key

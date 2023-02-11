@@ -1,9 +1,11 @@
 package fun.mortnon.service.login.impl;
 
 import fun.mortnon.service.login.LoginStorageService;
+import fun.mortnon.service.login.enums.LoginConstants;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,6 +19,7 @@ import static fun.mortnon.service.login.enums.LoginConstants.VERIFY_CODE;
  * @date 2023/2/10
  */
 @Singleton
+@Named(LoginConstants.REDIS)
 public class RedisLoginStorageServiceImpl implements LoginStorageService {
     private StatefulRedisConnection<String, String> connection;
     private RedisCommands<String, String> commands;

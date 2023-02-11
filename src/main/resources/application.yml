@@ -57,3 +57,5 @@ mortnon:
     expire-seconds: 600
   jwt:
     consistency: false
+    # 登录状态存储类型，local：内存ehcache存储，redis：redis存储
+    login-storage-type: redis

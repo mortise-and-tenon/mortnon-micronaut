@@ -1,7 +1,9 @@
 package fun.mortnon.service.login.security.impl;
 
 import fun.mortnon.framework.properties.JwtProperties;
+import fun.mortnon.service.login.LoginFactory;
 import fun.mortnon.service.login.LoginStorageService;
+import fun.mortnon.service.login.enums.LoginStorageType;
 import fun.mortnon.service.login.security.TokenListener;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.micronaut.security.token.event.AccessTokenGeneratedEvent;
@@ -30,14 +32,14 @@ public class TokenPersistence implements TokenListener {
     private AccessTokenConfigurationProperties accessTokenConfigurationProperties;
 
     @Inject
-    private LoginStorageService loginStorageService;
+    private LoginFactory loginFactory;
 
     @Override
     public void eventTask(AccessTokenGeneratedEvent event) {
         log.info("create token:{}", event.getSource());
         if (jwtProperties.isConsistency()) {
             Integer expiration = accessTokenConfigurationProperties.getExpiration();
-            loginStorageService.saveToken((String) event.getSource(), expiration);
+            getStorageService().saveToken((String) event.getSource(), expiration);
         }
     }
 
@@ -49,9 +51,13 @@ public class TokenPersistence implements TokenListener {
      */
     public boolean isExists(String accessToken) {
         if (jwtProperties.isConsistency()) {
-            return loginStorageService.tokenIsExists(accessToken);
+            return getStorageService().tokenIsExists(accessToken);
         }
 
         return true;
+    }
+
+    private LoginStorageService getStorageService() {
+        return loginFactory.getConfigLoginStorageService();
     }
 }

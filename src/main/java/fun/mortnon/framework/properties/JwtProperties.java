@@ -1,5 +1,6 @@
 package fun.mortnon.framework.properties;
 
+import fun.mortnon.service.login.enums.LoginConstants;
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.EachProperty;
@@ -19,4 +20,9 @@ public class JwtProperties {
      * 如果为 false，使用的 token 只要算法校验通过即可使用
      */
     private boolean consistency = false;
+
+    /**
+     * token 存储方式
+     */
+    private String loginStorageType = LoginConstants.REDIS;
 }

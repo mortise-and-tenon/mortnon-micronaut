@@ -8,6 +8,7 @@ import com.wf.captcha.base.Captcha;
 
 import fun.mortnon.framework.properties.CaptchaProperties;
 import fun.mortnon.service.login.CaptchaService;
+import fun.mortnon.service.login.LoginFactory;
 import fun.mortnon.service.login.LoginStorageService;
 import fun.mortnon.service.login.enums.LoginConstants;
 import fun.mortnon.service.login.model.MortnonCaptcha;
@@ -28,7 +29,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     private CaptchaProperties captchaProperties;
 
     @Inject
-    private LoginStorageService loginStorageService;
+    private LoginFactory loginFactory;
 
     @Override
     public boolean isEnabled() {
@@ -68,8 +69,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         mortnonCaptcha.setCaptchaKey(UUID.randomUUID().toString());
         mortnonCaptcha.setCaptchaImage(captcha.toBase64());
 
-
-        loginStorageService.saveVerifyCode(mortnonCaptcha.getCaptchaKey(), captcha.text(), captchaProperties.getExpireSeconds());
+        getStorageService().saveVerifyCode(mortnonCaptcha.getCaptchaKey(), captcha.text(), captchaProperties.getExpireSeconds());
 
         return mortnonCaptcha;
     }
@@ -81,14 +81,18 @@ public class CaptchaServiceImpl implements CaptchaService {
             return false;
         }
 
-        String verifyCode = loginStorageService.getVerifyCode(captchaKey);
+        String verifyCode = getStorageService().getVerifyCode(captchaKey);
         if (StringUtils.isBlank(verifyCode)) {
             return false;
         }
 
         // 使用后就清除验证码
-        loginStorageService.deleteVerifyCode(captchaKey);
+        getStorageService().deleteVerifyCode(captchaKey);
 
         return captchaCode.equalsIgnoreCase(verifyCode);
+    }
+
+    private LoginStorageService getStorageService() {
+        return loginFactory.getConfigLoginStorageService();
     }
 }
