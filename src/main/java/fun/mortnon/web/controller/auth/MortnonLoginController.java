@@ -3,14 +3,14 @@ package fun.mortnon.web.controller.auth;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.login.CaptchaService;
+import fun.mortnon.service.sys.SysUserService;
+import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.vo.login.PasswordLoginCredentials;
 import io.micronaut.context.event.ApplicationEventPublisher;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.async.annotation.SingleResult;
 import io.micronaut.http.*;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Consumes;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.Authenticator;
@@ -26,6 +26,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.security.Principal;
 
 /**
  * @author dev2007
@@ -37,15 +39,19 @@ import javax.validation.Valid;
 public class MortnonLoginController extends LoginController {
     private CaptchaService captchaService;
 
+    private SysUserService sysUserService;
+
     /**
      * @param authenticator  {@link Authenticator} collaborator
      * @param loginHandler   A collaborator which helps to build HTTP response depending on success or failure.
      * @param eventPublisher The application event publisher
      */
     public MortnonLoginController(Authenticator authenticator, LoginHandler loginHandler,
-                                  ApplicationEventPublisher eventPublisher, CaptchaService captchaService) {
+                                  ApplicationEventPublisher eventPublisher, CaptchaService captchaService,
+                                  SysUserService sysUserService) {
         super(authenticator, loginHandler, eventPublisher);
         this.captchaService = captchaService;
+        this.sysUserService = sysUserService;
     }
 
     @Post("/password")
@@ -69,6 +75,18 @@ public class MortnonLoginController extends LoginController {
                         return loginHandler.loginFailed(authenticationResponse, request);
                     }
                 }).switchIfEmpty(Mono.defer(() -> Mono.just(HttpResponse.unauthorized())));
+    }
+
+    /**
+     * 查询已登录用户自身信息
+     *
+     * @param principal
+     * @return
+     */
+    @Secured(SecurityRule.IS_AUTHENTICATED)
+    @Get("/user")
+    public Mono<SysUserDTO> queryUser(@Nullable Principal principal) {
+        return sysUserService.getUserByUsername(principal.getName()).map(SysUserDTO::convert);
     }
 
     /**

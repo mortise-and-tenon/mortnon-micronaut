@@ -52,10 +52,13 @@ redis:
   timeout: 30s
 mortnon:
   captcha:
-    enable: true
+    # 是否启用登录验证码
+    enable: false
+    # 验证码类型。arithmetic：数学，chinese：汉字，gif：gif 图片；png：png 图片
     type: arithmetic
+    # 验证码有效时长（秒）
     expire-seconds: 600
   jwt:
     consistency: false
-    # 登录状态存储类型，local：内存ehcache存储，redis：redis存储
+    # 登录状态存储类型。local：内存ehcache存储，redis：redis存储
     login-storage-type: redis

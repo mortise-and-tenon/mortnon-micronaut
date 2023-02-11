@@ -33,7 +33,7 @@ import java.util.Optional;
  * @author dev2007
  * @date 2023/2/7
  */
-//@Secured(SecurityRule.IS_AUTHENTICATED)
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/users")
 public class UserController {
     @Inject
@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @Get("/{name}")
-    public Mono<SysUser> queryUser(@NotBlank String name) {
-        return sysUserService.getUserByUsername(name);
+    public Mono<SysUserDTO> queryUser(@NotBlank String name) {
+        return sysUserService.getUserByUsername(name).map(SysUserDTO::convert);
     }
 }
