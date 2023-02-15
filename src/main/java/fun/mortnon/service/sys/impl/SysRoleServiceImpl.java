@@ -20,6 +20,11 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
+    public Mono<Boolean> modifyUser(RolePermissionDTO rolePermissionDTO) {
+        return null;
+    }
+
+    @Override
     public Mono<Page<SysRole>> queryRoles(Pageable pageable) {
         return null;
     }
