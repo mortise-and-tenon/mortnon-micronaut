@@ -12,5 +12,4 @@ import reactor.core.publisher.Flux;
  */
 @R2dbcRepository(dialect = Dialect.MYSQL)
 public interface ApiPermissionRepository extends ReactorCrudRepository<SysApiPermission, Long> {
-    Flux<SysApiPermission> findByApi(String api);
 }

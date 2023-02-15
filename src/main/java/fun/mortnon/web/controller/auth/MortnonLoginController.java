@@ -9,12 +9,14 @@ import fun.mortnon.web.vo.login.PasswordLoginCredentials;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.async.annotation.SingleResult;
-import io.micronaut.http.*;
+import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.Authenticator;
-import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.security.endpoints.LoginController;
 import io.micronaut.security.event.LoginFailedEvent;
 import io.micronaut.security.event.LoginSuccessfulEvent;
@@ -26,7 +28,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.security.Principal;
 
 /**
@@ -85,8 +86,9 @@ public class MortnonLoginController extends LoginController {
      */
     @Secured(SecurityRule.IS_AUTHENTICATED)
     @Get("/user")
-    public Mono<SysUserDTO> queryUser(@Nullable Principal principal) {
-        return sysUserService.getUserByUsername(principal.getName()).map(SysUserDTO::convert);
+    public Mono<MortnonResult<SysUserDTO>> queryUser(@Nullable Principal principal) {
+        return sysUserService.getUserByUsername(principal.getName()).map(SysUserDTO::convert)
+                .map(MortnonResult::success);
     }
 
     /**

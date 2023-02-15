@@ -1,14 +1,17 @@
 package fun.mortnon.dal.sys.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.base.entity.BaseEntity;
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.data.annotation.Join;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
 
 /**
- * 系统用户领域
+ * 系统用户
  *
  * @author dongfangzan
  * @date 28.4.21 3:37 下午

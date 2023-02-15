@@ -39,6 +39,14 @@ public interface SysUserService {
     Mono<Page<SysUserDTO>> queryUsers(Pageable pageable);
 
     /**
+     * 删除用户
+     *
+     * @param userName
+     * @return
+     */
+    Mono<Boolean> deleteUser(String userName);
+
+    /**
      * 查询用户对应角色
      *
      * @param userName

@@ -72,7 +72,7 @@ public class PermissionRule implements SecurityRule {
                 .map(SysRolePermission::getPermissionId)
                 .flatMap(pId -> permissionRepository.findById(pId))
                 .map(SysPermission::getIdentifier)
-                .flatMap(permission -> apiPermissionRepository.findByApi(path).filter(predicate)
+                .flatMap(permission -> apiPermissionRepository.findAll().filter(predicate)
                         .filter(k -> k.getPermission().equals(permission)))
                 .map(m -> SecurityRuleResult.ALLOWED)
                 .defaultIfEmpty(SecurityRuleResult.REJECTED);

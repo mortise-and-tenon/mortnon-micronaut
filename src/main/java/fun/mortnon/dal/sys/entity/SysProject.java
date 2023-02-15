@@ -1,34 +1,27 @@
 package fun.mortnon.dal.sys.entity;
 
 import fun.mortnon.dal.base.entity.BaseEntity;
-import io.micronaut.data.annotation.GeneratedValue;
-import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
 /**
- * 用户权限
+ * 组织
  *
  * @author dev2007
- * @date 2023/2/9
+ * @date 2023/2/11
  */
 @Serdeable
 @MappedEntity
 @Data
-public class SysPermission extends BaseEntity {
+public class SysProject extends BaseEntity {
     /**
-     * 权限名字
+     * 组织名字
      */
     private String name;
 
     /**
-     * 权限标识值
-     */
-    private String identifier;
-
-    /**
-     * 权限描述
+     * 组织描述
      */
     private String description;
 }

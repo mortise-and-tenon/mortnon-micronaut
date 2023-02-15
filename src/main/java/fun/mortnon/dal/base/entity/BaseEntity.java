@@ -1,6 +1,5 @@
 package fun.mortnon.dal.base.entity;
 
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.GeneratedValue;
 import io.micronaut.data.annotation.Id;
 import lombok.Data;
@@ -32,9 +31,4 @@ public class BaseEntity {
      * 修改时间
      */
     protected Date gmtModify;
-
-    /**
-     * 租户id
-     */
-    protected String tenantId;
 }

@@ -5,6 +5,7 @@ import fun.mortnon.dal.sys.entity.SysRole;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.r2dbc.annotation.R2dbcRepository;
 import io.micronaut.data.repository.reactive.ReactorCrudRepository;
+import io.micronaut.data.repository.reactive.ReactorPageableRepository;
 import reactor.core.publisher.Flux;
 
 /**
@@ -12,6 +13,6 @@ import reactor.core.publisher.Flux;
  * @date 2023/2/9
  */
 @R2dbcRepository(dialect = Dialect.MYSQL)
-public interface RoleRepository extends ReactorCrudRepository<SysRole, Long> {
+public interface RoleRepository extends ReactorPageableRepository<SysRole, Long> {
     Flux<SysRole> findByIdentifier(String roleName);
 }
