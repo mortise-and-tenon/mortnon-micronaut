@@ -87,7 +87,8 @@ public class MortnonLoginController extends LoginController {
     @Secured(SecurityRule.IS_AUTHENTICATED)
     @Get("/user")
     public Mono<MortnonResult<SysUserDTO>> queryUser(@Nullable Principal principal) {
-        return sysUserService.getUserByUsername(principal.getName()).map(SysUserDTO::convert)
+        return sysUserService.getUserByUsername(principal.getName())
+                .map(SysUserDTO::convert)
                 .map(MortnonResult::success);
     }
 

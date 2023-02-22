@@ -1,7 +1,9 @@
 package fun.mortnon.service.sys;
 
 import fun.mortnon.dal.sys.entity.SysRole;
-import fun.mortnon.service.sys.vo.RolePermissionDTO;
+import fun.mortnon.service.sys.vo.SysRoleDTO;
+import fun.mortnon.web.controller.user.command.CreateRoleCommand;
+import fun.mortnon.web.controller.user.command.UpdateRoleCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import reactor.core.publisher.Mono;
@@ -15,18 +17,18 @@ public interface SysRoleService {
     /**
      * 创建角色
      *
-     * @param rolePermissionDTO
+     * @param createRoleCommand
      * @return
      */
-    Mono<SysRole> saveUser(RolePermissionDTO rolePermissionDTO);
+    Mono<SysRoleDTO> saveRole(CreateRoleCommand createRoleCommand);
 
     /**
      * 修改角色
      *
-     * @param rolePermissionDTO
+     * @param updateRoleCommand
      * @return
      */
-    Mono<Boolean> modifyUser(RolePermissionDTO rolePermissionDTO);
+    Mono<SysRoleDTO> modifyRole(UpdateRoleCommand updateRoleCommand);
 
     /**
      * 查询角色列表
@@ -34,5 +36,22 @@ public interface SysRoleService {
      * @param pageable
      * @return
      */
-    Mono<Page<SysRole>> queryRoles(Pageable pageable);
+    Mono<Page<SysRoleDTO>> queryRoles(Pageable pageable);
+
+
+    /**
+     * 查询指定角色
+     *
+     * @param id
+     * @return
+     */
+    Mono<SysRoleDTO> queryRole(Long id);
+
+    /**
+     * 删除角色
+     *
+     * @param id
+     * @return
+     */
+    Mono<Boolean> deleteRole(Long id);
 }

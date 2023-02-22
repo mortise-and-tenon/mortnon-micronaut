@@ -1,6 +1,7 @@
 package fun.mortnon.service.login;
 
 import java.time.Duration;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author dev2007
@@ -23,6 +24,13 @@ public interface LoginStorageService {
      * @return
      */
     boolean saveToken(String token, int expiresSecond);
+
+    /**
+     * 删除 Token
+     *
+     * @param token
+     */
+    void deleteToken(String token);
 
     /**
      * 保存验证码

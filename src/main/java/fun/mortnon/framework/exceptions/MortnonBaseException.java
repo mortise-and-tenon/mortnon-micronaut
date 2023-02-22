@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class MortnonBaseException extends RuntimeException implements MortnonException{
+public class MortnonBaseException extends RuntimeException implements MortnonException {
 
     /**
      * uid
@@ -52,13 +52,23 @@ public class MortnonBaseException extends RuntimeException implements MortnonExc
         }
     }
 
-    /** 错误码 */
+    public MortnonBaseException(ErrorCodeEnum errorCodeEnum) {
+        this(errorCodeEnum, "");
+    }
+
+    /**
+     * 错误码
+     */
     private String errorCode;
 
-    /** 错误码枚举信息 */
+    /**
+     * 错误码枚举信息
+     */
     private ErrorCodeEnum errorCodeEnum;
 
-    /** 错误信息 */
+    /**
+     * 错误信息
+     */
     private String message;
 
     @Override

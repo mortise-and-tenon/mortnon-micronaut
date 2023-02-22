@@ -2,14 +2,18 @@ package fun.mortnon.service.sys.impl;
 
 import fun.mortnon.dal.sys.entity.SysRole;
 import fun.mortnon.dal.sys.entity.SysUser;
+import fun.mortnon.dal.sys.repository.AssignmentRepository;
 import fun.mortnon.dal.sys.repository.RoleRepository;
 import fun.mortnon.dal.sys.repository.UserRepository;
-import fun.mortnon.dal.sys.repository.AssignmentRepository;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.exceptions.MortnonBaseException;
+import fun.mortnon.framework.exceptions.NotFoundException;
+import fun.mortnon.framework.exceptions.ParameterException;
+import fun.mortnon.framework.exceptions.RepeatDataException;
 import fun.mortnon.service.sys.SysUserService;
 import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.CreateUserCommand;
+import fun.mortnon.web.controller.user.command.UpdateUserCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
@@ -22,6 +26,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -50,26 +56,26 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public Mono<SysUserDTO> createUser(CreateUserCommand createUserCommand) {
         if (StringUtils.isEmpty(createUserCommand.getPassword()) || StringUtils.isEmpty(createUserCommand.getRepeatPassword())) {
-            return Mono.error(new MortnonBaseException(ErrorCodeEnum.PARAM_ERROR, "password is empty"));
+            return Mono.error(ParameterException.create("password is empty"));
         }
 
         if (!createUserCommand.getPassword().equals(createUserCommand.getRepeatPassword())) {
-            return Mono.error(new MortnonBaseException(ErrorCodeEnum.PARAM_ERROR, "password is not match"));
+            return Mono.error(ParameterException.create( "password is not match"));
         }
 
         if (StringUtils.isEmpty(createUserCommand.getUserName())) {
-            return Mono.error(new MortnonBaseException(ErrorCodeEnum.PARAM_ERROR, "user name is empty"));
+            return Mono.error(ParameterException.create("user name is empty"));
         }
 
         if (StringUtils.isEmpty(createUserCommand.getNickName())) {
-            return Mono.error(new MortnonBaseException(ErrorCodeEnum.PARAM_ERROR, "nick name is empty"));
+            return Mono.error(ParameterException.create("nick name is empty"));
         }
 
-        return sysUserMapper.findByUserName(createUserCommand.getUserName())
-                .flatMap(t -> {
-                    if (null != t) {
+        return sysUserMapper.existsByUserName(createUserCommand.getUserName())
+                .flatMap(exists -> {
+                    if (exists) {
                         log.info("repeat user name:{}", createUserCommand.getUserName());
-                        return Mono.error(new MortnonBaseException(ErrorCodeEnum.USERNAME_ALREADY_EXISTS, "user name is repeat."));
+                        return Mono.error(RepeatDataException.create(ErrorCodeEnum.USERNAME_ALREADY_EXISTS, "user name is repeat."));
                     }
                     SysUser sysUser = new SysUser();
                     sysUser.setUserName(createUserCommand.getUserName());
@@ -79,9 +85,9 @@ public class SysUserServiceImpl implements SysUserService {
                     password = DigestUtils.sha256Hex(password + sysUser.getSalt());
                     sysUser.setPassword(password);
                     sysUser.setSex(createUserCommand.getSex());
-                    Date now = new Date();
-                    sysUser.setGmtCreate(now);
-                    sysUser.setGmtModify(now);
+                    sysUser.setEmail(createUserCommand.getEmail());
+                    sysUser.setPhone(createUserCommand.getPhone());
+
                     return sysUserMapper.save(sysUser).map(SysUserDTO::convert);
                 });
     }
@@ -93,7 +99,7 @@ public class SysUserServiceImpl implements SysUserService {
                 .flatMap(result -> {
                     if (!result) {
                         log.info("user name [{}] is not exists.", username);
-                        return Mono.error(new MortnonBaseException(ErrorCodeEnum.PARAM_ERROR, "user not exists."));
+                        return Mono.error(NotFoundException.create("user not exists."));
                     }
                     return sysUserMapper.findByUserName(username);
                 });
@@ -102,7 +108,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public Mono<Page<SysUserDTO>> queryUsers(Pageable pageable) {
         return sysUserMapper.findAll(pageable).map(k -> {
-            List<SysUserDTO> collect = k.getContent().stream().map(data -> SysUserDTO.convert(data)).collect(Collectors.toList());
+            List<SysUserDTO> collect = k.getContent().stream().map(SysUserDTO::convert).collect(Collectors.toList());
             return Page.of(collect, k.getPageable(), k.getTotalSize());
         });
     }
@@ -113,12 +119,44 @@ public class SysUserServiceImpl implements SysUserService {
                 .flatMap(result -> {
                     log.info("query user by name:{}", userName);
                     if (!result) {
-                        log.info("user name {} is not exists,return default true.");
-                        return Mono.just(true);
+                        log.info("user name {} is not exists", userName);
+                        return Mono.error(NotFoundException.create("user is not exists."));
                     }
                     return sysUserMapper.deleteByUserName(userName);
-                }).map(t -> true);
+                }).then(Mono.just(true));
     }
+
+    @Override
+    public Mono<SysUser> updateUser(UpdateUserCommand updateUserCommand) {
+        if (StringUtils.isEmpty(updateUserCommand.getUserName())) {
+            log.info("update user,name is empty.");
+            return Mono.error(new MortnonBaseException(ErrorCodeEnum.USER_NAME_CHECK_FAILED, "user name is empty."));
+        }
+        return sysUserMapper.existsByUserName(updateUserCommand.getUserName())
+                .flatMap(result -> {
+                    if (!result) {
+                        return Mono.error(new MortnonBaseException(ErrorCodeEnum.USER_NAME_CHECK_FAILED, "user is not exists."));
+                    }
+                    return sysUserMapper.findByUserName(updateUserCommand.getUserName());
+                })
+                .flatMap(user -> {
+
+                    Optional.ofNullable(validateUpdate.apply(updateUserCommand.getNickName())).ifPresent(t -> user.setNickName(t));
+                    Optional.ofNullable(validateUpdate.apply(updateUserCommand.getNickName())).ifPresent(t -> user.setNickName(t));
+                    Optional.ofNullable(validateUpdate.apply(updateUserCommand.getEmail())).ifPresent(t -> user.setEmail(t));
+                    Optional.ofNullable(validateUpdate.apply(updateUserCommand.getPhone())).ifPresent(t -> user.setPhone(t));
+                    Optional.ofNullable(validateUpdate.apply(updateUserCommand.getHead())).ifPresent(t -> user.setHead(t));
+                    updateUserCommand.setSex(updateUserCommand.getSex());
+                    return sysUserMapper.update(user);
+                });
+    }
+
+    private Function<String, String> validateUpdate = data -> {
+        if (StringUtils.isNotEmpty(data)) {
+            return data;
+        }
+        return null;
+    };
 
     @Override
     public Mono<SysRole> queryUserRole(String userName) {

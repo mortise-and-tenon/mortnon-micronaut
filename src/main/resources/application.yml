@@ -8,6 +8,8 @@ micronaut:
     endpoints:
       login:
         enabled: false
+      logout:
+        enabled: false
     token:
       jwt:
         bearer:
@@ -59,6 +61,7 @@ mortnon:
     # 验证码有效时长（秒）
     expire-seconds: 600
   jwt:
-    consistency: false
-    # 登录状态存储类型。local：内存ehcache存储，redis：redis存储
-    login-storage-type: redis
+    # 服务端是否记录 token ，默认为 true
+    consistency: true
+    # 登录状态存储类型。Local：内存ehcache存储，Redis：redis存储
+    login-storage-type: Redis

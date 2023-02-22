@@ -44,7 +44,7 @@ public interface UserRepository extends ReactorPageableRepository<SysUser, Long>
      * @param userName
      * @return
      */
-    Mono<Void> deleteByUserName(String userName);
+    Mono<Long> deleteByUserName(String userName);
 
     /**
      * 判断用户名是否存在

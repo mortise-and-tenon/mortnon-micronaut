@@ -1,9 +1,12 @@
 package fun.mortnon.dal.base.entity;
 
+import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.GeneratedValue;
 import io.micronaut.data.annotation.Id;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -25,10 +28,12 @@ public class BaseEntity {
     /**
      * 创建时间
      */
-    protected Date gmtCreate;
+    @DateCreated
+    protected Instant gmtCreate;
 
     /**
      * 修改时间
      */
-    protected Date gmtModify;
+    @DateUpdated
+    protected Instant gmtModify;
 }

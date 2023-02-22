@@ -53,7 +53,9 @@ public enum ErrorCodeEnum {
      */
     USER_IDENTITY_CHECK_FAILED("A0120", "user identity check failed"),
 
-    /** 用户名或密码错误 */
+    /**
+     * 用户名或密码错误
+     */
     INVALID_USERNAME_OR_PASSWORD("A0210", "invalid username or password"),
 
     /**
@@ -85,7 +87,16 @@ public enum ErrorCodeEnum {
      * 系统异常
      */
     SYSTEM_ERROR("B0001", "system error"),
-    ;
+
+    /**
+     * 重复
+     */
+    REPEAT_ERROR("B0002", "repeat data"),
+
+    /**
+     * 不存在
+     */
+    NOT_EXISTS_ERROR("B0003", "not exists");;
 
     ErrorCodeEnum(String errorCode, String description) {
         this.errorCode = errorCode;
@@ -103,10 +114,14 @@ public enum ErrorCodeEnum {
      */
     private final String description;
 
-    /** A级错误 */
+    /**
+     * A级错误
+     */
     public static final String A_LEVEL = "A";
 
-    /** B级错误 */
+    /**
+     * B级错误
+     */
     public static final String B_LEVEL = "B";
 
     /**

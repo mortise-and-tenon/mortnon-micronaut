@@ -48,6 +48,11 @@ public class RedisLoginStorageServiceImpl implements LoginStorageService {
     }
 
     @Override
+    public void deleteToken(String token) {
+        commands.del(String.format(LOGIN_TOKEN, token));
+    }
+
+    @Override
     public boolean saveVerifyCode(String key, String code, long expiresSecond) {
         if (COMMAND_RESULT_OK.equalsIgnoreCase(commands.set(String.format(VERIFY_CODE, key), code))) {
             return commands.expire(String.format(VERIFY_CODE, key), Duration.ofSeconds(expiresSecond));

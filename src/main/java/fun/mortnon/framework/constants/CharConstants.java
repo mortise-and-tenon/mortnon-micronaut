@@ -17,4 +17,9 @@ public class CharConstants {
 
     /** 分号*/
     public static final String SEMICOLON = ";";
+
+    /**
+     * 斜杠
+     */
+    public static final String SLASH = "/";
 }

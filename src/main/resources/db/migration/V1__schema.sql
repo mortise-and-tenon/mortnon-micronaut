@@ -106,4 +106,4 @@ INSERT INTO `sys_api_permission`(api,method,permission)
 VALUES ('/users','GET','USER_QUERY'),
     ('/users','POST','USER_CREATE'),
     ('/users','PUT','USER_MODIFY'),
-    ('/users','DELETE',"USER_DELETE");
+    ('/users/**','DELETE',"USER_DELETE");

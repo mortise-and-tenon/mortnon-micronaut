@@ -1,16 +1,15 @@
-package fun.mortnon.service.sys.vo;
+package fun.mortnon.web.controller.user.command;
 
-import fun.mortnon.dal.sys.entity.SysPermission;
 import lombok.Data;
 
 import java.util.List;
 
 /**
  * @author dev2007
- * @date 2023/2/15
+ * @date 2023/2/22
  */
 @Data
-public class RolePermissionDTO {
+public class CreateRoleCommand {
     /**
      * 角色名
      */
@@ -27,7 +26,7 @@ public class RolePermissionDTO {
     private String description;
 
     /**
-     * 权限列表
+     * 权限 id 列表
      */
-    private List<SysPermission> permissionList;
+    private List<Long> permissionList;
 }

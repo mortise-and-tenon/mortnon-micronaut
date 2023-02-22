@@ -2,7 +2,6 @@ package fun.mortnon.framework.vo;
 
 import fun.mortnon.framework.enums.ErrorCodeEnum;
 import io.micronaut.data.model.Page;
-import io.micronaut.data.model.Pageable;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -57,7 +56,7 @@ public class MortnonResult<T> implements Serializable {
         return result;
     }
 
-    public static MortnonResult success(Page page) {
+    public static MortnonResult successPageData(Page page) {
         PageableData pageableData = new PageableData(page.getPageNumber(), page.getTotalPages(), page.getSize(),
                 page.getTotalSize(), page.getContent());
         return success(pageableData);

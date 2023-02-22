@@ -50,11 +50,18 @@ public class TokenPersistence implements TokenListener {
      * @return
      */
     public boolean isExists(String accessToken) {
+        //如果配置 token 在持久化，进行检查；否则直接返回存在
         if (jwtProperties.isConsistency()) {
             return getStorageService().tokenIsExists(accessToken);
         }
 
         return true;
+    }
+
+    public void clearToken(String accessToken) {
+        if (isExists(accessToken)) {
+            getStorageService().deleteToken(accessToken);
+        }
     }
 
     private LoginStorageService getStorageService() {

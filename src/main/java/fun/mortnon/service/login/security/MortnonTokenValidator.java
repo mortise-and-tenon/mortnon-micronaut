@@ -41,6 +41,7 @@ public class MortnonTokenValidator extends JwtTokenValidator {
 
     @Override
     public Publisher<Authentication> validateToken(String token, @Nullable HttpRequest<?> request) {
+        //校验 token 在持久化存储中是否存在; 持久化处理的在 TokenListener 中实现
         if (tokenPersistence.isExists(token)) {
             return super.validateToken(token, request);
         }

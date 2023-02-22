@@ -20,4 +20,9 @@ public class MortnonConstants {
 
     /** jwt 用户名*/
     public static final String JWT_USERNAME = "username";
+
+    /**
+     * token 专用 key，如 cookies 中
+     */
+    public static final String TOKEN_KEY = "X-Auth-Token";
 }

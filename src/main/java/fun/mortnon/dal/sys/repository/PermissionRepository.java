@@ -4,6 +4,10 @@ import fun.mortnon.dal.sys.entity.SysPermission;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.r2dbc.annotation.R2dbcRepository;
 import io.micronaut.data.repository.reactive.ReactorPageableRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * @author dev2007
@@ -11,4 +15,11 @@ import io.micronaut.data.repository.reactive.ReactorPageableRepository;
  */
 @R2dbcRepository(dialect = Dialect.MYSQL)
 public interface PermissionRepository extends ReactorPageableRepository<SysPermission, Long> {
+    /**
+     * 按 id 查询所有权限
+     *
+     * @param ids
+     * @return
+     */
+    Flux<SysPermission> findByIdIn(List<Long> ids);
 }
