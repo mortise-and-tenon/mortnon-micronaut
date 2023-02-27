@@ -2,17 +2,19 @@ package fun.mortnon.service.sys.impl;
 
 import fun.mortnon.dal.sys.entity.SysRole;
 import fun.mortnon.dal.sys.entity.SysRolePermission;
+import fun.mortnon.dal.sys.repository.AssignmentRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
 import fun.mortnon.dal.sys.repository.RolePermissionRepository;
 import fun.mortnon.dal.sys.repository.RoleRepository;
 import fun.mortnon.framework.exceptions.NotFoundException;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.exceptions.RepeatDataException;
+import fun.mortnon.framework.exceptions.UsedException;
 import fun.mortnon.service.sys.SysRoleService;
 import fun.mortnon.service.sys.vo.SysPermissionDTO;
 import fun.mortnon.service.sys.vo.SysRoleDTO;
-import fun.mortnon.web.controller.user.command.CreateRoleCommand;
-import fun.mortnon.web.controller.user.command.UpdateRoleCommand;
+import fun.mortnon.web.controller.role.command.CreateRoleCommand;
+import fun.mortnon.web.controller.role.command.UpdateRoleCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
@@ -25,7 +27,6 @@ import reactor.core.publisher.Mono;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,13 +46,24 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Inject
     private PermissionRepository permissionRepository;
 
+    @Inject
+    private AssignmentRepository assignmentRepository;
+
     @Override
     @Transactional
-    public Mono<SysRoleDTO> saveRole(CreateRoleCommand createRoleCommand) {
+    public Mono<SysRoleDTO> createRole(CreateRoleCommand createRoleCommand) {
+        if (StringUtils.isEmpty(createRoleCommand.getName())) {
+            return Mono.error(ParameterException.create("role name is empty."));
+        }
+
+        if (StringUtils.isEmpty(createRoleCommand.getIdentifier())) {
+            return Mono.error(ParameterException.create("role identifier is empty."));
+        }
+
         return roleRepository.existsByNameOrIdentifier(createRoleCommand.getName(), createRoleCommand.getIdentifier())
                 .flatMap(result -> {
                     if (result) {
-                        log.info("repeat role: {},{}", createRoleCommand.getName(), createRoleCommand.getIdentifier());
+                        log.warn("create role fail,repeat role: {},{}", createRoleCommand.getName(), createRoleCommand.getIdentifier());
                         return Mono.error(RepeatDataException.create("repeat role name / identifier"));
                     }
 
@@ -80,6 +92,7 @@ public class SysRoleServiceImpl implements SysRoleService {
                             ).collectList()
                             .map(list -> {
                                 if (list.size() != rolePermissionList.size()) {
+                                    log.warn("create role fail,contains error permission id.");
                                     return Mono.error(NotFoundException.create("error permission id"));
                                 }
                                 List<SysPermissionDTO> pList = list.stream().map(k -> SysPermissionDTO.convert(k)).collect(Collectors.toList());
@@ -92,15 +105,15 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     @Transactional
-    public Mono<SysRoleDTO> modifyRole(UpdateRoleCommand updateRoleCommand) {
-        if(CollectionUtils.isEmpty(updateRoleCommand.getPermissionList())) {
+    public Mono<SysRoleDTO> updateRole(UpdateRoleCommand updateRoleCommand) {
+        if (CollectionUtils.isEmpty(updateRoleCommand.getPermissionList())) {
             return Mono.error(ParameterException.create("role permission is empty."));
         }
 
         return roleRepository.existsById(updateRoleCommand.getId())
                 .flatMap(exists -> {
                     if (!exists) {
-                        log.info("role id {} is not exists.");
+                        log.warn("update role fail,role id {} is not exists.");
                         return Mono.error(NotFoundException.create("role is not exists."));
                     }
                     return roleRepository.existsByIdNotEqualsAndNameEquals(updateRoleCommand.getId(), updateRoleCommand.getName());
@@ -180,7 +193,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         return roleRepository.existsById(id)
                 .flatMap(result -> {
                     if (!result) {
-                        log.info("role {} is not exists.", id);
+                        log.warn("query role fail,role {} is not exists.", id);
                         return Mono.error(NotFoundException.create("role is not exists."));
                     }
 
@@ -206,17 +219,27 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     @Transactional
     public Mono<Boolean> deleteRole(Long id) {
-        return roleRepository.existsById(id).flatMap(result -> {
-            if (!result) {
-                log.info("role {} is not exists.", id);
-                return Mono.error(NotFoundException.create("role is not exists."));
-            }
+        return roleRepository.existsById(id)
+                .flatMap(result -> {
+                    if (!result) {
+                        log.warn("delete role fail,role {} is not exists.", id);
+                        return Mono.error(NotFoundException.create("role is not exists."));
+                    }
 
-            return rolePermissionRepository.deleteByRoleId(id).flatMap(k -> roleRepository.deleteById(id))
-                    .map(roleResult -> {
-                        log.info("delete role result:{}", roleResult);
-                        return roleResult > 0;
-                    });
-        });
+                    return assignmentRepository.existsByRoleId(id);
+                })
+                .flatMap(exists -> {
+                    if (exists) {
+                        log.warn("delete role fail,role {} is used.", id);
+                        return Mono.error(UsedException.create("role is used."));
+                    }
+
+                    return rolePermissionRepository.deleteByRoleId(id).flatMap(k -> roleRepository.deleteById(id))
+                            .map(roleResult -> {
+                                log.info("delete role result:{}", roleResult);
+                                return roleResult > 0;
+                            });
+                })
+                ;
     }
 }

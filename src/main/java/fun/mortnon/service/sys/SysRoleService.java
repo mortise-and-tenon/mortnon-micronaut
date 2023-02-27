@@ -1,9 +1,8 @@
 package fun.mortnon.service.sys;
 
-import fun.mortnon.dal.sys.entity.SysRole;
 import fun.mortnon.service.sys.vo.SysRoleDTO;
-import fun.mortnon.web.controller.user.command.CreateRoleCommand;
-import fun.mortnon.web.controller.user.command.UpdateRoleCommand;
+import fun.mortnon.web.controller.role.command.CreateRoleCommand;
+import fun.mortnon.web.controller.role.command.UpdateRoleCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import reactor.core.publisher.Mono;
@@ -20,7 +19,7 @@ public interface SysRoleService {
      * @param createRoleCommand
      * @return
      */
-    Mono<SysRoleDTO> saveRole(CreateRoleCommand createRoleCommand);
+    Mono<SysRoleDTO> createRole(CreateRoleCommand createRoleCommand);
 
     /**
      * 修改角色
@@ -28,7 +27,7 @@ public interface SysRoleService {
      * @param updateRoleCommand
      * @return
      */
-    Mono<SysRoleDTO> modifyRole(UpdateRoleCommand updateRoleCommand);
+    Mono<SysRoleDTO> updateRole(UpdateRoleCommand updateRoleCommand);
 
     /**
      * 查询角色列表

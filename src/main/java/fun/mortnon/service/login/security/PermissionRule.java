@@ -1,10 +1,7 @@
 package fun.mortnon.service.login.security;
 
-import fun.mortnon.dal.sys.entity.SysApiPermission;
 import fun.mortnon.dal.sys.entity.SysPermission;
-import fun.mortnon.dal.sys.entity.SysRole;
 import fun.mortnon.dal.sys.entity.SysRolePermission;
-import fun.mortnon.dal.sys.repository.ApiPermissionRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
 import fun.mortnon.dal.sys.repository.RolePermissionRepository;
 import fun.mortnon.dal.sys.repository.RoleRepository;
@@ -35,15 +32,13 @@ import java.util.function.Predicate;
 @Slf4j
 public class PermissionRule implements SecurityRule {
     private final AntPathMatcher pathMatcher;
-    private ApiPermissionRepository apiPermissionRepository;
     private RoleRepository roleRepository;
     private PermissionRepository permissionRepository;
     private RolePermissionRepository rolePermissionRepository;
 
-    public PermissionRule(ApiPermissionRepository apiPermissionRepository, RoleRepository roleRepository, PermissionRepository permissionRepository,
+    public PermissionRule(RoleRepository roleRepository, PermissionRepository permissionRepository,
                           RolePermissionRepository rolePermissionRepository) {
         this.pathMatcher = PathMatcher.ANT;
-        this.apiPermissionRepository = apiPermissionRepository;
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
         this.rolePermissionRepository = rolePermissionRepository;
@@ -63,7 +58,7 @@ public class PermissionRule implements SecurityRule {
             return Mono.just(SecurityRuleResult.REJECTED);
         }
 
-        Predicate<SysApiPermission> predicate = p -> pathMatcher.matches(p.getApi(), path)
+        Predicate<SysPermission> predicate = p -> pathMatcher.matches(p.getApi(), path)
                 && httpMethod.equals(p.getMethod());
 
         return Flux.fromIterable(roles)
@@ -71,10 +66,9 @@ public class PermissionRule implements SecurityRule {
                 .flatMap(role -> rolePermissionRepository.findByRoleId(role.getId()))
                 .map(SysRolePermission::getPermissionId)
                 .flatMap(pId -> permissionRepository.findById(pId))
-                .map(SysPermission::getIdentifier)
-                .flatMap(permission -> apiPermissionRepository.findAll().filter(predicate)
-                        .filter(k -> k.getPermission().equals(permission)))
-                .map(m -> SecurityRuleResult.ALLOWED)
+                .filter(permission -> predicate.test(permission))
+                .collectList()
+                .map(apiList -> CollectionUtils.isNotEmpty(apiList) ? SecurityRuleResult.ALLOWED:SecurityRuleResult.REJECTED)
                 .defaultIfEmpty(SecurityRuleResult.REJECTED);
     }
 }

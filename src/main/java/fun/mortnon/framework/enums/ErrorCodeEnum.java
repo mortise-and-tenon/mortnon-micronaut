@@ -96,7 +96,12 @@ public enum ErrorCodeEnum {
     /**
      * 不存在
      */
-    NOT_EXISTS_ERROR("B0003", "not exists");;
+    NOT_EXISTS_ERROR("B0003", "data is not exists"),
+
+    /**
+     * 数据已被使用
+     */
+    USED_DATA_ERROR("B0004", "data is used");
 
     ErrorCodeEnum(String errorCode, String description) {
         this.errorCode = errorCode;

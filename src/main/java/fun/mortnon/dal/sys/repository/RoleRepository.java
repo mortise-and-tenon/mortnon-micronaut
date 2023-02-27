@@ -1,10 +1,8 @@
 package fun.mortnon.dal.sys.repository;
 
-import fun.mortnon.dal.sys.entity.SysApiPermission;
 import fun.mortnon.dal.sys.entity.SysRole;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.r2dbc.annotation.R2dbcRepository;
-import io.micronaut.data.repository.reactive.ReactorCrudRepository;
 import io.micronaut.data.repository.reactive.ReactorPageableRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

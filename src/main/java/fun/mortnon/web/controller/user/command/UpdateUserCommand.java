@@ -10,10 +10,9 @@ import lombok.Data;
 @Data
 public class UpdateUserCommand {
     /**
-     * 用户名
+     * 用户 id
      */
-    @JsonProperty("user_name")
-    private String userName;
+    private Long id;
 
     /**
      * 昵称

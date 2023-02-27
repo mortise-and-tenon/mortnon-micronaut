@@ -4,6 +4,7 @@ import fun.mortnon.dal.base.entity.BaseEntity;
 import io.micronaut.data.annotation.GeneratedValue;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.http.HttpMethod;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
@@ -31,4 +32,14 @@ public class SysPermission extends BaseEntity {
      * 权限描述
      */
     private String description;
+
+    /**
+     * 适用 API
+     */
+    private String api;
+
+    /**
+     * API 方法
+     */
+    private HttpMethod method;
 }

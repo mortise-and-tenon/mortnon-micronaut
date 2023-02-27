@@ -1,33 +1,34 @@
 package fun.mortnon.web.controller.user;
 
 import fun.mortnon.framework.enums.ErrorCodeEnum;
-import fun.mortnon.framework.exceptions.MortnonBaseException;
+import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.framework.vo.PageableData;
 import fun.mortnon.service.sys.SysUserService;
 import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.CreateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdateUserCommand;
+import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * @author dev2007
  * @date 2023/2/7
  */
-@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/users")
 @Slf4j
 public class UserController {
@@ -76,12 +77,12 @@ public class UserController {
     /**
      * 删除指定用户
      *
-     * @param name 用户名
+     * @param id 用户 id
      * @return
      */
-    @Delete("/{name}")
-    public Mono<MutableHttpResponse<MortnonResult>> delete(@NonNull String name) {
-        return sysUserService.deleteUser(name)
+    @Delete("/{id}")
+    public Mono<MutableHttpResponse<MortnonResult>> delete(@NonNull Long id) {
+        return sysUserService.deleteUser(id)
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok);
     }
@@ -89,14 +90,47 @@ public class UserController {
     /**
      * 获取指定用户
      *
-     * @param name 用户名
+     * @param id 用户名 id
      * @return
      */
-    @Get("/{name}")
-    public Mono<MutableHttpResponse<MortnonResult>> queryUser(@NotBlank String name) {
-        return sysUserService.getUserByUsername(name).map(SysUserDTO::convert)
+    @Get("/{id}")
+    public Mono<MutableHttpResponse<MortnonResult>> queryUser(@NotNull Long id) {
+        return sysUserService.getUserById(id).map(SysUserDTO::convert)
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok)
                 .onErrorReturn(HttpResponse.badRequest(MortnonResult.fail(ErrorCodeEnum.PARAM_ERROR)));
+    }
+
+    /**
+     * 修改其他用户密码
+     *
+     * @param id
+     * @param updatePassword
+     * @return
+     */
+    @Put("/password/{id}")
+    public Mono<MutableHttpResponse<MortnonResult>> updateUserPassword(@NotNull Long id, @Body @NotNull UpdatePasswordCommand updatePassword) {
+        updatePassword.setId(id);
+        return sysUserService.updateUserPassword(updatePassword).map(MortnonResult::success).map(HttpResponse::ok);
+    }
+
+    /**
+     * 修改自己密码
+     *
+     * @param authentication
+     * @param updatePasswordCommand
+     * @return
+     */
+    @Secured(SecurityRule.IS_AUTHENTICATED)
+    @Put("/password")
+    public Mono<MutableHttpResponse<MortnonResult>> updateUserPassword(Authentication authentication, @Body @NotNull UpdatePasswordCommand updatePasswordCommand) {
+        if (null == authentication) {
+            return Mono.error(ParameterException.create("auth is null."));
+        }
+
+        String userName = authentication.getName();
+        updatePasswordCommand.setId(0L);
+        updatePasswordCommand.setUserName(userName);
+        return sysUserService.updateUserPassword(updatePasswordCommand).map(MortnonResult::success).map(HttpResponse::ok);
     }
 }

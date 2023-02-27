@@ -5,17 +5,13 @@ import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.framework.vo.PageableData;
 import fun.mortnon.service.sys.SysRoleService;
 import fun.mortnon.service.sys.vo.SysRoleDTO;
-import fun.mortnon.service.sys.vo.SysUserDTO;
-import fun.mortnon.web.controller.user.command.CreateRoleCommand;
-import fun.mortnon.web.controller.user.command.UpdateRoleCommand;
-import fun.mortnon.web.controller.user.command.UpdateUserCommand;
+import fun.mortnon.web.controller.role.command.CreateRoleCommand;
+import fun.mortnon.web.controller.role.command.UpdateRoleCommand;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.*;
-import io.micronaut.security.annotation.Secured;
-import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -25,10 +21,11 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
+ * 角色
+ *
  * @author dev2007
  * @date 2023/2/15
  */
-@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/roles")
 @Slf4j
 public class RoleController {
@@ -54,7 +51,7 @@ public class RoleController {
      */
     @Post
     public Mono<MutableHttpResponse<MortnonResult>> createRole(CreateRoleCommand createRoleCommand) {
-        return sysRoleService.saveRole(createRoleCommand).map(k -> HttpResponse.created(MortnonResult.success(k)));
+        return sysRoleService.createRole(createRoleCommand).map(k -> HttpResponse.created(MortnonResult.success(k)));
     }
 
     /**
@@ -85,7 +82,7 @@ public class RoleController {
 
     @Put
     public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull UpdateRoleCommand updateRoleCommand) {
-        return sysRoleService.modifyRole(updateRoleCommand)
+        return sysRoleService.updateRole(updateRoleCommand)
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok)
                 .onErrorReturn(HttpResponse.badRequest(MortnonResult.fail(ErrorCodeEnum.PARAM_ERROR)));

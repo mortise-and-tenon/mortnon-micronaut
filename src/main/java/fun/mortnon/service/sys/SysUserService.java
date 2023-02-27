@@ -5,8 +5,10 @@ import fun.mortnon.dal.sys.entity.SysUser;
 import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.CreateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdateUserCommand;
+import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -26,10 +28,10 @@ public interface SysUserService {
     /**
      * 根据账户名获取用户信息
      *
-     * @param username 账户名
+     * @param id 用户 id
      * @return 用户信息
      */
-    Mono<SysUser> getUserByUsername(String username);
+    Mono<SysUser> getUserById(Long id);
 
     /**
      * 查询用户列表
@@ -40,12 +42,20 @@ public interface SysUserService {
     Mono<Page<SysUserDTO>> queryUsers(Pageable pageable);
 
     /**
-     * 删除用户
+     * 按用户名查询用户
      *
      * @param userName
      * @return
      */
-    Mono<Boolean> deleteUser(String userName);
+    Mono<SysUser> getUserByUsername(String userName);
+
+    /**
+     * 删除用户
+     *
+     * @param userId
+     * @return
+     */
+    Mono<Boolean> deleteUser(Long userId);
 
     /**
      * 更新用户
@@ -61,5 +71,21 @@ public interface SysUserService {
      * @param userName
      * @return
      */
-    Mono<SysRole> queryUserRole(String userName);
+    Flux<SysRole> queryUserRole(String userName);
+
+    /**
+     * 修改用户密码
+     *
+     * @param updatePasswordCommand
+     * @return
+     */
+    Mono<Boolean> updateUserPassword(UpdatePasswordCommand updatePasswordCommand);
+
+    /**
+     * 修改用户自身密码
+     *
+     * @param updatePasswordCommand
+     * @return
+     */
+    Mono<Boolean> updateSelfPassword(UpdatePasswordCommand updatePasswordCommand);
 }

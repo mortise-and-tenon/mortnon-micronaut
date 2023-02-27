@@ -1,7 +1,10 @@
 package fun.mortnon.web.controller.user.command;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fun.mortnon.service.sys.vo.ProjectRoleDTO;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author dev2007
@@ -20,4 +23,7 @@ public class CreateUserCommand {
     private String phone;
     private String head;
     private Integer sex;
+
+    @JsonProperty(value = "project_roles")
+    private List<ProjectRoleDTO> projectRoles;
 }

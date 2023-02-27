@@ -1,4 +1,4 @@
-package fun.mortnon.web.controller.user.command;
+package fun.mortnon.web.controller.role.command;
 
 import lombok.Data;
 
@@ -9,16 +9,16 @@ import java.util.List;
  * @date 2023/2/22
  */
 @Data
-public class CreateRoleCommand {
+public class UpdateRoleCommand {
+    /**
+     * 角色 id
+     */
+    private Long id;
+
     /**
      * 角色名
      */
     private String name;
-
-    /**
-     * 标识符
-     */
-    private String identifier;
 
     /**
      * 描述

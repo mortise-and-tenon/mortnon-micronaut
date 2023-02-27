@@ -15,14 +15,14 @@ import io.micronaut.security.authentication.AuthenticationResponse;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
+import org.apache.commons.collections4.CollectionUtils;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author dev2007
@@ -43,19 +43,22 @@ public class AuthenticationProviderUserPassword implements AuthenticationProvide
     public Publisher<AuthenticationResponse> authenticate(@Nullable HttpRequest<?> httpRequest,
                                                           AuthenticationRequest<?, ?> authenticationRequest) {
         return Mono.<AuthenticationResponse>create(emitter -> {
-            SysRole role = loginService.authenticate(authenticationRequest)
+            List<SysRole> roleList = loginService.authenticate(authenticationRequest)
                     .flatMap(result -> {
                         if (result) {
-                            return sysUserService.queryUserRole((String) authenticationRequest.getIdentity());
+                            return sysUserService.queryUserRole((String) authenticationRequest.getIdentity()).collectList();
+                        } else {
+                            emitter.error(AuthenticationResponse.exception(AuthenticationFailureReason.CUSTOM));
                         }
                         return null;
-                    }).block();
-            if (null == role) {
-                emitter.error(AuthenticationResponse.exception(AuthenticationFailureReason.CUSTOM));
-            }
-            List<String> roleList = new ArrayList<>();
-            roleList.add(role.getIdentifier());
-            emitter.success(AuthenticationResponse.success((String) authenticationRequest.getIdentity(), roleList));
+                    })
+                    .block();
+
+            Set<String> roleIdentifierSet = Optional.ofNullable(roleList)
+                            .map(list -> list.stream().map(SysRole::getIdentifier)
+                            .collect(Collectors.toSet())).orElse(new HashSet<>());
+
+            emitter.success(AuthenticationResponse.success((String) authenticationRequest.getIdentity(), roleIdentifierSet));
         });
     }
 }

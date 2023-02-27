@@ -22,4 +22,13 @@ public interface PermissionRepository extends ReactorPageableRepository<SysPermi
      * @return
      */
     Flux<SysPermission> findByIdIn(List<Long> ids);
+
+    /**
+     * 名字或标识符重复
+     *
+     * @param name
+     * @param identifier
+     * @return
+     */
+    Mono<Boolean> existsByNameEqualsOrIdentifierEquals(String name, String identifier);
 }

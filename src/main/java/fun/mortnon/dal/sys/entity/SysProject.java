@@ -24,4 +24,9 @@ public class SysProject extends BaseEntity {
      * 组织描述
      */
     private String description;
+
+    /**
+     * 父组织 id
+     */
+    private Long parentId;
 }
