@@ -165,6 +165,10 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public Mono<SysUser> getUserById(Long id) {
+        if(null == id || id <= 0){
+            return Mono.error(ParameterException.create("user id is wrong."));
+        }
+
         return userRepository.existsById(id)
                 .flatMap(result -> {
                     if (!result) {

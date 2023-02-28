@@ -97,8 +97,7 @@ public class UserController {
     public Mono<MutableHttpResponse<MortnonResult>> queryUser(@NotNull Long id) {
         return sysUserService.getUserById(id).map(SysUserDTO::convert)
                 .map(MortnonResult::success)
-                .map(HttpResponse::ok)
-                .onErrorReturn(HttpResponse.badRequest(MortnonResult.fail(ErrorCodeEnum.PARAM_ERROR)));
+                .map(HttpResponse::ok);
     }
 
     /**

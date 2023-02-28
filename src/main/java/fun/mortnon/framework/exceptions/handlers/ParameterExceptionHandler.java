@@ -18,6 +18,6 @@ import jakarta.inject.Singleton;
 @Requires(classes = {ParameterException.class, ExceptionHandler.class})
 public class ParameterExceptionHandler implements ExceptionHandler<ParameterException, HttpResponse> {
     public HttpResponse handle(HttpRequest request, ParameterException exception) {
-        return HttpResponse.notFound(MortnonResult.fail(exception.getErrorCodeEnum(), exception.getMessage()));
+        return HttpResponse.badRequest(MortnonResult.fail(exception.getErrorCodeEnum(), exception.getMessage()));
     }
 }
