@@ -24,8 +24,7 @@ import java.util.Collection;
  * @author dev2007
  * @date 2023/2/7
  */
-@Replaces(JwtTokenValidator.class)
-@Singleton
+
 @Slf4j
 public class MortnonTokenValidator extends JwtTokenValidator {
     @Inject

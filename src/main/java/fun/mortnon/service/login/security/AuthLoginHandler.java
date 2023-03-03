@@ -18,8 +18,7 @@ import jakarta.inject.Singleton;
  * @author dev2007
  * @date 2023/2/10
  */
-@Replaces(AccessRefreshTokenLoginHandler.class)
-@Singleton
+
 public class AuthLoginHandler extends AccessRefreshTokenLoginHandler {
     /**
      * @param accessRefreshTokenGenerator AccessRefresh Token generator

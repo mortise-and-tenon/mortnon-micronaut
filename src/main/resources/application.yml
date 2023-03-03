@@ -2,24 +2,38 @@ micronaut:
   application:
     name: mortnon-micronaut
   security:
-    authentication: bearer
-    redirect:
+    reject-not-found: false
+    authentication: cookie
+#    redirect:
+#      enabled: false
+#    endpoints:
+#      login:
+#        enabled: false
+#      logout:
+#        enabled: false
+    oauth2:
       enabled: false
-    endpoints:
-      login:
-        enabled: false
-      logout:
-        enabled: false
-    token:
-      jwt:
-        bearer:
-          header-name: Authorization
-          prefix: Bearer
-        signatures:
-          secret:
-            generator:
-              secret: GvnfNoDSgD22VTkDjUear6WNcf5g1Bwi7aQ9BwpvTFeGcpb8TJsQgbAh9T92kU2MPpSK2BIWVvNDDpYEGgyXzdpof6e9LtWtd30MujSUXawjNAsPk9ZJa7kdEgHh5LuqQVWxL6GVJOuMmeX2L0TZ5aOdslazChM9PaNeYzaxJ7mLonMwwA1N0O7pK5wnTt3LECZf6FFH13MuioFI4qEjhVfeEcs5hIzLt2POXE8fyjC0dPe9yuahKTEeqva99kwKbk9TJL7lDJRsLJSvWKUldxUJEKVBXeunFsP2DWpKsroxslJNuHow8NZeWLMAV5HELXwxgdGjSrfrWStRNwpa76yh78vuYm5QMBfmim7FBdX0L9uInN6kLXNLRdkBIdiA3Shg0vvnsHr8QKFebk1rcpk8XApf2lrE1awISyWEiSE3vcSGd6SAyDBozGCzpubIgQ17ialZYnoI3Roe3dEfOufNKqoLeqT7nvbsBKwf56PF577zxoqk0wXnvClfI8vpjv3ucCE7BVgczg9DkNwfwcG4Xr3ryB340qi3PmgRHUTk68c6vRpeOxTpNokfzWiFfwmAfjwsTBrZFQhrSSbE2ej3gOoGeJr2eVBLs4TXcZSkFa1Sb1Xt1OBxlK798JLGlQJcuSMT5DrbWw5lg6ou1BU1xvFvMQxV35E4a3Q3xjltCcab5zfvewOAazGly4oItigdSzHRyVyqjEhWfgqgUhC954zOzBlhzxLfwYeSWsm6FCyGLnaqSOndXhJ5ZgLSjXzwuHNOTjxSpiyyUqoyUewADAHS5Gvz8cMFXB7X4YrUWGHNqXSGjeFUat5Y7H7VPn2hb0oV2wS7ABFvccHBa1LemClyTUc5gTmuzLaAWPXJksLAOHaPLPY818j0a81wD0vcxkqwJjurKnScFqNUpv6bR54MZDstVLE78kZg5vtXFpZoT5bdmnQTv6miUpyDxVU3hfLLsBMpCDFN9g0AjpRgj8QFoo1kor8Ci7a0pWclJauJrvu1FY79imiSTHDhL9A7aLWnN4AfUzcNYHgvGKgJngMuKJC3TkkjYRQldBVmkrG3YzG3rdlNtsUhFi62ZHBn17Rx20L314PQ9CtX82ItEsmCaNM1vImyw21TcQVKIwxXVyZvOsSQq0jHBwBsWciwipNB9a39MqypP9iaskS4a6jRZSiQaWLyfaD3Rdv74JPGRBHnf0lj4hFfbuk5JE5q3lRI7obKtGVOGIDg6jnNctQxO3XfV3J4cuwhdkmX6I4sjCwlX4bcmQs0P75k
-              jws-algorithm: HS256
+      clients:
+        github:
+          client-id: da28980047eb2c732b8bcee4be567c6a4f38c6459587063f2607084c9c33b957
+          client-secret: 4cd81eac1dae28b698044ed5b55e2580da94aca7d872e11e5b47d6c8a3b0a26d
+          scopes:
+            - user_info
+          authorization:
+            url: https://gitee.com/oauth/authorize
+          token:
+            url: https://gitee.com/oauth/token
+            auth-method: client-secret-post
+#    token:
+#      jwt:
+#        bearer:
+#          header-name: Authorization
+#          prefix: Bearer
+#        signatures:
+#          secret:
+#            generator:
+#              secret: GvnfNoDSgD22VTkDjUear6WNcf5g1Bwi7aQ9BwpvTFeGcpb8TJsQgbAh9T92kU2MPpSK2BIWVvNDDpYEGgyXzdpof6e9LtWtd30MujSUXawjNAsPk9ZJa7kdEgHh5LuqQVWxL6GVJOuMmeX2L0TZ5aOdslazChM9PaNeYzaxJ7mLonMwwA1N0O7pK5wnTt3LECZf6FFH13MuioFI4qEjhVfeEcs5hIzLt2POXE8fyjC0dPe9yuahKTEeqva99kwKbk9TJL7lDJRsLJSvWKUldxUJEKVBXeunFsP2DWpKsroxslJNuHow8NZeWLMAV5HELXwxgdGjSrfrWStRNwpa76yh78vuYm5QMBfmim7FBdX0L9uInN6kLXNLRdkBIdiA3Shg0vvnsHr8QKFebk1rcpk8XApf2lrE1awISyWEiSE3vcSGd6SAyDBozGCzpubIgQ17ialZYnoI3Roe3dEfOufNKqoLeqT7nvbsBKwf56PF577zxoqk0wXnvClfI8vpjv3ucCE7BVgczg9DkNwfwcG4Xr3ryB340qi3PmgRHUTk68c6vRpeOxTpNokfzWiFfwmAfjwsTBrZFQhrSSbE2ej3gOoGeJr2eVBLs4TXcZSkFa1Sb1Xt1OBxlK798JLGlQJcuSMT5DrbWw5lg6ou1BU1xvFvMQxV35E4a3Q3xjltCcab5zfvewOAazGly4oItigdSzHRyVyqjEhWfgqgUhC954zOzBlhzxLfwYeSWsm6FCyGLnaqSOndXhJ5ZgLSjXzwuHNOTjxSpiyyUqoyUewADAHS5Gvz8cMFXB7X4YrUWGHNqXSGjeFUat5Y7H7VPn2hb0oV2wS7ABFvccHBa1LemClyTUc5gTmuzLaAWPXJksLAOHaPLPY818j0a81wD0vcxkqwJjurKnScFqNUpv6bR54MZDstVLE78kZg5vtXFpZoT5bdmnQTv6miUpyDxVU3hfLLsBMpCDFN9g0AjpRgj8QFoo1kor8Ci7a0pWclJauJrvu1FY79imiSTHDhL9A7aLWnN4AfUzcNYHgvGKgJngMuKJC3TkkjYRQldBVmkrG3YzG3rdlNtsUhFi62ZHBn17Rx20L314PQ9CtX82ItEsmCaNM1vImyw21TcQVKIwxXVyZvOsSQq0jHBwBsWciwipNB9a39MqypP9iaskS4a6jRZSiQaWLyfaD3Rdv74JPGRBHnf0lj4hFfbuk5JE5q3lRI7obKtGVOGIDg6jnNctQxO3XfV3J4cuwhdkmX6I4sjCwlX4bcmQs0P75k
+#              jws-algorithm: HS256
 #        generator:
 #          refresh-token:
 #            secret: GvnfNoDSgD22VTkDjUear6WNcf5g1Bwi7aQ9BwpvTFeGcpb8TJsQgbAh9T92kU2MPpSK2BIWVvNDDpYEGgyXzdpof6e9LtWtd30MujSUXawjNAsPk9ZJa7kdEgHh5LuqQVWxL6GVJOuMmeX2L0TZ5aOdslazChM9PaNeYzaxJ7mLonMwwA1N0O7pK5wnTt3LECZf6FFH13MuioFI4qEjhVfeEcs5hIzLt2POXE8fyjC0dPe9yuahKTEeqva99kwKbk9TJL7lDJRsLJSvWKUldxUJEKVBXeunFsP2DWpKsroxslJNuHow8NZeWLMAV5HELXwxgdGjSrfrWStRNwpa76yh78vuYm5QMBfmim7FBdX0L9uInN6kLXNLRdkBIdiA3Shg0vvnsHr8QKFebk1rcpk8XApf2lrE1awISyWEiSE3vcSGd6SAyDBozGCzpubIgQ17ialZYnoI3Roe3dEfOufNKqoLeqT7nvbsBKwf56PF577zxoqk0wXnvClfI8vpjv3ucCE7BVgczg9DkNwfwcG4Xr3ryB340qi3PmgRHUTk68c6vRpeOxTpNokfzWiFfwmAfjwsTBrZFQhrSSbE2ej3gOoGeJr2eVBLs4TXcZSkFa1Sb1Xt1OBxlK798JLGlQJcuSMT5DrbWw5lg6ou1BU1xvFvMQxV35E4a3Q3xjltCcab5zfvewOAazGly4oItigdSzHRyVyqjEhWfgqgUhC954zOzBlhzxLfwYeSWsm6FCyGLnaqSOndXhJ5ZgLSjXzwuHNOTjxSpiyyUqoyUewADAHS5Gvz8cMFXB7X4YrUWGHNqXSGjeFUat5Y7H7VPn2hb0oV2wS7ABFvccHBa1LemClyTUc5gTmuzLaAWPXJksLAOHaPLPY818j0a81wD0vcxkqwJjurKnScFqNUpv6bR54MZDstVLE78kZg5vtXFpZoT5bdmnQTv6miUpyDxVU3hfLLsBMpCDFN9g0AjpRgj8QFoo1kor8Ci7a0pWclJauJrvu1FY79imiSTHDhL9A7aLWnN4AfUzcNYHgvGKgJngMuKJC3TkkjYRQldBVmkrG3YzG3rdlNtsUhFi62ZHBn17Rx20L314PQ9CtX82ItEsmCaNM1vImyw21TcQVKIwxXVyZvOsSQq0jHBwBsWciwipNB9a39MqypP9iaskS4a6jRZSiQaWLyfaD3Rdv74JPGRBHnf0lj4hFfbuk5JE5q3lRI7obKtGVOGIDg6jnNctQxO3XfV3J4cuwhdkmX6I4sjCwlX4bcmQs0P75k
@@ -65,3 +79,7 @@ mortnon:
     consistency: true
     # 登录状态存储类型。Local：内存ehcache存储，Redis：redis存储
     login-storage-type: Redis
+  pac4j:
+    global: false
+    login-uri: /sso/login
+    callback-uri: /callback

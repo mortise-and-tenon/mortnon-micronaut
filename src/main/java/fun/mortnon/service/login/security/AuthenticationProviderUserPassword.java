@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * @author dev2007
  * @date 2023/2/7
  */
-@Singleton
+
 public class AuthenticationProviderUserPassword implements AuthenticationProvider {
     private LoginService loginService;
 

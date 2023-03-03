@@ -28,7 +28,7 @@ import static fun.mortnon.framework.constants.MortnonConstants.TOKEN_KEY;
  * @author dev2007
  * @date 2023/2/21
  */
-@Singleton
+
 public class AuthLogoutHandler implements LogoutHandler {
 
     @Inject

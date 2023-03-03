@@ -20,8 +20,7 @@ import java.util.Map;
  * @author dev2007
  * @date 2023/2/7
  */
-@Replaces(JWTClaimsSetGenerator.class)
-@Singleton
+
 @Slf4j
 public class MortnonClaimsGenerator extends JWTClaimsSetGenerator {
 
