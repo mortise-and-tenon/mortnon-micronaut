@@ -28,7 +28,8 @@ public class TraceFilter implements HttpServerFilter {
 
     @Override
     public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
-        return Flux.from(traceService.trace(request))
-                .switchMap(result -> chain.proceed(request));
+        return Flux.from(traceService.traceBefore(request))
+                .switchMap(result -> chain.proceed(request))
+                .map(response -> traceService.traceAfter(response));
     }
 }
