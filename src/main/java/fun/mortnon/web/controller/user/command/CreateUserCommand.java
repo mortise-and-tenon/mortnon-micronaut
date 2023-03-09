@@ -12,18 +12,48 @@ import java.util.List;
  */
 @Data
 public class CreateUserCommand {
-    @JsonProperty("user_name")
+    /**
+     * 用户名
+     */
     private String userName;
-    @JsonProperty("nick_name")
+
+    /**
+     * 昵称
+     */
     private String nickName;
+
+    /**
+     * 密码
+     */
     private String password;
-    @JsonProperty("repeat_password")
+
+    /**
+     * 重复密码
+     */
     private String repeatPassword;
+
+    /**
+     * 电子邮箱
+     */
     private String email;
+
+    /**
+     * 电话
+     */
     private String phone;
+
+    /**
+     * 头像
+     */
     private String head;
+
+    /**
+     * 性别
+     */
     private Integer sex;
 
-    @JsonProperty(value = "project_roles")
+    /**
+     * 分配的组织、角色
+     */
     private List<ProjectRoleDTO> projectRoles;
 }

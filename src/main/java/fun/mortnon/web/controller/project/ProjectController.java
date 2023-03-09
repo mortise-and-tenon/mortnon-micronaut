@@ -1,5 +1,7 @@
 package fun.mortnon.web.controller.project;
 
+import fun.mortnon.framework.aop.OperationLog;
+import fun.mortnon.framework.constants.LogConstants;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.framework.vo.PageableData;
 import fun.mortnon.service.sys.SysProjectService;
@@ -33,6 +35,12 @@ public class ProjectController {
     @Inject
     private SysProjectService sysProjectService;
 
+    /**
+     * 查询组织
+     *
+     * @param pageable
+     * @return
+     */
     @Get
     public Mono<MortnonResult<PageableData<List<SysProjectDTO>>>> queryRole(@Valid Pageable pageable) {
         return sysProjectService.queryProjects(pageable).map(MortnonResult::successPageData);
@@ -44,6 +52,7 @@ public class ProjectController {
      * @param createProjectCommand
      * @return
      */
+    @OperationLog(LogConstants.PROJECT_CREATE)
     @Post
     public Mono<MutableHttpResponse<MortnonResult>> createRole(CreateProjectCommand createProjectCommand) {
         return sysProjectService.createProject(createProjectCommand).map(k -> HttpResponse.created(MortnonResult.success(k)));
@@ -55,6 +64,7 @@ public class ProjectController {
      * @param id
      * @return
      */
+    @OperationLog(LogConstants.PROJECT_DELETE)
     @Delete("/{id}")
     public Mono<MutableHttpResponse<MortnonResult>> deleteProject(@NotNull Long id) {
         return sysProjectService.deleteProject(id).map(MortnonResult::success).map(HttpResponse::ok);
@@ -62,9 +72,11 @@ public class ProjectController {
 
     /**
      * 修改组织
+     *
      * @param updateProjectCommand
      * @return
      */
+    @OperationLog(LogConstants.PROJECT_UPDATE)
     @Put
     public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull UpdateProjectCommand updateProjectCommand) {
         return sysProjectService.updateProject(updateProjectCommand).map(MortnonResult::success).map(HttpResponse::ok);

@@ -15,16 +15,15 @@ public class UpdatePasswordCommand {
     private Long id;
 
     /**
-     * 用户名字
+     * 用户名
      */
-    @JsonProperty(value = "user_name")
     private String userName;
 
     /**
      * 旧密码
      */
-    @JsonProperty(value = "old_password")
     private String oldPassword;
+
     /**
      * 新密码
      */
@@ -33,6 +32,5 @@ public class UpdatePasswordCommand {
     /**
      * 重复新密码
      */
-    @JsonProperty(value = "repeat_password")
     private String repeatPassword;
 }

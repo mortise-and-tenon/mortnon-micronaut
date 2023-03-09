@@ -12,7 +12,10 @@ import io.micronaut.security.token.jwt.generator.claims.JwtIdGenerator;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashSet;
 import java.util.Map;
+
+import static fun.mortnon.framework.constants.login.ClaimsConstants.PROJECT;
 
 /**
  * JWT 生成器
@@ -24,8 +27,6 @@ import java.util.Map;
 @Singleton
 @Slf4j
 public class MortnonClaimsGenerator extends JWTClaimsSetGenerator {
-
-    private static final String PROJECT = "project";
 
     /**
      * @param tokenConfiguration       Token Configuration
@@ -53,6 +54,6 @@ public class MortnonClaimsGenerator extends JWTClaimsSetGenerator {
 
     private void populateProject(JWTClaimsSet.Builder builder, Authentication authentication) {
         Map<String, Object> attributes = authentication.getAttributes();
-        builder.claim(PROJECT, attributes.getOrDefault(PROJECT, ""));
+        builder.claim(PROJECT, attributes.getOrDefault(PROJECT, new HashSet<>()));
     }
 }

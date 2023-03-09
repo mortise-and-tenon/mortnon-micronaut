@@ -1,6 +1,7 @@
 package fun.mortnon.service.sys.impl;
 
 import fun.mortnon.dal.sys.entity.SysAssignment;
+import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.entity.SysRole;
 import fun.mortnon.dal.sys.entity.SysUser;
 import fun.mortnon.dal.sys.repository.AssignmentRepository;
@@ -165,7 +166,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public Mono<SysUser> getUserById(Long id) {
-        if(null == id || id <= 0){
+        if (null == id || id <= 0) {
             return Mono.error(ParameterException.create("user id is wrong."));
         }
 
@@ -258,8 +259,16 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public Flux<SysRole> queryUserRole(String userName) {
-        return userRepository.findByUserName(userName).flatMapMany(user -> assignmentRepository.findByUserId(user.getId()))
-                .flatMap(userRole -> roleRepository.findById(userRole.getRoleId()));
+        return userRepository.findByUserName(userName)
+                .flatMapMany(user -> assignmentRepository.findByUserId(user.getId()))
+                .flatMap(assignment -> roleRepository.findById(assignment.getRoleId()));
+    }
+
+    @Override
+    public Flux<SysProject> queryUserProject(String userName) {
+        return userRepository.findByUserName(userName)
+                .flatMapMany(user -> assignmentRepository.findByUserId(user.getId()))
+                .flatMap(assignment -> projectRepository.findById(assignment.getProjectId()));
     }
 
     @Override

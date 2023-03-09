@@ -1,7 +1,9 @@
 package fun.mortnon.service.login.security;
 
+import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.entity.SysRole;
 import fun.mortnon.framework.constants.LoginTypeConstants;
+import fun.mortnon.framework.constants.login.ClaimsProject;
 import fun.mortnon.service.login.LoginService;
 import fun.mortnon.service.login.enums.LoginType;
 import fun.mortnon.service.login.model.LoginUser;
@@ -23,6 +25,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static fun.mortnon.framework.constants.login.ClaimsConstants.PROJECT;
 
 /**
  * @author dev2007
@@ -55,10 +59,21 @@ public class AuthenticationProviderUserPassword implements AuthenticationProvide
                     .block();
 
             Set<String> roleIdentifierSet = Optional.ofNullable(roleList)
-                            .map(list -> list.stream().map(SysRole::getIdentifier)
+                    .map(list -> list.stream().map(SysRole::getIdentifier)
                             .collect(Collectors.toSet())).orElse(new HashSet<>());
 
-            emitter.success(AuthenticationResponse.success((String) authenticationRequest.getIdentity(), roleIdentifierSet));
+            Map<String, Object> attributes = new HashMap<>();
+
+
+            Set<ClaimsProject> projectSet = sysUserService.queryUserProject((String) authenticationRequest.getIdentity())
+                    .map(project -> new ClaimsProject(project.getId(), project.getName()))
+                    .collect(Collectors.toSet()).block();
+
+            if (CollectionUtils.isNotEmpty(projectSet)) {
+                attributes.put(PROJECT, projectSet);
+            }
+
+            emitter.success(AuthenticationResponse.success((String) authenticationRequest.getIdentity(), roleIdentifierSet, attributes));
         });
     }
 }

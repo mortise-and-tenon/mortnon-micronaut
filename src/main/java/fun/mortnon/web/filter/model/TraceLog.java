@@ -1,7 +1,6 @@
 package fun.mortnon.web.filter.model;
 
 import io.micronaut.http.HttpMethod;
-import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

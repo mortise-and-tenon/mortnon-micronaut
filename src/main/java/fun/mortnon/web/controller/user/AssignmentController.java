@@ -1,5 +1,7 @@
 package fun.mortnon.web.controller.user;
 
+import fun.mortnon.framework.aop.OperationLog;
+import fun.mortnon.framework.constants.LogConstants;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.sys.AssignmentService;
 import io.micronaut.http.HttpResponse;
@@ -11,6 +13,8 @@ import jakarta.inject.Inject;
 import reactor.core.publisher.Mono;
 
 /**
+ * 分派用户角色、组织
+ *
  * @author dev2007
  * @date 2023/2/27
  */
@@ -27,6 +31,7 @@ public class AssignmentController {
      * @param roleId
      * @return
      */
+    @OperationLog(LogConstants.ASSIGNMENT_CREATE)
     @Post("/user/{userId}/project/{projectId}/role/{roleId}")
     public Mono<MutableHttpResponse<MortnonResult>> assignmentUser(Long userId, Long projectId, Long roleId) {
         return assignmentService.assignmentUser(userId, projectId, roleId).map(MortnonResult::success).map(HttpResponse::ok);
@@ -40,6 +45,7 @@ public class AssignmentController {
      * @param roleId
      * @return
      */
+    @OperationLog(LogConstants.ASSIGNMENT_DELETE)
     @Delete("/user/{userId}/project/{projectId}/role/{roleId}")
     public Mono<MutableHttpResponse<MortnonResult>> revokeUser(Long userId, Long projectId, Long roleId) {
         return assignmentService.revokeUser(userId, projectId, roleId).map(MortnonResult::success).map(HttpResponse::ok);

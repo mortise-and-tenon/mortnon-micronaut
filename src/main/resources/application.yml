@@ -49,6 +49,12 @@ redis:
   io-thread-pool-size: 5
   computation-thread-pool-size: 4
   timeout: 30s
+
+jackson:
+  propertyNamingStrategy: SNAKE_CASE
+  date-format: YYYY-MM-DD HH:mm:ss
+
+
 mortnon:
   captcha:
     # 是否启用登录验证码

@@ -95,7 +95,8 @@ VALUES ('查询用户','USER_QUERY','查看用户数据','/users/**','GET'),
     ('查询组织','PROJECT_QUERY','查询组织数据','/projects/**','GET'),
     ('创建组织','PROJECT_CREATE','创建组织数据','/projects','POST'),
     ('修改组织','PROJECT_MODIFY','修改组织数据','/projects','PUT'),
-    ('删除组织','PROJECT_DELETE','删除组织数据','/projects/**','DELETE');
+    ('删除组织','PROJECT_DELETE','删除组织数据','/projects/**','DELETE'),
+    ('查看日志','LOG_QUERY','查看日志数据','/logs','GET');
 
 -- 角色权限关联表
 CREATE TABLE IF NOT EXISTS `sys_role_permission`(
@@ -109,4 +110,19 @@ CREATE TABLE IF NOT EXISTS `sys_role_permission`(
 INSERT INTO `sys_role_permission`(role_id,permission_id)
 SELECT 1,id
 FROM sys_permission;
+
+-- 操作日志表
+CREATE TABLE IF NOT EXISTS `sys_log` (
+	`id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+	`action` VARCHAR(255) NOT NULL,
+	`user_name` VARCHAR(255) NOT NULL,
+	`project_name` VARCHAR(255) NULL,
+	`project_id` BIGINT NULL,
+	`ip` VARCHAR(255) NOT NULL,
+	`result` ENUM('SUCCESS',"FAILURE") DEFAULT 'SUCCESS',
+	`level` ENUM('INFO','WARN','DANGER') DEFAULT 'INFO',
+	`time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 COMMIT;

@@ -1,6 +1,7 @@
 package fun.mortnon.web.controller.auth;
 
-import fun.mortnon.framework.aop.log.RequestLog;
+import fun.mortnon.framework.aop.OperationLog;
+import fun.mortnon.framework.constants.LogConstants;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.login.CaptchaService;
@@ -56,7 +57,14 @@ public class MortnonLoginController extends LoginController {
         this.sysUserService = sysUserService;
     }
 
-    @RequestLog
+    /**
+     * 登录
+     *
+     * @param passwordLoginCredentials
+     * @param request
+     * @return
+     */
+    @OperationLog(LogConstants.LOGIN)
     @Post("/password")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON})
     @SingleResult

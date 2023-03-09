@@ -1,5 +1,7 @@
 package fun.mortnon.web.controller.user;
 
+import fun.mortnon.framework.aop.OperationLog;
+import fun.mortnon.framework.constants.LogConstants;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.vo.MortnonResult;
@@ -52,6 +54,7 @@ public class UserController {
      * @param createUserCommand 用户数据
      * @return
      */
+    @OperationLog(LogConstants.USER_CREATE)
     @Post
     public Mono<MutableHttpResponse<MortnonResult>> save(@NonNull CreateUserCommand createUserCommand) {
         return sysUserService.createUser(createUserCommand).map(data -> MortnonResult.success(data))
@@ -65,6 +68,7 @@ public class UserController {
      * @param updateUserCommand
      * @return
      */
+    @OperationLog(LogConstants.USER_UPDATE)
     @Put
     public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull UpdateUserCommand updateUserCommand) {
         return sysUserService.updateUser(updateUserCommand)
@@ -80,6 +84,7 @@ public class UserController {
      * @param id 用户 id
      * @return
      */
+    @OperationLog(LogConstants.USER_DELETE)
     @Delete("/{id}")
     public Mono<MutableHttpResponse<MortnonResult>> delete(@NonNull Long id) {
         return sysUserService.deleteUser(id)
@@ -107,6 +112,7 @@ public class UserController {
      * @param updatePassword
      * @return
      */
+    @OperationLog(LogConstants.USER_PASSWORD_UPDATE)
     @Put("/password/{id}")
     public Mono<MutableHttpResponse<MortnonResult>> updateUserPassword(@NotNull Long id, @Body @NotNull UpdatePasswordCommand updatePassword) {
         updatePassword.setId(id);
@@ -120,6 +126,7 @@ public class UserController {
      * @param updatePasswordCommand
      * @return
      */
+    @OperationLog(LogConstants.USER_PASSWORD_UPDATE)
     @Secured(SecurityRule.IS_AUTHENTICATED)
     @Put("/password")
     public Mono<MutableHttpResponse<MortnonResult>> updateUserPassword(Authentication authentication, @Body @NotNull UpdatePasswordCommand updatePasswordCommand) {
@@ -130,6 +137,6 @@ public class UserController {
         String userName = authentication.getName();
         updatePasswordCommand.setId(0L);
         updatePasswordCommand.setUserName(userName);
-        return sysUserService.updateUserPassword(updatePasswordCommand).map(MortnonResult::success).map(HttpResponse::ok);
+        return sysUserService.updateSelfPassword(updatePasswordCommand).map(MortnonResult::success).map(HttpResponse::ok);
     }
 }

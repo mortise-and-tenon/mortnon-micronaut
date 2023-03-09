@@ -1,5 +1,7 @@
 package fun.mortnon.web.controller.auth;
 
+import fun.mortnon.framework.aop.OperationLog;
+import fun.mortnon.framework.constants.LogConstants;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpRequest;
@@ -13,6 +15,7 @@ import io.micronaut.security.handlers.LogoutHandler;
 import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 /**
  * @author dev2007
@@ -28,11 +31,19 @@ public class MortnonLogoutController {
     @Inject
     private ApplicationEventPublisher eventPublisher;
 
+    /**
+     * 登出
+     *
+     * @param request
+     * @param authentication
+     * @return
+     */
+    @OperationLog(LogConstants.LOGOUT)
     @Get
-    public MutableHttpResponse<?> indexGet(HttpRequest<?> request, @Nullable Authentication authentication) {
+    public Mono<MutableHttpResponse<?>> logout(HttpRequest<?> request, @Nullable Authentication authentication) {
         if (authentication != null) {
             eventPublisher.publishEvent(new LogoutEvent(authentication));
         }
-        return logoutHandler.logout(request);
+        return Mono.just(logoutHandler.logout(request));
     }
 }

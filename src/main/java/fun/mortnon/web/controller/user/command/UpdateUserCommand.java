@@ -17,7 +17,6 @@ public class UpdateUserCommand {
     /**
      * 昵称
      */
-    @JsonProperty("nick_name")
     private String nickName;
 
     /**

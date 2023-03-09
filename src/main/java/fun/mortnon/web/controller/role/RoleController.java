@@ -1,5 +1,7 @@
 package fun.mortnon.web.controller.role;
 
+import fun.mortnon.framework.aop.OperationLog;
+import fun.mortnon.framework.constants.LogConstants;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.framework.vo.PageableData;
@@ -49,6 +51,7 @@ public class RoleController {
      * @param createRoleCommand
      * @return
      */
+    @OperationLog(LogConstants.ROLE_CREATE)
     @Post
     public Mono<MutableHttpResponse<MortnonResult>> createRole(CreateRoleCommand createRoleCommand) {
         return sysRoleService.createRole(createRoleCommand).map(k -> HttpResponse.created(MortnonResult.success(k)));
@@ -60,6 +63,7 @@ public class RoleController {
      * @param id
      * @return
      */
+    @OperationLog(LogConstants.ROLE_DELETE)
     @Delete("/{id}")
     public Mono<MutableHttpResponse<MortnonResult>> deleteRole(@NotNull Long id) {
         return sysRoleService.deleteRole(id)
@@ -80,6 +84,12 @@ public class RoleController {
                 .map(HttpResponse::ok);
     }
 
+    /**
+     * 修改角色
+     * @param updateRoleCommand
+     * @return
+     */
+    @OperationLog(LogConstants.ROLE_UPDATE)
     @Put
     public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull UpdateRoleCommand updateRoleCommand) {
         return sysRoleService.updateRole(updateRoleCommand)

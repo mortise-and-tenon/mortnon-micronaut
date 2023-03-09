@@ -1,5 +1,6 @@
 package fun.mortnon.service.sys;
 
+import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.entity.SysRole;
 import fun.mortnon.dal.sys.entity.SysUser;
 import fun.mortnon.service.sys.vo.SysUserDTO;
@@ -72,6 +73,14 @@ public interface SysUserService {
      * @return
      */
     Flux<SysRole> queryUserRole(String userName);
+
+    /**
+     * 查询用户对应的组织
+     *
+     * @param userName
+     * @return
+     */
+    Flux<SysProject> queryUserProject(String userName);
 
     /**
      * 修改用户密码
