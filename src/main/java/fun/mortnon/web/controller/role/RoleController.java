@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 /**
@@ -53,7 +54,7 @@ public class RoleController {
      */
     @OperationLog(LogConstants.ROLE_CREATE)
     @Post
-    public Mono<MutableHttpResponse<MortnonResult>> createRole(CreateRoleCommand createRoleCommand) {
+    public Mono<MutableHttpResponse<MortnonResult>> createRole(@Valid CreateRoleCommand createRoleCommand) {
         return sysRoleService.createRole(createRoleCommand).map(k -> HttpResponse.created(MortnonResult.success(k)));
     }
 
@@ -65,7 +66,7 @@ public class RoleController {
      */
     @OperationLog(LogConstants.ROLE_DELETE)
     @Delete("/{id}")
-    public Mono<MutableHttpResponse<MortnonResult>> deleteRole(@NotNull Long id) {
+    public Mono<MutableHttpResponse<MortnonResult>> deleteRole(@NotNull @Positive Long id) {
         return sysRoleService.deleteRole(id)
                 .map(result -> result ? HttpResponse.ok(MortnonResult.success(null))
                         : HttpResponse.badRequest(MortnonResult.fail(ErrorCodeEnum.PARAM_ERROR)));
@@ -78,7 +79,7 @@ public class RoleController {
      * @return
      */
     @Get("/{id}")
-    public Mono<MutableHttpResponse<MortnonResult>> getRole(@NotNull Long id) {
+    public Mono<MutableHttpResponse<MortnonResult>> getRole(@NotNull @Positive Long id) {
         return sysRoleService.queryRole(id)
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok);
@@ -86,12 +87,13 @@ public class RoleController {
 
     /**
      * 修改角色
+     *
      * @param updateRoleCommand
      * @return
      */
     @OperationLog(LogConstants.ROLE_UPDATE)
     @Put
-    public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull UpdateRoleCommand updateRoleCommand) {
+    public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull @Valid UpdateRoleCommand updateRoleCommand) {
         return sysRoleService.updateRole(updateRoleCommand)
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok)

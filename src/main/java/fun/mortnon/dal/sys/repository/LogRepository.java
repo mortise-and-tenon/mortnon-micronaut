@@ -1,6 +1,5 @@
 package fun.mortnon.dal.sys.repository;
 
-import fun.mortnon.dal.sys.entity.SysAssignment;
 import fun.mortnon.dal.sys.entity.SysLog;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.r2dbc.annotation.R2dbcRepository;

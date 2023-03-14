@@ -16,6 +16,7 @@ import io.micronaut.http.annotation.Post;
 import jakarta.inject.Inject;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -36,12 +37,12 @@ public class PermissionController {
      * @return
      */
     @Get
-    public Mono<MortnonResult<PageableData<List<SysPermissionDTO>>>> queryPermission(Pageable pageable) {
+    public Mono<MortnonResult<PageableData<List<SysPermissionDTO>>>> queryPermission(@Valid Pageable pageable) {
         return sysPermissionService.queryPermission(pageable).map(MortnonResult::successPageData);
     }
 
     @Post
-    public Mono<MutableHttpResponse> createPermission(@NotNull CreatePermissionCommand createPermissionCommand) {
+    public Mono<MutableHttpResponse> createPermission(@NotNull @Valid CreatePermissionCommand createPermissionCommand) {
         return sysPermissionService.createPermission(createPermissionCommand)
                 .map(MortnonResult::success)
                 .map(HttpResponse::created);

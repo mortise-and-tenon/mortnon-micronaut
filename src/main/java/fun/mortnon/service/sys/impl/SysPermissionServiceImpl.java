@@ -44,22 +44,6 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
     @Override
     public Mono<SysPermissionDTO> createPermission(CreatePermissionCommand createPermissionCommand) {
-        if (StringUtils.isEmpty(createPermissionCommand.getName())) {
-            return Mono.error(ParameterException.create("name is empty."));
-        }
-
-        if (StringUtils.isEmpty(createPermissionCommand.getIdentifier())) {
-            return Mono.error(ParameterException.create("identifier is empty."));
-        }
-
-        if (StringUtils.isEmpty(createPermissionCommand.getApi())) {
-            return Mono.error(ParameterException.create("api is empty."));
-        }
-
-        if (StringUtils.isEmpty(createPermissionCommand.getMethod())) {
-            return Mono.error(ParameterException.create("method is empty."));
-        }
-
         SysPermission sysPermission = new SysPermission();
         sysPermission.setName(createPermissionCommand.getName());
         sysPermission.setIdentifier(createPermissionCommand.getIdentifier());

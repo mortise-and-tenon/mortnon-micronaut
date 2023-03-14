@@ -52,14 +52,6 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     @Transactional
     public Mono<SysRoleDTO> createRole(CreateRoleCommand createRoleCommand) {
-        if (StringUtils.isEmpty(createRoleCommand.getName())) {
-            return Mono.error(ParameterException.create("role name is empty."));
-        }
-
-        if (StringUtils.isEmpty(createRoleCommand.getIdentifier())) {
-            return Mono.error(ParameterException.create("role identifier is empty."));
-        }
-
         return roleRepository.existsByNameOrIdentifier(createRoleCommand.getName(), createRoleCommand.getIdentifier())
                 .flatMap(result -> {
                     if (result) {
@@ -106,10 +98,6 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     @Transactional
     public Mono<SysRoleDTO> updateRole(UpdateRoleCommand updateRoleCommand) {
-        if (CollectionUtils.isEmpty(updateRoleCommand.getPermissionList())) {
-            return Mono.error(ParameterException.create("role permission is empty."));
-        }
-
         return roleRepository.existsById(updateRoleCommand.getId())
                 .flatMap(exists -> {
                     if (!exists) {

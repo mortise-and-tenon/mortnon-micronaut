@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 /**
@@ -56,7 +57,7 @@ public class UserController {
      */
     @OperationLog(LogConstants.USER_CREATE)
     @Post
-    public Mono<MutableHttpResponse<MortnonResult>> save(@NonNull CreateUserCommand createUserCommand) {
+    public Mono<MutableHttpResponse<MortnonResult>> save(@NonNull @Valid CreateUserCommand createUserCommand) {
         return sysUserService.createUser(createUserCommand).map(data -> MortnonResult.success(data))
                 .map(HttpResponse::created)
                 .onErrorReturn(HttpResponse.badRequest(MortnonResult.fail(ErrorCodeEnum.PARAM_ERROR)));
@@ -70,7 +71,7 @@ public class UserController {
      */
     @OperationLog(LogConstants.USER_UPDATE)
     @Put
-    public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull UpdateUserCommand updateUserCommand) {
+    public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull @Valid UpdateUserCommand updateUserCommand) {
         return sysUserService.updateUser(updateUserCommand)
                 .map(SysUserDTO::convert)
                 .map(MortnonResult::success)
@@ -86,7 +87,7 @@ public class UserController {
      */
     @OperationLog(LogConstants.USER_DELETE)
     @Delete("/{id}")
-    public Mono<MutableHttpResponse<MortnonResult>> delete(@NonNull Long id) {
+    public Mono<MutableHttpResponse<MortnonResult>> delete(@NotNull @Positive Long id) {
         return sysUserService.deleteUser(id)
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok);
@@ -99,7 +100,7 @@ public class UserController {
      * @return
      */
     @Get("/{id}")
-    public Mono<MutableHttpResponse<MortnonResult>> queryUser(@NotNull Long id) {
+    public Mono<MutableHttpResponse<MortnonResult>> queryUser(@NotNull @Positive Long id) {
         return sysUserService.getUserById(id).map(SysUserDTO::convert)
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok);
@@ -114,7 +115,7 @@ public class UserController {
      */
     @OperationLog(LogConstants.USER_PASSWORD_UPDATE)
     @Put("/password/{id}")
-    public Mono<MutableHttpResponse<MortnonResult>> updateUserPassword(@NotNull Long id, @Body @NotNull UpdatePasswordCommand updatePassword) {
+    public Mono<MutableHttpResponse<MortnonResult>> updateUserPassword(@NotNull @Positive Long id, @Body @NotNull @Valid UpdatePasswordCommand updatePassword) {
         updatePassword.setId(id);
         return sysUserService.updateUserPassword(updatePassword).map(MortnonResult::success).map(HttpResponse::ok);
     }

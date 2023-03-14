@@ -166,10 +166,6 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public Mono<SysUser> getUserById(Long id) {
-        if (null == id || id <= 0) {
-            return Mono.error(ParameterException.create("user id is wrong."));
-        }
-
         return userRepository.existsById(id)
                 .flatMap(result -> {
                     if (!result) {
@@ -227,10 +223,6 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public Mono<SysUser> updateUser(UpdateUserCommand updateUserCommand) {
-        if (null == updateUserCommand.getId() || updateUserCommand.getId() <= 0) {
-            return Mono.error(ParameterException.create("user id is empty."));
-        }
-
         return userRepository.existsById(updateUserCommand.getId())
                 .flatMap(result -> {
                     if (!result) {
@@ -276,13 +268,6 @@ public class SysUserServiceImpl implements SysUserService {
         if (null == updatePasswordCommand.getId() || updatePasswordCommand.getId() <= 0) {
             return Mono.error(ParameterException.create("user info is incorrect."));
         }
-
-        if (StringUtils.isEmpty(updatePasswordCommand.getPassword())) {
-            return Mono.error(ParameterException.create("password is empty."));
-        }
-        if (StringUtils.isEmpty(updatePasswordCommand.getRepeatPassword())) {
-            return Mono.error(ParameterException.create("repeat password is empty."));
-        }
         if (!updatePasswordCommand.getPassword().equals(updatePasswordCommand.getRepeatPassword())) {
             return Mono.error(ParameterException.create("password and repeat password is not match."));
         }
@@ -312,12 +297,7 @@ public class SysUserServiceImpl implements SysUserService {
         if (StringUtils.isEmpty(updatePasswordCommand.getOldPassword())) {
             return Mono.error(ParameterException.create("old password is empty."));
         }
-        if (StringUtils.isEmpty(updatePasswordCommand.getPassword())) {
-            return Mono.error(ParameterException.create("password is empty."));
-        }
-        if (StringUtils.isEmpty(updatePasswordCommand.getRepeatPassword())) {
-            return Mono.error(ParameterException.create("repeat password is empty."));
-        }
+
         if (!updatePasswordCommand.getPassword().equals(updatePasswordCommand.getRepeatPassword())) {
             return Mono.error(ParameterException.create("password and repeat password is not match."));
         }

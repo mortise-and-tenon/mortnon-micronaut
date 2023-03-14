@@ -1,12 +1,16 @@
 package fun.mortnon.web.controller.user.command;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.micronaut.core.annotation.Introspected;
 import lombok.Data;
+
+import javax.validation.constraints.*;
 
 /**
  * @author dev2007
  * @date 2023/2/17
  */
+@Introspected
 @Data
 public class UpdatePasswordCommand {
     /**
@@ -27,10 +31,12 @@ public class UpdatePasswordCommand {
     /**
      * 新密码
      */
+    @NotBlank
     private String password;
 
     /**
      * 重复新密码
      */
+    @NotBlank
     private String repeatPassword;
 }

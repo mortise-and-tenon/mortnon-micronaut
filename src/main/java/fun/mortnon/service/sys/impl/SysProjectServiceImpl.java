@@ -38,15 +38,6 @@ public class SysProjectServiceImpl implements SysProjectService {
 
     @Override
     public Mono<SysProjectDTO> createProject(CreateProjectCommand createProjectCommand) {
-        if (StringUtils.isEmpty(createProjectCommand.getName())) {
-            return Mono.error(ParameterException.create("name is empty."));
-        }
-
-        if (createProjectCommand.getParentId() < 0) {
-            log.info("create project,parent id is not suitable,set default 0.");
-            createProjectCommand.setParentId(0L);
-        }
-
         SysProject sysProject = new SysProject();
         sysProject.setName(createProjectCommand.getName());
         sysProject.setDescription(createProjectCommand.getDescription());
@@ -98,10 +89,6 @@ public class SysProjectServiceImpl implements SysProjectService {
 
     @Override
     public Mono<SysProjectDTO> updateProject(UpdateProjectCommand updateProjectCommand) {
-        if (null == updateProjectCommand.getId()) {
-            return Mono.error(ParameterException.create("project id is empty."));
-        }
-
         return projectRepository.existsByNameEqualsAndIdNotEquals(updateProjectCommand.getName(), updateProjectCommand.getId())
                 .flatMap(exists -> {
                     if (exists) {

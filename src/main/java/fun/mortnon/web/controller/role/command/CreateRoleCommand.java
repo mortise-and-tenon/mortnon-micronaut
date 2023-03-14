@@ -1,23 +1,31 @@
 package fun.mortnon.web.controller.role.command;
 
+import io.micronaut.core.annotation.Introspected;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * @author dev2007
  * @date 2023/2/22
  */
+@Introspected
 @Data
 public class CreateRoleCommand {
     /**
      * 角色名
      */
+    @NotNull
+    @NotEmpty
     private String name;
 
     /**
      * 标识符
      */
+    @NotNull
+    @NotEmpty
     private String identifier;
 
     /**
@@ -28,5 +36,6 @@ public class CreateRoleCommand {
     /**
      * 权限 id 列表
      */
+    @NotNull
     private List<Long> permissionList;
 }

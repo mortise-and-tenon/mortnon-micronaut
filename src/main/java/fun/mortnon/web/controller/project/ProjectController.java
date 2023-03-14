@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 /**
@@ -54,8 +55,10 @@ public class ProjectController {
      */
     @OperationLog(LogConstants.PROJECT_CREATE)
     @Post
-    public Mono<MutableHttpResponse<MortnonResult>> createRole(CreateProjectCommand createProjectCommand) {
-        return sysProjectService.createProject(createProjectCommand).map(k -> HttpResponse.created(MortnonResult.success(k)));
+    public Mono<MutableHttpResponse<MortnonResult>> createRole(@Valid CreateProjectCommand createProjectCommand) {
+        return sysProjectService.createProject(createProjectCommand)
+                .map(MortnonResult::success)
+                .map(HttpResponse::created);
     }
 
     /**
@@ -66,7 +69,7 @@ public class ProjectController {
      */
     @OperationLog(LogConstants.PROJECT_DELETE)
     @Delete("/{id}")
-    public Mono<MutableHttpResponse<MortnonResult>> deleteProject(@NotNull Long id) {
+    public Mono<MutableHttpResponse<MortnonResult>> deleteProject(@NotNull @Positive Long id) {
         return sysProjectService.deleteProject(id).map(MortnonResult::success).map(HttpResponse::ok);
     }
 
@@ -78,7 +81,7 @@ public class ProjectController {
      */
     @OperationLog(LogConstants.PROJECT_UPDATE)
     @Put
-    public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull UpdateProjectCommand updateProjectCommand) {
+    public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull @Valid UpdateProjectCommand updateProjectCommand) {
         return sysProjectService.updateProject(updateProjectCommand).map(MortnonResult::success).map(HttpResponse::ok);
     }
 
