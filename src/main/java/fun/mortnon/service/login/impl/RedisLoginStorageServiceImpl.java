@@ -69,4 +69,9 @@ public class RedisLoginStorageServiceImpl implements LoginStorageService {
     public boolean deleteVerifyCode(String key) {
         return commands.del(String.format(VERIFY_CODE, key)) == 1;
     }
+
+    @Override
+    public String type() {
+        return LoginConstants.REDIS;
+    }
 }

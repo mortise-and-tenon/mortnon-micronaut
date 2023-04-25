@@ -96,4 +96,9 @@ public class LocalLoginStorageServiceImpl implements LoginStorageService {
         captchaCache.invalidate(key);
         return true;
     }
+
+    @Override
+    public String type() {
+        return LoginConstants.LOCAL;
+    }
 }

@@ -3,6 +3,7 @@ package fun.mortnon.dal.sys.entity;
 import io.micronaut.data.annotation.GeneratedValue;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
 /**
@@ -13,6 +14,7 @@ import lombok.Data;
  */
 @MappedEntity
 @Data
+@Serdeable
 public class SysAssignment {
     /**
      * 主键

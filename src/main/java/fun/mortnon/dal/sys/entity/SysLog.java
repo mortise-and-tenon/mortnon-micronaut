@@ -5,6 +5,7 @@ import fun.mortnon.dal.sys.entity.log.LogResult;
 import io.micronaut.data.annotation.GeneratedValue;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
 import java.time.Instant;
@@ -16,7 +17,7 @@ import java.time.Instant;
  */
 @MappedEntity
 @Data
-
+@Serdeable
 public class SysLog {
     /**
      * 主键

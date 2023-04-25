@@ -3,6 +3,7 @@ package fun.mortnon.service.login;
 import fun.mortnon.framework.properties.JwtProperties;
 import fun.mortnon.service.login.enums.LoginConstants;
 import fun.mortnon.service.login.enums.LoginStorageType;
+import io.micronaut.context.BeanContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -35,14 +36,15 @@ public class LoginFactory {
     @Named(LoginConstants.REDIS)
     private LoginStorageService redisStorageService;
 
+    @Inject
+    private BeanContext beanContext;
+
     @PostConstruct
     public void init() {
         // 初始化session存储
-        LoginStorageService redis = redisStorageService;
-        LoginStorageService local = localStorageService;
-
-        loginStorageServiceMap.put(LoginConstants.REDIS, redis);
-        loginStorageServiceMap.put(LoginConstants.LOCAL, local);
+        for (LoginStorageService loginStorageService : beanContext.getBeansOfType(LoginStorageService.class)) {
+            loginStorageServiceMap.put(loginStorageService.type(), loginStorageService);
+        }
     }
 
     /**

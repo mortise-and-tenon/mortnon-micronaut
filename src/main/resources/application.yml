@@ -45,7 +45,8 @@ flyway:
     default:
       enabled: true
 redis:
-  uri: redis://${REDIS_HOST:localhost}:${REDIS_PORT:6379}
+  # 如果使用 sentinel，REDIS_SCHEME 为 redis_sentinel，直连 redis REDIS_SCHEME 为 redis
+  uri: ${REDIS_SCHEME:redis}://${REDIS_HOST:localhost}:${REDIS_PORT:6379}#mymaster
   io-thread-pool-size: 5
   computation-thread-pool-size: 4
   timeout: 30s

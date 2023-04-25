@@ -57,4 +57,11 @@ public interface LoginStorageService {
      * @return
      */
     boolean deleteVerifyCode(String key);
+
+    /**
+     * 存储类型
+     *
+     * @return
+     */
+    String type();
 }
