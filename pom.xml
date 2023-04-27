@@ -34,6 +34,10 @@
 
     <repositories>
         <repository>
+            <id>aliyun</id>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </repository>
+        <repository>
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
