@@ -1,21 +1,19 @@
 package fun.mortnon.service.login.impl;
 
-import com.wf.captcha.ArithmeticCaptcha;
-import com.wf.captcha.ChineseCaptcha;
-import com.wf.captcha.GifCaptcha;
-import com.wf.captcha.SpecCaptcha;
-import com.wf.captcha.base.Captcha;
-
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.CircleCaptcha;
+import cn.hutool.captcha.ICaptcha;
 import fun.mortnon.framework.properties.CaptchaProperties;
 import fun.mortnon.service.login.CaptchaService;
 import fun.mortnon.service.login.LoginFactory;
 import fun.mortnon.service.login.LoginStorageService;
-import fun.mortnon.service.login.enums.LoginConstants;
 import fun.mortnon.service.login.model.MortnonCaptcha;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Base64;
 import java.util.UUID;
 
 /**
@@ -24,6 +22,7 @@ import java.util.UUID;
  */
 @Singleton
 public class CaptchaServiceImpl implements CaptchaService {
+    private static final String BASE64_IMAGE = "data:image/png;base64,";
 
     @Inject
     private CaptchaProperties captchaProperties;
@@ -39,40 +38,23 @@ public class CaptchaServiceImpl implements CaptchaService {
     @Override
     public MortnonCaptcha generateCaptcha() {
         MortnonCaptcha mortnonCaptcha = new MortnonCaptcha();
-        Captcha captcha = new SpecCaptcha();
-        if (captchaProperties.getType().equals(LoginConstants.CAPTCHA_TYPE_DEFAULT)) {
-            captcha = new SpecCaptcha();
-            captcha.setLen(captchaProperties.getLength());
-        }
-
-        if (captchaProperties.getType().equals(LoginConstants.CAPTCHA_TYPE_GIF)) {
-            captcha = new GifCaptcha();
-            captcha.setLen(captchaProperties.getLength());
-        }
-
-        if (captchaProperties.getType().equals(LoginConstants.CAPTCHA_TYPE_CHINESE)) {
-            captcha = new ChineseCaptcha();
-            // 汉字4位
-            captcha.setLen(4);
-        }
-
-        if (captchaProperties.getType().equals(LoginConstants.CAPTCHA_TYPE_ARITHMETIC)) {
-            captcha = new ArithmeticCaptcha();
-            // 算术2位即可
-            captcha.setLen(2);
-        }
-
-        captcha.setWidth(captchaProperties.getWidth());
-        captcha.setHeight(captchaProperties.getHeight());
-
+        CircleCaptcha captcha = CaptchaUtil.createCircleCaptcha(captchaProperties.getWidth(), captchaProperties.getHeight(),
+                captchaProperties.getLength(), 20);
 
         mortnonCaptcha.setCaptchaKey(UUID.randomUUID().toString());
-        mortnonCaptcha.setCaptchaImage(captcha.toBase64());
+        mortnonCaptcha.setCaptchaImage(toBase64(captcha));
 
-        getStorageService().saveVerifyCode(mortnonCaptcha.getCaptchaKey(), captcha.text(), captchaProperties.getExpireSeconds());
+        getStorageService().saveVerifyCode(mortnonCaptcha.getCaptchaKey(), captcha.getCode(), captchaProperties.getExpireSeconds());
 
         return mortnonCaptcha;
     }
+
+    private String toBase64(ICaptcha captcha) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        captcha.write(outputStream);
+        return BASE64_IMAGE + Base64.getEncoder().encodeToString(outputStream.toByteArray());
+    }
+
 
     @Override
     public boolean verifyCaptcha(String captchaKey, String captchaCode) {

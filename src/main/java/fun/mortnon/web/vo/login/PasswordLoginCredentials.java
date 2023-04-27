@@ -1,5 +1,6 @@
 package fun.mortnon.web.vo.login;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class PasswordLoginCredentials extends UsernamePasswordCredentials {
     /**
      * 验证码token
      */
+    @JsonProperty("verify_token")
     private String verifyToken;
 
     /**
