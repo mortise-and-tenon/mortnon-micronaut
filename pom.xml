@@ -26,8 +26,7 @@
         <commons.codec.version>1.15</commons.codec.version>
         <commons.io.version>2.11.0</commons.io.version>
         <commons.lang3.version>3.12.0</commons.lang3.version>
-        <easy.captcha.version>1.6.2</easy.captcha.version>
-        <nashorn.version>15.4</nashorn.version>
+        <hutool.version>5.8.18</hutool.version>
         <mysql.connector.version>8.0.32</mysql.connector.version>
         <exec.mainClass>fun.mortnon.Application</exec.mainClass>
     </properties>
@@ -164,20 +163,11 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.github.whvcse</groupId>
-            <artifactId>easy-captcha</artifactId>
-            <version>${easy.captcha.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjdk.nashorn</groupId>
-            <artifactId>nashorn-core</artifactId>
-            <version>${nashorn.version}</version>
-        </dependency>
 
         <dependency>
-            <groupId>org.reactivestreams</groupId>
-            <artifactId>reactive-streams</artifactId>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-captcha</artifactId>
+            <version>${hutool.version}</version>
         </dependency>
 
         <dependency>

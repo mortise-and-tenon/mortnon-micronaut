@@ -1,5 +1,6 @@
 package fun.mortnon.service.login.model;
 
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -9,6 +10,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
+@Serdeable
 public class MortnonCaptcha {
 
     /** key */

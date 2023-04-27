@@ -2,6 +2,7 @@ package fun.mortnon.service.login.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import fun.mortnon.service.login.enums.LoginType;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,6 +14,7 @@ import java.util.Set;
  */
 @Data
 @Accessors(chain = true)
+@Serdeable
 public class LoginUser {
 
     /** 登录用户id  */
