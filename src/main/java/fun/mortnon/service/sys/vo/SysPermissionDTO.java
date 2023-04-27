@@ -2,6 +2,7 @@ package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysPermission;
 import io.micronaut.http.HttpMethod;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Data;
  * @date 2023/2/17
  */
 @Data
+@Serdeable
 public class SysPermissionDTO {
     /**
      * 权限 id

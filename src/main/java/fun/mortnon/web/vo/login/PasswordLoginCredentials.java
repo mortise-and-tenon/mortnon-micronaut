@@ -1,6 +1,7 @@
 package fun.mortnon.web.vo.login;
 
 import io.micronaut.security.authentication.UsernamePasswordCredentials;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @Accessors(chain = true)
+@Serdeable
 public class PasswordLoginCredentials extends UsernamePasswordCredentials {
     /**
      * 验证码token

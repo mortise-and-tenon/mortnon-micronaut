@@ -1,7 +1,9 @@
 package fun.mortnon.framework.vo;
 
 import fun.mortnon.framework.enums.ErrorCodeEnum;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.data.model.Page;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,6 +17,7 @@ import java.io.Serializable;
  */
 @Data
 @Accessors(chain = true)
+@Serdeable
 public class MortnonResult<T> implements Serializable {
 
     /**

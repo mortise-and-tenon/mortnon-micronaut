@@ -1,6 +1,7 @@
 package fun.mortnon.service.sys.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
  * @date 2023/2/27
  */
 @Data
+@Serdeable
 public class ProjectRoleDTO {
     /**
      * 组织 id

@@ -29,14 +29,6 @@ public class LoginFactory {
     private final Map<String, LoginStorageService> loginStorageServiceMap = new ConcurrentHashMap<>();
 
     @Inject
-    @Named(LoginConstants.LOCAL)
-    private LoginStorageService localStorageService;
-
-    @Inject
-    @Named(LoginConstants.REDIS)
-    private LoginStorageService redisStorageService;
-
-    @Inject
     private BeanContext beanContext;
 
     @PostConstruct

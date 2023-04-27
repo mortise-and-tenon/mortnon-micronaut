@@ -3,6 +3,7 @@ package fun.mortnon.service.sys.vo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysUser;
 import fun.mortnon.framework.enums.Sex;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @date 2023/2/8
  */
 @Data
+@Serdeable
 public class SysUserDTO {
     private Long id;
     private String userName;

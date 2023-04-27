@@ -1,6 +1,7 @@
 package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysProject;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Data;
  * @date 2023/2/24
  */
 @Data
+@Serdeable
 public class SysProjectDTO {
 
     /**
