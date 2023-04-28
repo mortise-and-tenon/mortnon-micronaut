@@ -2,6 +2,7 @@ package fun.mortnon.service.login.impl;
 
 import fun.mortnon.service.login.LoginStorageService;
 import fun.mortnon.service.login.enums.LoginConstants;
+import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import jakarta.inject.Inject;
@@ -24,17 +25,11 @@ import static fun.mortnon.service.login.enums.LoginConstants.VERIFY_CODE;
 @Named(LoginConstants.REDIS)
 @Slf4j
 public class RedisLoginStorageServiceImpl implements LoginStorageService {
+
     @Inject
-    private StatefulRedisConnection<String, String> connection;
     private RedisCommands<String, String> commands;
 
     private static final String COMMAND_RESULT_OK = "OK";
-
-    @PostConstruct
-    public void init() {
-        log.info("redis storage init. Connection is not null:{}", connection != null);
-        this.commands = connection.sync();
-    }
 
     @Override
     public boolean tokenIsExists(String token) {

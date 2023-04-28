@@ -44,13 +44,6 @@ flyway:
   datasources:
     default:
       enabled: true
-redis:
-  # 如果使用 sentinel，REDIS_SCHEME 为 redis_sentinel，直连 redis REDIS_SCHEME 为 redis
-  uri: ${REDIS_SCHEME:redis}://${REDIS_HOST:localhost}:${REDIS_PORT:6379}#mymaster
-  io-thread-pool-size: 5
-  computation-thread-pool-size: 4
-  timeout: 30s
-
 jackson:
   propertyNamingStrategy: SNAKE_CASE
   date-format: YYYY-MM-DD HH:mm:ss
@@ -69,3 +62,7 @@ mortnon:
     consistency: true
     # 登录状态存储类型。Local：内存存储，Redis：redis存储
     login-storage-type: Redis
+
+  redis:
+    # 如果使用 sentinel，REDIS_SCHEME 为 redis_sentinel，直连 redis REDIS_SCHEME 为 redis
+    uri: ${REDIS_SCHEME:redis}://${REDIS_HOST:localhost}:${REDIS_PORT:6379}#mymaster
