@@ -7,8 +7,10 @@ import io.lettuce.core.api.sync.RedisCommands;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.PostConstruct;
 import java.time.Duration;
 
 import static fun.mortnon.service.login.enums.LoginConstants.LOGIN_TOKEN;
@@ -20,15 +22,17 @@ import static fun.mortnon.service.login.enums.LoginConstants.VERIFY_CODE;
  */
 @Singleton
 @Named(LoginConstants.REDIS)
+@Slf4j
 public class RedisLoginStorageServiceImpl implements LoginStorageService {
+    @Inject
     private StatefulRedisConnection<String, String> connection;
     private RedisCommands<String, String> commands;
 
     private static final String COMMAND_RESULT_OK = "OK";
 
-    @Inject
-    public RedisLoginStorageServiceImpl(StatefulRedisConnection<String, String> connection) {
-        this.connection = connection;
+    @PostConstruct
+    public void init() {
+        log.info("redis storage init. Connection is not null:{}", connection != null);
         this.commands = connection.sync();
     }
 
