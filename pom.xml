@@ -21,6 +21,7 @@
         <micronaut.runtime>netty</micronaut.runtime>
         <micronaut.jdbc.hikari>2.2.6</micronaut.jdbc.hikari>
         <micronaut.serde.api>1.5.0</micronaut.serde.api>
+        <micronaut.native-image.args>-H:ReflectionConfigurationFiles=reflect.json</micronaut.native-image.args>
         <guava.version>31.1-jre</guava.version>
         <commons.collection.version>4.4</commons.collection.version>
         <commons.codec.version>1.15</commons.codec.version>
@@ -123,6 +124,11 @@
             <artifactId>lettuce-core</artifactId>
             <version>6.2.4.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>4.3.0</version>
+        </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -189,6 +195,7 @@
                 <groupId>io.micronaut.build</groupId>
                 <artifactId>micronaut-maven-plugin</artifactId>
                 <configuration>
+                    <baseImageRun>frolvlad/alpine-glibc:alpine-3.17</baseImageRun>
                     <testResourcesDependencies>
                         <dependency>
                             <groupId>io.micronaut.testresources</groupId>
