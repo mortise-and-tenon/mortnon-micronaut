@@ -20,8 +20,8 @@ Mornton 基于 Micronaut 实现。
 4. √ RBAC（用户管理、角色及权限管理、组织管理，用户可分配角色和组织） 
 5. √ 提供认证及鉴权（Token 基于 JWT，鉴权传输支持请求头和 Cookie）
 
-### 期望目标
-1. 更多特性以扩展形式提供（如 Pac4j） 
-2. 编译本地镜像（GraalVM 支持）
+### 同步目标
+1. √ Pac4j 扩展 [Micronaut Pac4j](https://github.com/mortise-and-tenon/micronaut-pac4j)
+2. √ 编译为 GraalVM Native Image
 
 
