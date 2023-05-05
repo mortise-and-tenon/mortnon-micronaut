@@ -4,7 +4,11 @@
     "fields": [
       {
         "name": "pData",
-        "allowWRite": true
+        "allowWrite": true
+      },
+      {
+        "name": "nBits",
+        "allowWrite": true
       }
     ]
   }
