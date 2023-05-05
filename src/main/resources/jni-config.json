@@ -1,0 +1,11 @@
+[
+  {
+    "name": "java.awt.image.ColorModel",
+    "fields": [
+      {
+        "name": "pData",
+        "allowWRite": true
+      }
+    ]
+  }
+]
