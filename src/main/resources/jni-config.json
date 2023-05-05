@@ -9,7 +9,14 @@
       {
         "name": "nBits",
         "allowWrite": true
+      },
+      {
+        "name": "colorSpace",
+        "allowWrite": true
       }
     ]
+  },
+  {
+    "name": "java.awt.image.BufferedImage"
   }
 ]
