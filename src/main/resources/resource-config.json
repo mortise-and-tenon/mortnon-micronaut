@@ -1,0 +1,14 @@
+{
+  "resources":{
+    "includes":[],
+  "bundles":[
+    {
+      "name":"mortnon.i18n.messages",
+      "locales":["en"]
+    },
+    {
+      "name":"sun.awt.resources.awt",
+      "classNames":["sun.awt.resources.awt"]
+    }
+  ]
+}
