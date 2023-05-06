@@ -15,6 +15,9 @@
     "methods":[{"name":"isHeadless","parameterTypes":[] }]
   },
   {
+    "name":"java.awt.GraphicsEnvironment$LocalGE"
+  },
+  {
     "name":"java.awt.geom.AffineTransform",
     "fields":[
       {"name":"m00"},
@@ -146,5 +149,8 @@
       {"name":"scanlineStride"},
       {"name":"type"}
     ]
+  },
+  {
+    "name": "sun.awt.X11GraphicsEnvironment"
   }
 ]
