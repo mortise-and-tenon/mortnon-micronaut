@@ -149,8 +149,5 @@
       {"name":"scanlineStride"},
       {"name":"type"}
     ]
-  },
-  {
-    "name": "sun.awt.X11GraphicsEnvironment"
   }
 ]
