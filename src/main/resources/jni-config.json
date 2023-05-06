@@ -136,5 +136,15 @@
       {"name":"bitSizes"},
       {"name":"maxBitSize"}
     ]
+  },
+  {
+    "name":"sun.awt.image.IntegerComponentRaster",
+    "fields":[
+      {"name":"data"},
+      {"name":"dataOffsets"},
+      {"name":"pixelStride"},
+      {"name":"scanlineStride"},
+      {"name":"type"}
+    ]
   }
 ]
