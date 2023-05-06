@@ -1,7 +1,11 @@
 {
   "resources":{
-    "includes":[],
+    "includes":[]},
   "bundles":[
+    {
+      "name":"com.mysql.cj.LocalizedErrorMessages",
+      "locales":[""]
+    },
     {
       "name":"mortnon.i18n.messages",
       "locales":["en"]
