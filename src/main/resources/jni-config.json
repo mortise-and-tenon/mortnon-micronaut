@@ -1,8 +1,5 @@
 [
   {
-    "name":"[Lsun.java2d.loops.GraphicsPrimitive;"
-  },
-  {
     "name":"java.awt.AlphaComposite",
     "fields":[
       {"name":"extraAlpha"},
@@ -139,10 +136,6 @@
       {"name":"bitSizes"},
       {"name":"maxBitSize"}
     ]
-  },
-  {
-    "name":"java.io.FileDescriptor",
-    "fields":[{"name":"fd"}]
   },
   {
     "name":"sun.awt.SunHints",
