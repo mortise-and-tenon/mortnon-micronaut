@@ -190,7 +190,7 @@
                 <groupId>io.micronaut.build</groupId>
                 <artifactId>micronaut-maven-plugin</artifactId>
                 <configuration>
-                    <baseImageRun>frolvlad/alpine-glibc:alpine-3.17</baseImageRun>
+                    <baseImageRun>redhat/ubi8-micro:8.7-8-awt</baseImageRun>
                     <testResourcesDependencies>
                         <dependency>
                             <groupId>io.micronaut.testresources</groupId>
