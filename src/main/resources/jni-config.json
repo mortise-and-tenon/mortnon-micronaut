@@ -18,6 +18,12 @@
     "methods":[{"name":"isHeadless","parameterTypes":[] }]
   },
   {
+    "name":"java.awt.GraphicsEnvironment$LocalGE"
+  },
+  {
+    "name":"sun.awt.X11GraphicsEnvironment"
+  },
+  {
     "name":"java.awt.geom.AffineTransform",
     "fields":[
       {"name":"m00"},
