@@ -453,6 +453,9 @@
       {"name": "createdFont"},
       {"name": "nonIdentityTx"}
     ],
-    "methods":[{"name":"getFontPeer","parameterTypes":[] }]
+    "methods":[
+      {"name": "getFontPeer","parameterTypes": [] },
+      {"name": "getFamily_NoClientCode","parameterTypes": []}
+    ]
   }
 ]
