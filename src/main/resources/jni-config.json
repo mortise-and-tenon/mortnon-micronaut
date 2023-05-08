@@ -11,6 +11,13 @@
   },
   {
     "name":"java.awt.Color",
+    "fields": [
+      {"name": "value"},
+      {"name": "frgbvalue"},
+      {"name": "fvalue"},
+      {"name": "falpha"},
+      {"name": "cs"}
+    ],
     "methods":[{"name":"getRGB","parameterTypes":[] }]
   },
   {
