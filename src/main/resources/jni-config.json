@@ -452,6 +452,7 @@
       {"name": "hasLayoutAttributes"},
       {"name": "createdFont"},
       {"name": "nonIdentityTx"}
-    ]
+    ],
+    "methods":[{"name":"getFontPeer","parameterTypes":[] }]
   }
 ]
