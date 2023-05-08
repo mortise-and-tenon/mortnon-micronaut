@@ -437,5 +437,20 @@
       {"name":"threadAllocatedMemorySupport"},
       {"name":"threadContentionMonitoringSupport"}
     ]
+  },
+  {
+    "name": "java.awt.Font",
+    "fields": [
+      {"name": "name"},
+      {"name": "style"},
+      {"name": "size"},
+      {"name": "pointSize"},
+      {"name": "peer"},
+      {"name": "font2DHandle"},
+      {"name": "values"},
+      {"name": "hasLayoutAttributes"},
+      {"name": "createdFont"},
+      {"name": "nonIdentityTx"}
+    ]
   }
 ]
