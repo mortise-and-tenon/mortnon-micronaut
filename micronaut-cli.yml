@@ -1,6 +1,6 @@
 applicationType: default
-defaultPackage: fun.mortnon
+defaultPackage: example.micronaut
 testFramework: junit
 sourceLanguage: java
 buildTool: maven
-features: [annotation-api, app-name, http-client, jackson-databind, java, java-application, junit, logback, maven, netty-server, readme, shade, yaml]
+features: [annotation-api, app-name, graalvm, http-client, jackson-databind, java-application, junit, logback, maven, netty-server, readme, shade, spring-boot-java, yaml]
