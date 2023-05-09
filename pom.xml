@@ -92,6 +92,9 @@
       <plugin>
         <groupId>io.micronaut.build</groupId>
         <artifactId>micronaut-maven-plugin</artifactId>
+        <configuration>
+          <baseImageRun>redhat/ubi8-micro:8.7-8-awt</baseImageRun>
+        </configuration>
       </plugin>
       
       <plugin>
