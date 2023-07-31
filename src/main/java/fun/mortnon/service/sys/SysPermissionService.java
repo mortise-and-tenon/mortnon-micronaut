@@ -4,7 +4,10 @@ import fun.mortnon.service.sys.vo.SysPermissionDTO;
 import fun.mortnon.web.controller.role.command.CreatePermissionCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * @author dev2007
@@ -34,4 +37,12 @@ public interface SysPermissionService {
      * @return
      */
     Mono<Boolean> deletePermission(Long id);
+
+    /**
+     * 查询指定用户的权限信息
+     *
+     * @param userId
+     * @return
+     */
+    Mono<List<SysPermissionDTO>> queryUserPermission(Long userId);
 }

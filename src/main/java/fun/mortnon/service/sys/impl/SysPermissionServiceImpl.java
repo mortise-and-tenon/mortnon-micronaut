@@ -1,21 +1,20 @@
 package fun.mortnon.service.sys.impl;
 
 import fun.mortnon.dal.sys.entity.SysPermission;
+import fun.mortnon.dal.sys.entity.SysRolePermission;
+import fun.mortnon.dal.sys.repository.AssignmentRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
 import fun.mortnon.dal.sys.repository.RolePermissionRepository;
-import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.exceptions.RepeatDataException;
 import fun.mortnon.framework.exceptions.UsedException;
 import fun.mortnon.service.sys.SysPermissionService;
 import fun.mortnon.service.sys.vo.SysPermissionDTO;
-import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.role.command.CreatePermissionCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -33,6 +32,9 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
     @Inject
     private RolePermissionRepository rolePermissionRepository;
+
+    @Inject
+    private AssignmentRepository assignmentRepository;
 
     @Override
     public Mono<Page<SysPermissionDTO>> queryPermission(Pageable pageable) {
@@ -73,5 +75,17 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
             return permissionRepository.deleteById(id).map(result -> result.intValue() > 0);
         });
+    }
+
+    @Override
+    public Mono<List<SysPermissionDTO>> queryUserPermission(Long userId) {
+        return assignmentRepository.findByUserId(userId)
+                .map(assignment -> assignment.getRoleId())
+                .flatMap(roleId -> rolePermissionRepository.findByRoleId(roleId))
+                .map(SysRolePermission::getPermissionId)
+                .collectList()
+                .flatMap(idList -> permissionRepository.findByIdIn(idList).collectList())
+                .map(permissionList -> permissionList.stream().map(SysPermissionDTO::convert).collect(Collectors.toList()));
+
     }
 }

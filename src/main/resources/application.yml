@@ -1,6 +1,9 @@
 micronaut:
   application:
     name: mortnon-micronaut
+  server:
+    cors:
+      enabled: true
   security:
     # 认证方式，bearer ：JWT 以请求头形式传递；cookie：JWT 以 cookies 形式传递
     authentication: cookie

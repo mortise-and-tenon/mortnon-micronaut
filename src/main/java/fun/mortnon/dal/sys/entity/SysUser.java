@@ -1,10 +1,7 @@
 package fun.mortnon.dal.sys.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.base.entity.BaseEntity;
 import io.micronaut.core.annotation.NonNull;
-import io.micronaut.data.annotation.Join;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
@@ -55,7 +52,7 @@ public class SysUser extends BaseEntity {
     /**
      * 头像
      */
-    private String head;
+    private String avatar;
 
     /**
      * 性别

@@ -236,7 +236,7 @@ public class SysUserServiceImpl implements SysUserService {
                     Optional.ofNullable(validateUpdate.apply(updateUserCommand.getNickName())).ifPresent(t -> user.setNickName(t));
                     Optional.ofNullable(validateUpdate.apply(updateUserCommand.getEmail())).ifPresent(t -> user.setEmail(t));
                     Optional.ofNullable(validateUpdate.apply(updateUserCommand.getPhone())).ifPresent(t -> user.setPhone(t));
-                    Optional.ofNullable(validateUpdate.apply(updateUserCommand.getHead())).ifPresent(t -> user.setHead(t));
+                    Optional.ofNullable(validateUpdate.apply(updateUserCommand.getHead())).ifPresent(t -> user.setAvatar(t));
                     updateUserCommand.setSex(updateUserCommand.getSex());
                     return userRepository.update(user);
                 });

@@ -2,11 +2,10 @@ package fun.mortnon.service.sys.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysUser;
-import fun.mortnon.framework.enums.Sex;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
-import org.apache.commons.collections4.CollectionUtils;
 
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -21,7 +20,7 @@ public class SysUserDTO {
     private String nickName;
     private String email;
     private String phone;
-    private String head;
+    private String avatar;
     private Integer sex;
 
     @JsonProperty(value = "project_roles")
@@ -31,13 +30,13 @@ public class SysUserDTO {
 
     }
 
-    public SysUserDTO(Long id, String userName, String nickName, String email, String phone, String head, int sex) {
+    public SysUserDTO(Long id, String userName, String nickName, String email, String phone, String avatar, int sex) {
         setId(id);
         setUserName(userName);
         setNickName(nickName);
         setEmail(email);
         setPhone(phone);
-        setHead(head);
+        setAvatar(avatar);
         setSex(sex);
     }
 
@@ -47,6 +46,6 @@ public class SysUserDTO {
         }
 
         return new SysUserDTO(sysUser.getId(), sysUser.getUserName(), sysUser.getNickName(), sysUser.getEmail(),
-                sysUser.getPhone(), sysUser.getHead(), sysUser.getSex());
+                sysUser.getPhone(), sysUser.getAvatar(), sysUser.getSex());
     }
 }
