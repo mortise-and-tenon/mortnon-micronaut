@@ -65,7 +65,7 @@ public class SysProjectServiceImpl implements SysProjectService {
 
     @Override
     public Mono<Boolean> deleteProject(Long id) {
-        if (null == id || id.longValue() <= 0) {
+        if (null == id || id <= 0) {
             return Mono.error(ParameterException.create("project id is not exists."));
         }
 

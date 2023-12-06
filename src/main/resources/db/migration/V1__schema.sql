@@ -14,8 +14,9 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
 	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
 
+-- 预置 admin 密码：password
 INSERT INTO `sys_user`(user_name,nick_name,password,salt,email,phone)
-SELECT 'admin','系统管理员','4cc49025256bc1fa355dff5103b5a477d6a9dca293517a5596c8fd5ed95d7e01','q1RL80',
+SELECT 'admin','系统管理员','463e71f1d033870e4ea468eb78cda7f0224446bf8ab20cf102d80be559bdfc2a','q1RL80',
     'admin@mortnon.fun','13012345678'
 FROM DUAL WHERE NOT EXISTS(SELECT id FROM `sys_user`);
 
@@ -98,6 +99,7 @@ VALUES ('查询用户','USER_QUERY','查看用户数据','/users/**','GET'),
     ('删除组织','PROJECT_DELETE','删除组织数据','/projects/**','DELETE'),
     ('查询菜单','MENU_QUERY','查询菜单数据','/menus','GET'),
     ('创建菜单','MENU_CREATE','创建菜单数据','/menus','POST'),
+    ('修改菜单','MENU_DELETE','修改菜单数据','/menus/**','PUT'),
     ('删除菜单','MENU_DELETE','删除菜单数据','/menus/**','DELETE'),
     ('查看日志','LOG_QUERY','查看日志数据','/logs','GET');
 

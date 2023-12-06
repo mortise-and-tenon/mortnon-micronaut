@@ -1,5 +1,7 @@
 package fun.mortnon.framework.vo;
 
+import io.micronaut.core.annotation.Introspected;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -9,6 +11,8 @@ import lombok.Data;
  * @author dev2007
  * @date 2023/2/8
  */
+@Serdeable
+@Introspected
 @Data
 public class PageableData<T> {
     /**
