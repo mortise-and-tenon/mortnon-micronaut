@@ -5,6 +5,8 @@ import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,7 +45,7 @@ public class SysMenuDTO {
     /**
      * 菜单权限
      */
-    private String permission;
+    private List<String> permission;
 
     /**
      * 菜单顺序
@@ -61,7 +63,10 @@ public class SysMenuDTO {
         sysMenuDTO.setName(sysMenu.getName());
         sysMenuDTO.setUrl(sysMenu.getUrl());
         sysMenuDTO.setIcon(sysMenu.getIcon());
-        sysMenuDTO.setPermission(sysMenu.getPermission());
+
+        String permission = sysMenu.getPermission();
+        sysMenuDTO.setPermission(Arrays.asList(permission.split(",")));
+
         sysMenuDTO.setParentId(sysMenu.getParentId());
         return sysMenuDTO;
     }

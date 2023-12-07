@@ -5,7 +5,6 @@ import fun.mortnon.service.sys.SysMenuService;
 import fun.mortnon.service.sys.vo.SysMenuDTO;
 import fun.mortnon.web.controller.menu.command.CreateMenuCommand;
 import fun.mortnon.web.controller.menu.command.UpdateMenuCommand;
-import fun.mortnon.web.controller.project.command.UpdateProjectCommand;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
@@ -14,7 +13,6 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.util.List;
@@ -46,7 +44,7 @@ public class MenuController {
      * @return
      */
     @Post
-    public Mono<MutableHttpResponse<MortnonResult>> createRole(@Valid CreateMenuCommand createMenuCommand) {
+    public Mono<MutableHttpResponse<MortnonResult>> createRole(@NonNull CreateMenuCommand createMenuCommand) {
         return sysMenuService.createMenu(createMenuCommand)
                 .map(MortnonResult::success)
                 .map(HttpResponse::created);
@@ -70,7 +68,7 @@ public class MenuController {
      * @return
      */
     @Put
-    public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull @Valid UpdateMenuCommand updateMenuCommand) {
+    public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull UpdateMenuCommand updateMenuCommand) {
         return sysMenuService.updateMenu(updateMenuCommand).map(MortnonResult::success).map(HttpResponse::ok);
     }
 }

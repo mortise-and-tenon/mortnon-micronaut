@@ -32,6 +32,7 @@ public class CreateMenuCommand {
     /**
      * 菜单 url
      */
+    @NotBlank
     private String url;
 
     /**
@@ -43,7 +44,7 @@ public class CreateMenuCommand {
      * 菜单权限
      */
     @NotEmpty
-    private String permission;
+    private List<String> permission;
 
     @NotNull
     @Positive

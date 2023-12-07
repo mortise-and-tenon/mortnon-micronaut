@@ -31,4 +31,12 @@ public interface PermissionRepository extends ReactorPageableRepository<SysPermi
      * @return
      */
     Mono<Boolean> existsByNameEqualsOrIdentifierEquals(String name, String identifier);
+
+    /**
+     * 标识符是否存在
+     *
+     * @param identifierList
+     * @return
+     */
+    Mono<Boolean> existsByIdentifierContains(List<String> identifierList);
 }
