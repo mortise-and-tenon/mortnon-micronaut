@@ -8,6 +8,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
+import io.micronaut.http.cookie.Cookie;
 import io.micronaut.security.authentication.AuthenticationResponse;
 import io.micronaut.security.config.RedirectConfiguration;
 import io.micronaut.security.config.RedirectService;
@@ -19,6 +20,9 @@ import io.micronaut.security.token.jwt.cookie.RefreshTokenCookieConfiguration;
 import io.micronaut.security.token.jwt.generator.AccessRefreshTokenGenerator;
 import io.micronaut.security.token.jwt.generator.AccessTokenConfiguration;
 import jakarta.inject.Singleton;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author dev2007
@@ -35,5 +39,11 @@ public class CookieAuthLoginHandler extends JwtCookieLoginHandler {
     @Override
     public MutableHttpResponse<?> loginFailed(AuthenticationResponse authenticationFailed, HttpRequest<?> request) {
         return HttpResponse.unauthorized().body(MortnonResult.fail(ErrorCodeEnum.INVALID_USERNAME_OR_PASSWORD));
+    }
+
+    @Override
+    public MutableHttpResponse<?> applyCookies(MutableHttpResponse<?> response, List<Cookie> cookies) {
+        return super.applyCookies(response, cookies)
+                .body(MortnonResult.success(null));
     }
 }
