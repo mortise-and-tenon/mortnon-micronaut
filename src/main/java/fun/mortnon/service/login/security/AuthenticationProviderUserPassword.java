@@ -51,12 +51,14 @@ public class AuthenticationProviderUserPassword implements AuthenticationProvide
                     .flatMap(result -> {
                         if (result) {
                             return sysUserService.queryUserRole((String) authenticationRequest.getIdentity()).collectList();
-                        } else {
-                            emitter.error(AuthenticationResponse.exception(AuthenticationFailureReason.CUSTOM));
                         }
                         return null;
                     })
                     .block();
+
+             if(CollectionUtils.isEmpty(roleList)) {
+                emitter.error(AuthenticationResponse.exception(AuthenticationFailureReason.CUSTOM));
+            }
 
             Set<String> roleIdentifierSet = Optional.ofNullable(roleList)
                     .map(list -> list.stream().map(SysRole::getIdentifier)
