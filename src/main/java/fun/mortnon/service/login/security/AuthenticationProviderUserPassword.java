@@ -52,7 +52,7 @@ public class AuthenticationProviderUserPassword implements AuthenticationProvide
                         if (result) {
                             return sysUserService.queryUserRole((String) authenticationRequest.getIdentity()).collectList();
                         }
-                        return null;
+                        return Mono.empty();
                     })
                     .block();
 
