@@ -144,12 +144,12 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
     `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
 
-INSERT INTO `sys_menu` (`name`, `parent_id`, `url`, `permission`)
+INSERT INTO `sys_menu` (`name`, `parent_id`, `url`,`icon`, `permission`)
 VALUES
-	('用户管理', 0, '/user', 'USER_QUERY'),
-	('角色管理', 0, '/role', 'ROLE_QUERY'),
-	('组织管理', 0, '/project', 'PROJECT_QUERY'),
-	('菜单管理', 0, '/url', 'MENU_QUERY'),
-	('日志管理', 0, '/log', 'LOG_QUERY');
+	('用户管理', 0, '/user', 'IconUser', 'USER_QUERY'),
+	('角色管理', 0, '/role', 'IconUserGroup', 'ROLE_QUERY'),
+	('组织管理', 0, '/project', 'IconLayers', 'PROJECT_QUERY'),
+	('菜单管理', 0, '/menu', 'IconMenu', 'MENU_QUERY'),
+	('日志管理', 0, '/log', 'IconFile', 'LOG_QUERY');
 
 COMMIT;
