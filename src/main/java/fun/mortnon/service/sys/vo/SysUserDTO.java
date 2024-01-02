@@ -1,7 +1,9 @@
 package fun.mortnon.service.sys.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysUser;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
@@ -12,8 +14,9 @@ import java.util.List;
  * @author dev2007
  * @date 2023/2/8
  */
-@Data
+@Introspected
 @Serdeable
+@Data
 public class SysUserDTO {
     private Long id;
     private String userName;
@@ -24,6 +27,7 @@ public class SysUserDTO {
     private Integer sex;
 
     @JsonProperty(value = "project_roles")
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private List<ProjectRoleDTO> projectRoles;
 
     public SysUserDTO() {

@@ -187,7 +187,7 @@ public class SysUserServiceImpl implements SysUserService {
                                 .flatMapMany(exists -> {
                                     if (!exists) {
                                         log.info("query user [{}],assignment is empty.", userDTO.getId());
-                                        return null;
+                                        return Mono.empty();
                                     }
 
                                     return assignmentRepository.findByUserId(userDTO.getId());

@@ -3,6 +3,7 @@ package fun.mortnon.web.controller.user.command;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.service.sys.vo.ProjectRoleDTO;
 import io.micronaut.core.annotation.Introspected;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -15,6 +16,7 @@ import java.util.List;
  * @date 2023/2/8
  */
 @Introspected
+@Serdeable
 @Data
 public class CreateUserCommand {
     /**
