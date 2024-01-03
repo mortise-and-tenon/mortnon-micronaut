@@ -59,8 +59,7 @@ public class UserController {
     @Post
     public Mono<MutableHttpResponse<MortnonResult>> save(@NonNull @Valid CreateUserCommand createUserCommand) {
         return sysUserService.createUser(createUserCommand).map(data -> MortnonResult.success(data))
-                .map(HttpResponse::created)
-                .onErrorReturn(HttpResponse.badRequest(MortnonResult.fail(ErrorCodeEnum.PARAM_ERROR)));
+                .map(HttpResponse::created);
     }
 
     /**
@@ -75,8 +74,7 @@ public class UserController {
         return sysUserService.updateUser(updateUserCommand)
                 .map(SysUserDTO::convert)
                 .map(MortnonResult::success)
-                .map(HttpResponse::ok)
-                .onErrorReturn(HttpResponse.badRequest(MortnonResult.fail(ErrorCodeEnum.PARAM_ERROR)));
+                .map(HttpResponse::ok);
     }
 
     /**
