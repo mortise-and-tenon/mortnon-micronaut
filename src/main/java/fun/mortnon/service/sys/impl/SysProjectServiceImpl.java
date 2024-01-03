@@ -9,6 +9,7 @@ import fun.mortnon.framework.exceptions.RepeatDataException;
 import fun.mortnon.framework.exceptions.UsedException;
 import fun.mortnon.service.sys.SysProjectService;
 import fun.mortnon.service.sys.vo.SysProjectDTO;
+import fun.mortnon.service.sys.vo.SysProjectTreeDTO;
 import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.project.command.CreateProjectCommand;
 import fun.mortnon.web.controller.project.command.UpdateProjectCommand;
@@ -61,6 +62,32 @@ public class SysProjectServiceImpl implements SysProjectService {
                     List<SysProjectDTO> collect = k.getContent().stream().map(SysProjectDTO::convert).collect(Collectors.toList());
                     return Page.of(collect, k.getPageable(), k.getTotalSize());
                 });
+    }
+
+    @Override
+    public Mono<SysProjectTreeDTO> queryTreeProjects() {
+        return projectRepository.findAll()
+                .collectList()
+                .map(list -> {
+                    SysProject root = list.stream().filter(data -> data.getParentId() == 0L).findAny().orElse(null);
+                    if (null == root) {
+                        log.warn("root project is empty.");
+                        return new SysProjectTreeDTO();
+                    }
+                    SysProjectTreeDTO rootNode = SysProjectTreeDTO.convert(root);
+                    return createTree(rootNode, list);
+                });
+    }
+
+    private SysProjectTreeDTO createTree(SysProjectTreeDTO parentNode, List<SysProject> list) {
+
+        List<SysProject> childrenList = list.stream().filter(data -> data.getParentId().equals(parentNode.getId())).collect(Collectors.toList());
+        List<SysProjectTreeDTO> childrenNode = childrenList.stream().map(SysProjectTreeDTO::convert).collect(Collectors.toList());
+        parentNode.setChildren(childrenNode);
+
+        childrenNode.forEach(child -> createTree(child, list));
+
+        return parentNode;
     }
 
     @Override

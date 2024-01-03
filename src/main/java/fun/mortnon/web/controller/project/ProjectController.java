@@ -7,6 +7,7 @@ import fun.mortnon.framework.vo.PageableData;
 import fun.mortnon.service.sys.SysProjectService;
 import fun.mortnon.service.sys.SysRoleService;
 import fun.mortnon.service.sys.vo.SysProjectDTO;
+import fun.mortnon.service.sys.vo.SysProjectTreeDTO;
 import fun.mortnon.service.sys.vo.SysRoleDTO;
 import fun.mortnon.web.controller.project.command.CreateProjectCommand;
 import fun.mortnon.web.controller.project.command.UpdateProjectCommand;
@@ -43,8 +44,18 @@ public class ProjectController {
      * @return
      */
     @Get
-    public Mono<MortnonResult<PageableData<List<SysProjectDTO>>>> queryRole(@Valid Pageable pageable) {
+    public Mono<MortnonResult<PageableData<List<SysProjectDTO>>>> queryProject(@Valid Pageable pageable) {
         return sysProjectService.queryProjects(pageable).map(MortnonResult::successPageData);
+    }
+
+    /**
+     * 查询树型的组织信息
+     *
+     * @return
+     */
+    @Get("/tree")
+    public Mono<MortnonResult<SysProjectTreeDTO>> queryTreeProject() {
+        return sysProjectService.queryTreeProjects().map(MortnonResult::success);
     }
 
     /**
@@ -55,7 +66,7 @@ public class ProjectController {
      */
     @OperationLog(LogConstants.PROJECT_CREATE)
     @Post
-    public Mono<MutableHttpResponse<MortnonResult>> createRole(@Valid CreateProjectCommand createProjectCommand) {
+    public Mono<MutableHttpResponse<MortnonResult>> createProject(@Valid CreateProjectCommand createProjectCommand) {
         return sysProjectService.createProject(createProjectCommand)
                 .map(MortnonResult::success)
                 .map(HttpResponse::created);
@@ -81,7 +92,7 @@ public class ProjectController {
      */
     @OperationLog(LogConstants.PROJECT_UPDATE)
     @Put
-    public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull @Valid UpdateProjectCommand updateProjectCommand) {
+    public Mono<MutableHttpResponse<MortnonResult>> updateProject(@NonNull @Valid UpdateProjectCommand updateProjectCommand) {
         return sysProjectService.updateProject(updateProjectCommand).map(MortnonResult::success).map(HttpResponse::ok);
     }
 

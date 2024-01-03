@@ -1,19 +1,19 @@
 package fun.mortnon.service.sys.vo;
 
-import fun.mortnon.dal.sys.entity.SysPermission;
 import fun.mortnon.dal.sys.entity.SysRole;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author dev2007
  * @date 2023/2/17
  */
-@Data
+@Introspected
 @Serdeable
+@Data
 public class SysRoleDTO {
     /**
      * 角色 id

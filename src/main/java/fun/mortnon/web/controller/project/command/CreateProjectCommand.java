@@ -1,6 +1,7 @@
 package fun.mortnon.web.controller.project.command;
 
 import io.micronaut.core.annotation.Introspected;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Positive;
  * @date 2023/2/24
  */
 @Introspected
+@Serdeable
 @Data
 public class CreateProjectCommand {
     /**

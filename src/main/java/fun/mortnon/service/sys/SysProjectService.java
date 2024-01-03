@@ -2,6 +2,7 @@ package fun.mortnon.service.sys;
 
 import fun.mortnon.dal.sys.entity.SysUser;
 import fun.mortnon.service.sys.vo.SysProjectDTO;
+import fun.mortnon.service.sys.vo.SysProjectTreeDTO;
 import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.project.command.CreateProjectCommand;
 import fun.mortnon.web.controller.project.command.UpdateProjectCommand;
@@ -32,6 +33,13 @@ public interface SysProjectService {
      * @return
      */
     Mono<Page<SysProjectDTO>> queryProjects(Pageable pageable);
+
+    /**
+     * 查询树型的全部组织数据
+     *
+     * @return
+     */
+    Mono<SysProjectTreeDTO> queryTreeProjects();
 
     /**
      * 删除组织
