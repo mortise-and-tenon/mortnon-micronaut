@@ -28,7 +28,7 @@ public class LogController {
     private SysLogService sysLogService;
 
     @Get
-    public Mono<MortnonResult<PageableData<List<SysLogDTO>>>> queryUser(@Valid Pageable pageable, @QueryValue String lang) {
+    public Mono<MortnonResult<PageableData<List<SysLogDTO>>>> queryUser(@Valid Pageable pageable, @QueryValue(defaultValue = "zh") String lang) {
         return sysLogService.queryLogs(pageable, lang).map(MortnonResult::successPageData);
     }
 }

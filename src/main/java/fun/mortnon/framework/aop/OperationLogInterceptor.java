@@ -113,7 +113,7 @@ public class OperationLogInterceptor implements MethodInterceptor<Object, Object
                         return Mono.just(response);
                     }
 
-                    return operationLogService.createLog(sysLog).map(syslog -> response);
+                    return operationLogService.createLog(logData).map(syslog -> response);
                 });
     }
 }

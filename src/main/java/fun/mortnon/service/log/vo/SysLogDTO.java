@@ -2,6 +2,8 @@ package fun.mortnon.service.log.vo;
 
 import fun.mortnon.dal.sys.entity.SysLog;
 import io.micronaut.context.MessageSource;
+import io.micronaut.core.annotation.Introspected;
+import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +15,9 @@ import java.util.Locale;
  * @author dev2007
  * @date 2023/3/9
  */
+
+@Introspected
+@Serdeable
 @Data
 @Slf4j
 public class SysLogDTO {
