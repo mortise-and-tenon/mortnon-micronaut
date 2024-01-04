@@ -72,4 +72,12 @@ public interface AssignmentRepository extends ReactorPageableRepository<SysAssig
      * @return
      */
     Mono<Long> deleteByUserIdEqualsAndProjectIdEqualsAndRoleIdEquals(Long userId, Long projectId, Long roleId);
+
+    /**
+     * 按用户id删除关联
+     *
+     * @param userId
+     * @return
+     */
+    Mono<Long> deleteByUserId(Long userId);
 }

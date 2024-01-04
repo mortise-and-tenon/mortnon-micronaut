@@ -217,8 +217,10 @@ public class SysUserServiceImpl implements SysUserService {
                         log.warn("delete user fail,user id [{}] is not exists", id);
                         return Mono.error(NotFoundException.create("user is not exists."));
                     }
-                    return userRepository.deleteById(id);
-                }).map(k -> k > 0);
+                    return assignmentRepository.deleteById(id);
+                })
+                .flatMap(result-> userRepository.deleteById(id))
+                .map(k -> k > 0);
     }
 
     @Override
@@ -233,11 +235,10 @@ public class SysUserServiceImpl implements SysUserService {
                 })
                 .flatMap(user -> {
                     Optional.ofNullable(validateUpdate.apply(updateUserCommand.getNickName())).ifPresent(t -> user.setNickName(t));
-                    Optional.ofNullable(validateUpdate.apply(updateUserCommand.getNickName())).ifPresent(t -> user.setNickName(t));
                     Optional.ofNullable(validateUpdate.apply(updateUserCommand.getEmail())).ifPresent(t -> user.setEmail(t));
                     Optional.ofNullable(validateUpdate.apply(updateUserCommand.getPhone())).ifPresent(t -> user.setPhone(t));
                     Optional.ofNullable(validateUpdate.apply(updateUserCommand.getHead())).ifPresent(t -> user.setAvatar(t));
-                    updateUserCommand.setSex(updateUserCommand.getSex());
+                    user.setSex(updateUserCommand.getSex());
                     return userRepository.update(user);
                 });
     }
