@@ -1,6 +1,9 @@
 package fun.mortnon.service.log.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysLog;
+import fun.mortnon.framework.json.InstantSerializer;
 import io.micronaut.context.MessageSource;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
@@ -10,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * @author dev2007
@@ -34,11 +38,13 @@ public class SysLogDTO {
     /**
      * 操作用户名
      */
+    @JsonProperty(value = "user_name")
     private String userName;
 
     /**
      * 组织名字
      */
+    @JsonProperty(value = "project_name")
     private String projectName;
 
     /**
@@ -59,6 +65,7 @@ public class SysLogDTO {
     /**
      * 操作时间
      */
+    @Serdeable.Serializable(using = InstantSerializer.class)
     private Instant time;
 
     public static SysLogDTO convert(SysLog sysLog, MessageSource messageSource, String lang) {
@@ -74,7 +81,8 @@ public class SysLogDTO {
         SysLogDTO sysLogDTO = new SysLogDTO();
         sysLogDTO.setId(sysLog.getId());
         sysLogDTO.setUserName(sysLog.getUserName());
-        sysLogDTO.setProjectName(sysLog.getProjectName());
+        sysLogDTO.setIp(Optional.ofNullable(sysLog.getIp()).orElse(""));
+        sysLogDTO.setProjectName(Optional.ofNullable(sysLog.getProjectName()).orElse(""));
         sysLogDTO.setTime(sysLog.getTime());
 
         sysLogDTO.setAction(i18n(messageSource, sysLog.getAction(), lang));

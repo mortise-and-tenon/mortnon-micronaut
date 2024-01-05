@@ -1,5 +1,6 @@
 package fun.mortnon.service.sys.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysProject;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
@@ -32,6 +33,7 @@ public class SysProjectDTO {
     /**
      * 父组织 id
      */
+    @JsonProperty(value = "parent_id")
     private Long parentId;
 
     public static SysProjectDTO convert(SysProject sysProject) {

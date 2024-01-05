@@ -1,5 +1,6 @@
 package fun.mortnon.service.sys.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysMenu;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
@@ -25,6 +26,7 @@ public class SysMenuDTO {
     /**
      * 父菜单 id
      */
+    @JsonProperty(value = "parent_id")
     private Long parentId;
 
     /**
@@ -55,6 +57,7 @@ public class SysMenuDTO {
     /**
      * 子菜单
      */
+    @JsonProperty(value = "children_menu")
     private List<SysMenuDTO> childrenMenu;
 
     public static SysMenuDTO convert(SysMenu sysMenu) {

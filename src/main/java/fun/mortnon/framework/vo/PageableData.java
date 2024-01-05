@@ -1,5 +1,6 @@
 package fun.mortnon.framework.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.AllArgsConstructor;
@@ -18,19 +19,23 @@ public class PageableData<T> {
     /**
      * 当前页数
      */
+    @JsonProperty(value = "page_number")
     private Integer pageNumber;
     /**
      * 数据总页数
      */
+    @JsonProperty(value = "total_pages")
     private Integer totalPages;
     /**
      * 每页数据量
      */
+    @JsonProperty(value = "page_size")
     private Integer pageSize;
 
     /**
      * 数据总量
      */
+    @JsonProperty(value = "total_size")
     private Long totalSize;
 
     /**

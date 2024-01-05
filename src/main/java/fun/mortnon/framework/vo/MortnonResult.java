@@ -1,5 +1,8 @@
 package fun.mortnon.framework.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.data.model.Page;
@@ -35,6 +38,7 @@ public class MortnonResult<T> implements Serializable {
      *
      * @mock 00000
      */
+    @JsonProperty(value = "error_code")
     private String errorCode;
 
     /**

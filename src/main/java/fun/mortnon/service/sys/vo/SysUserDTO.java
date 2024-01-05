@@ -19,7 +19,11 @@ import java.util.List;
 @Data
 public class SysUserDTO {
     private Long id;
+
+    @JsonProperty(value = "user_name")
     private String userName;
+
+    @JsonProperty(value = "nick_name")
     private String nickName;
     private String email;
     private String phone;
@@ -27,7 +31,6 @@ public class SysUserDTO {
     private Integer sex;
 
     @JsonProperty(value = "project_roles")
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     private List<ProjectRoleDTO> projectRoles;
 
     public SysUserDTO() {

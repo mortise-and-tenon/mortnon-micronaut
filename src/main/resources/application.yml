@@ -47,10 +47,6 @@ flyway:
   datasources:
     default:
       enabled: true
-jackson:
-  serializationInclusion: ALWAYS
-  propertyNamingStrategy: SNAKE_CASE
-  date-format: YYYY-MM-DD HH:mm:ss
 
 redis:
   # 如果使用 sentinel，REDIS_SCHEME 为 redis_sentinel，直连 redis REDIS_SCHEME 为 redis
