@@ -2,6 +2,7 @@ package fun.mortnon.web.controller.menu.command;
 
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -15,7 +16,7 @@ import java.util.List;
  * @date 2023/12/6
  */
 @Introspected
-@Serdeable
+@Serdeable(naming = SnakeCaseStrategy.class)
 @Data
 public class CreateMenuCommand {
     /**

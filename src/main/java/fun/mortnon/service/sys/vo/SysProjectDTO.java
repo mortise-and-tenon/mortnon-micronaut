@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysProject;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
 /**
@@ -11,7 +12,7 @@ import lombok.Data;
  * @date 2023/2/24
  */
 @Introspected
-@Serdeable
+@Serdeable(naming = SnakeCaseStrategy.class)
 @Data
 public class SysProjectDTO {
 
@@ -33,7 +34,6 @@ public class SysProjectDTO {
     /**
      * 父组织 id
      */
-    @JsonProperty(value = "parent_id")
     private Long parentId;
 
     public static SysProjectDTO convert(SysProject sysProject) {

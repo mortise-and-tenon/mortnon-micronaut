@@ -3,6 +3,7 @@ package fun.mortnon.framework.vo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -12,30 +13,26 @@ import lombok.Data;
  * @author dev2007
  * @date 2023/2/8
  */
-@Serdeable
 @Introspected
+@Serdeable(naming = SnakeCaseStrategy.class)
 @Data
 public class PageableData<T> {
     /**
      * 当前页数
      */
-    @JsonProperty(value = "page_number")
     private Integer pageNumber;
     /**
      * 数据总页数
      */
-    @JsonProperty(value = "total_pages")
     private Integer totalPages;
     /**
      * 每页数据量
      */
-    @JsonProperty(value = "page_size")
     private Integer pageSize;
 
     /**
      * 数据总量
      */
-    @JsonProperty(value = "total_size")
     private Long totalSize;
 
     /**

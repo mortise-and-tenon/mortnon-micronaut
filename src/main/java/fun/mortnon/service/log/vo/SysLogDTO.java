@@ -1,6 +1,7 @@
 package fun.mortnon.service.log.vo;
 
 import fun.mortnon.dal.sys.entity.SysLog;
+import fun.mortnon.framework.json.InstantSerializer;
 import io.micronaut.context.MessageSource;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
@@ -61,6 +62,7 @@ public class SysLogDTO {
     /**
      * 操作时间
      */
+    @Serdeable.Serializable(using = InstantSerializer.class)
     private Instant time;
 
     public static SysLogDTO convert(SysLog sysLog, MessageSource messageSource, String lang) {

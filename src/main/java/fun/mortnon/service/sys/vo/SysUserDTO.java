@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysUser;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
 import java.awt.*;
@@ -15,22 +16,19 @@ import java.util.List;
  * @date 2023/2/8
  */
 @Introspected
-@Serdeable
+@Serdeable(naming = SnakeCaseStrategy.class)
 @Data
 public class SysUserDTO {
     private Long id;
 
-    @JsonProperty(value = "user_name")
     private String userName;
 
-    @JsonProperty(value = "nick_name")
     private String nickName;
     private String email;
     private String phone;
     private String avatar;
     private Integer sex;
 
-    @JsonProperty(value = "project_roles")
     private List<ProjectRoleDTO> projectRoles;
 
     public SysUserDTO() {

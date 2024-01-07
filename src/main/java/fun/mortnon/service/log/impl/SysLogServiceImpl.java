@@ -8,6 +8,7 @@ import fun.mortnon.web.vo.login.MortnonDefaultPageable;
 import io.micronaut.context.MessageSource;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import io.micronaut.data.model.Sort;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,7 @@ public class SysLogServiceImpl implements SysLogService {
 
     @Override
     public Mono<Page<SysLogDTO>> queryLogs(Pageable pageable, String lang) {
+        pageable = pageable.order(Sort.Order.desc("time"));
         return logRepository.findAll(pageable)
                 .map(k -> {
                     List<SysLogDTO> list = k.getContent().stream()

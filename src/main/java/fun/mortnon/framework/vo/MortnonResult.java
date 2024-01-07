@@ -1,16 +1,11 @@
 package fun.mortnon.framework.vo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
-import io.micronaut.core.annotation.Introspected;
 import io.micronaut.data.model.Page;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import java.io.Serializable;
 
 /**
  * web层默认返回
@@ -20,8 +15,8 @@ import java.io.Serializable;
  */
 @Data
 @Accessors(chain = true)
-@Serdeable
-public class MortnonResult<T> implements Serializable {
+@Serdeable(naming = SnakeCaseStrategy.class)
+public class MortnonResult<T> {
 
     /**
      * uid
@@ -36,22 +31,18 @@ public class MortnonResult<T> implements Serializable {
     /**
      * 错误码
      *
-     * @mock 00000
      */
-    @JsonProperty(value = "error_code")
     private String errorCode;
 
     /**
      * 错误描述
      *
-     * @mock success
      */
     private String message;
 
     /**
      * 是否成功
      *
-     * @mock true
      */
     private boolean success;
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysMenu;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
  * @date 2023/12/6
  */
 @Introspected
-@Serdeable
+@Serdeable(naming = SnakeCaseStrategy.class)
 @Data
 public class SysMenuDTO {
     /**
@@ -26,7 +27,6 @@ public class SysMenuDTO {
     /**
      * 父菜单 id
      */
-    @JsonProperty(value = "parent_id")
     private Long parentId;
 
     /**
@@ -57,7 +57,6 @@ public class SysMenuDTO {
     /**
      * 子菜单
      */
-    @JsonProperty(value = "children_menu")
     private List<SysMenuDTO> childrenMenu;
 
     public static SysMenuDTO convert(SysMenu sysMenu) {
