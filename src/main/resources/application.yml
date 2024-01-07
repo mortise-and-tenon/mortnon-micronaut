@@ -4,6 +4,10 @@ micronaut:
   server:
     cors:
       enabled: true
+  serde:
+    serialization:
+      # 属性不论是否为空值，都要序列化
+      inclusion: ALWAYS
   security:
     # 认证方式，bearer ：JWT 以请求头形式传递；cookie：JWT 以 cookies 形式传递
     authentication: cookie
