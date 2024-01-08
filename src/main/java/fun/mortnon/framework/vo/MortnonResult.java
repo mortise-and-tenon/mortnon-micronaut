@@ -1,5 +1,6 @@
 package fun.mortnon.framework.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
 import io.micronaut.data.model.Page;
 import io.micronaut.serde.annotation.Serdeable;
@@ -26,6 +27,7 @@ public class MortnonResult<T> {
     /**
      * 结果
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 
     /**
@@ -38,6 +40,7 @@ public class MortnonResult<T> {
      * 错误描述
      *
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String message;
 
     /**
