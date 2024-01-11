@@ -6,6 +6,7 @@ import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.framework.vo.PageableData;
+import fun.mortnon.framework.vo.PageableQuery;
 import fun.mortnon.service.sys.SysUserService;
 import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.CreateUserCommand;
@@ -44,9 +45,9 @@ public class UserController {
      * @param pageable
      * @return
      */
-    @Get
-    public Mono<MortnonResult<PageableData<List<SysUserDTO>>>> queryUser(@Valid Pageable pageable) {
-        return sysUserService.queryUsers(pageable).map(MortnonResult::successPageData);
+    @Get("{?pageable*}")
+    public Mono<MortnonResult<PageableData<List<SysUserDTO>>>> queryUser(PageableQuery pageable) {
+        return sysUserService.queryUsers(pageable.convert()).map(MortnonResult::successPageData);
     }
 
     /**

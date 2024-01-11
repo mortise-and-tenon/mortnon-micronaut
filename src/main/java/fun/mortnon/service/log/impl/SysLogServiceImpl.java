@@ -40,7 +40,11 @@ public class SysLogServiceImpl implements SysLogService {
 
     @Override
     public Mono<Page<SysLogDTO>> queryLogs(Pageable pageable, String lang) {
-        pageable = pageable.order(Sort.Order.desc("time"));
+        //默认按时间倒序排列
+        if (!pageable.isSorted()) {
+            pageable = pageable.order(Sort.Order.desc("time"));
+        }
+
         return logRepository.findAll(pageable)
                 .map(k -> {
                     List<SysLogDTO> list = k.getContent().stream()

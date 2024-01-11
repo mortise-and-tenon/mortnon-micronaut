@@ -21,6 +21,7 @@ import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
 import fun.mortnon.web.controller.user.command.UpdateUserCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import io.micronaut.data.model.Sort;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -178,6 +179,10 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public Mono<Page<SysUserDTO>> queryUsers(Pageable pageable) {
+        //默认按用户名倒序排列
+        if (!pageable.isSorted()) {
+            pageable = pageable.order(Sort.Order.desc("nickName"));
+        }
         return userRepository.findAll(pageable).flatMap(k -> {
             List<SysUserDTO> collect = k.getContent().stream().map(SysUserDTO::convert).collect(Collectors.toList());
 

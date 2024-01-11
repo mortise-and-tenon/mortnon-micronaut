@@ -2,6 +2,7 @@ package fun.mortnon.web.controller.log;
 
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.framework.vo.PageableData;
+import fun.mortnon.framework.vo.PageableQuery;
 import fun.mortnon.service.log.SysLogService;
 import fun.mortnon.service.log.vo.SysLogDTO;
 import fun.mortnon.service.sys.vo.SysUserDTO;
@@ -27,8 +28,8 @@ public class LogController {
     @Inject
     private SysLogService sysLogService;
 
-    @Get
-    public Mono<MortnonResult<PageableData<List<SysLogDTO>>>> queryUser(@Valid Pageable pageable, @QueryValue(defaultValue = "zh") String lang) {
-        return sysLogService.queryLogs(pageable, lang).map(MortnonResult::successPageData);
+    @Get("{?pageable*}")
+    public Mono<MortnonResult<PageableData<List<SysLogDTO>>>> queryUser(PageableQuery pageable, @QueryValue(defaultValue = "zh") String lang) {
+        return sysLogService.queryLogs(pageable.convert(), lang).map(MortnonResult::successPageData);
     }
 }
