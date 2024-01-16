@@ -152,4 +152,14 @@ VALUES
 	('菜单管理', 0, '/menu', 'IconMenu', 'MENU_QUERY'),
 	('日志管理', 0, '/log', 'IconFile', 'LOG_QUERY');
 
+INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `order`, `url`, `icon`, `permission`)
+VALUES
+	(1, '首页', 0, 1, '/', 'DashboardIcon', ''),
+	(2, '系统管理', 0, 2, '#', '', ''),
+	(3, '用户管理', 2, 1, '/user', 'PersonIcon', 'USER_QUERY'),
+	(4, '角色管理', 2, 2, '/role', 'GroupsIcon', 'ROLE_QUERY'),
+	(5, '组织管理', 2, 3, '/project', 'AccountTreeIcon', 'PROJECT_QUERY'),
+	(6, '菜单管理', 2, 4, '/menu', 'MenuIcon', 'MENU_QUERY'),
+	(7, '日志管理', 2, 5, '/log', 'NoteIcon', 'LOG_QUERY');
+
 COMMIT;
