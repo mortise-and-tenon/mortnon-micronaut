@@ -39,10 +39,8 @@ public class PageableQuery {
 
         if (StringUtils.isNotEmpty(property)) {
             if (StringUtils.isNotEmpty(order)) {
-                if (order.toLowerCase().equals("asc")) {
+                if (order.equalsIgnoreCase("asc")) {
                     direction = Sort.Order.Direction.ASC;
-                } else {
-                    direction = Sort.Order.Direction.DESC;
                 }
             }
 

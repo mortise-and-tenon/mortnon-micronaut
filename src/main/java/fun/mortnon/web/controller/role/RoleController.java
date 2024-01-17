@@ -5,6 +5,7 @@ import fun.mortnon.framework.constants.LogConstants;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.framework.vo.PageableData;
+import fun.mortnon.framework.vo.PageableQuery;
 import fun.mortnon.service.sys.SysRoleService;
 import fun.mortnon.service.sys.vo.SysRoleDTO;
 import fun.mortnon.web.controller.role.command.CreateRoleCommand;
@@ -42,8 +43,8 @@ public class RoleController {
      * @return
      */
     @Get
-    public Mono<MortnonResult<PageableData<List<SysRoleDTO>>>> queryRole(@Valid Pageable pageable) {
-        return sysRoleService.queryRoles(pageable).map(MortnonResult::successPageData);
+    public Mono<MortnonResult<PageableData<List<SysRoleDTO>>>> queryRole(@Valid PageableQuery pageable) {
+        return sysRoleService.queryRoles(pageable.convert()).map(MortnonResult::successPageData);
     }
 
     /**
