@@ -1,5 +1,6 @@
 package fun.mortnon.service.sys.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
@@ -25,6 +26,7 @@ public class ProjectRoleDTO {
     /**
      * 组织名字
      */
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String projectName;
 
     /**
@@ -35,5 +37,6 @@ public class ProjectRoleDTO {
     /**
      * 角色名字
      */
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String roleName;
 }
