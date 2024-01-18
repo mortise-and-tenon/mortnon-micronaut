@@ -45,7 +45,7 @@ public class CreateMenuCommand {
      * 菜单权限
      */
     @NotEmpty
-    private List<String> permission;
+    private String permission;
 
     @NotNull
     @Positive

@@ -216,6 +216,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public Mono<Boolean> deleteUser(Long id) {
+        if (id == 1) {
+            return Mono.error(ParameterException.create("default data can't be deleted."));
+        }
         return userRepository.existsById(id)
                 .flatMap(result -> {
                     if (!result) {
@@ -224,7 +227,7 @@ public class SysUserServiceImpl implements SysUserService {
                     }
                     return assignmentRepository.deleteById(id);
                 })
-                .flatMap(result-> userRepository.deleteById(id))
+                .flatMap(result -> userRepository.deleteById(id))
                 .map(k -> k > 0);
     }
 

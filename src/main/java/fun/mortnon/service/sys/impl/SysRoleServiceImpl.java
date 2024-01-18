@@ -68,7 +68,7 @@ public class SysRoleServiceImpl implements SysRoleService {
                 })
                 .flatMap(role -> {
                     List<SysRolePermission> rolePermissionList = new ArrayList<>();
-                    createRoleCommand.getPermissionList().forEach(k -> {
+                    createRoleCommand.getPermissions().forEach(k -> {
                         SysRolePermission rolePermission = new SysRolePermission();
                         rolePermission.setRoleId(role.getId());
                         rolePermission.setPermissionId(k);
@@ -80,7 +80,7 @@ public class SysRoleServiceImpl implements SysRoleService {
                     return rolePermissionRepository.saveAll(rolePermissionList)
                             .collectList()
                             .flatMapMany(list ->
-                                    permissionRepository.findByIdIn(createRoleCommand.getPermissionList())
+                                    permissionRepository.findByIdIn(createRoleCommand.getPermissions())
                             ).collectList()
                             .map(list -> {
                                 if (list.size() != rolePermissionList.size()) {
@@ -129,7 +129,7 @@ public class SysRoleServiceImpl implements SysRoleService {
                                     rolePermissionRepository.deleteByRoleId(updateRoleCommand.getId())
                             )
                             .flatMapMany(result -> {
-                                List<SysRolePermission> pList = updateRoleCommand.getPermissionList().stream().map(k -> {
+                                List<SysRolePermission> pList = updateRoleCommand.getPermissions().stream().map(k -> {
                                     SysRolePermission sysRolePermission = new SysRolePermission();
                                     sysRolePermission.setRoleId(updateRoleCommand.getId());
                                     sysRolePermission.setPermissionId(k);
@@ -140,7 +140,7 @@ public class SysRoleServiceImpl implements SysRoleService {
                             })
                             .collectList()
                             .flatMapMany(rpList ->
-                                    permissionRepository.findByIdIn(updateRoleCommand.getPermissionList())
+                                    permissionRepository.findByIdIn(updateRoleCommand.getPermissions())
                             )
                             .collectList()
                             .map(list -> {
@@ -207,6 +207,10 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     @Transactional
     public Mono<Boolean> deleteRole(Long id) {
+        if (id == 1) {
+            return Mono.error(ParameterException.create("default data can't be deleted."));
+        }
+
         return roleRepository.existsById(id)
                 .flatMap(result -> {
                     if (!result) {

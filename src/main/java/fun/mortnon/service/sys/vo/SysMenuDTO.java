@@ -47,7 +47,7 @@ public class SysMenuDTO {
     /**
      * 菜单权限
      */
-    private List<String> permission;
+    private String permission;
 
     /**
      * 菜单顺序
@@ -57,7 +57,7 @@ public class SysMenuDTO {
     /**
      * 子菜单
      */
-    private List<SysMenuDTO> childrenMenu;
+    private List<SysMenuDTO> children;
 
     public static SysMenuDTO convert(SysMenu sysMenu) {
         SysMenuDTO sysMenuDTO = new SysMenuDTO();
@@ -65,9 +65,10 @@ public class SysMenuDTO {
         sysMenuDTO.setName(sysMenu.getName());
         sysMenuDTO.setUrl(sysMenu.getUrl());
         sysMenuDTO.setIcon(sysMenu.getIcon());
+        sysMenuDTO.setOrder(sysMenu.getOrder());
 
         String permission = sysMenu.getPermission();
-        sysMenuDTO.setPermission(Arrays.asList(permission.split(",")));
+        sysMenuDTO.setPermission(permission);
 
         sysMenuDTO.setParentId(sysMenu.getParentId());
         return sysMenuDTO;

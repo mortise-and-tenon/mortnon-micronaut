@@ -144,18 +144,10 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
     `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
 
-INSERT INTO `sys_menu` (`name`, `parent_id`, `url`,`icon`, `permission`)
-VALUES
-	('用户管理', 0, '/user', 'IconUser', 'USER_QUERY'),
-	('角色管理', 0, '/role', 'IconUserGroup', 'ROLE_QUERY'),
-	('组织管理', 0, '/project', 'IconLayers', 'PROJECT_QUERY'),
-	('菜单管理', 0, '/menu', 'IconMenu', 'MENU_QUERY'),
-	('日志管理', 0, '/log', 'IconFile', 'LOG_QUERY');
-
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `order`, `url`, `icon`, `permission`)
 VALUES
-	(1, '首页', 0, 1, '/', 'DashboardIcon', ''),
-	(2, '系统管理', 0, 2, '#', '', ''),
+	(1, '首页', 0, 1, '/', 'IconHome', ''),
+	(2, '系统管理', 0, 2, '#', 'IconDesktop', ''),
 	(3, '用户管理', 2, 1, '/user', 'PersonIcon', 'USER_QUERY'),
 	(4, '角色管理', 2, 2, '/role', 'GroupsIcon', 'ROLE_QUERY'),
 	(5, '组织管理', 2, 3, '/project', 'AccountTreeIcon', 'PROJECT_QUERY'),

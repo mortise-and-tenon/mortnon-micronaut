@@ -58,7 +58,7 @@ public class SysMenuServiceImpl implements SysMenuService {
 
         levelCurrentMenuList.forEach(levelCurrentMenu -> {
             List<SysMenuDTO> childMenuList = paresMenu(menuList, levelCurrentMenu.getId());
-            levelCurrentMenu.setChildrenMenu(childMenuList);
+            levelCurrentMenu.setChildren(childMenuList);
         });
 
         return levelCurrentMenuList;
@@ -66,7 +66,7 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public Mono<SysMenu> createMenu(CreateMenuCommand createMenuCommand) {
-        return permissionRepository.existsByIdentifierContains(createMenuCommand.getPermission())
+        return permissionRepository.existsByIdentifier(createMenuCommand.getPermission())
                 .flatMap(exists -> {
                     if (!exists) {
                         return Mono.error(ParameterException.create("permission is incorrect."));
@@ -77,7 +77,7 @@ public class SysMenuServiceImpl implements SysMenuService {
                     sysMenu.setUrl(createMenuCommand.getUrl());
                     sysMenu.setIcon(createMenuCommand.getIcon());
                     sysMenu.setParentId(createMenuCommand.getParentId());
-                    sysMenu.setPermission(String.join(",", createMenuCommand.getPermission()));
+                    sysMenu.setPermission(createMenuCommand.getPermission());
 
                     return menuRepository.save(sysMenu);
                 });
@@ -122,8 +122,8 @@ public class SysMenuServiceImpl implements SysMenuService {
                                 if (StringUtils.isNotEmpty((updateMenuCommand.getIcon()))) {
                                     sysMenu.setIcon(updateMenuCommand.getIcon());
                                 }
-                                if (CollectionUtils.isNotEmpty(updateMenuCommand.getPermission())) {
-                                    sysMenu.setPermission(String.join(",", updateMenuCommand.getPermission()));
+                                if (StringUtils.isNotEmpty(updateMenuCommand.getPermission())) {
+                                    sysMenu.setPermission(updateMenuCommand.getPermission());
                                 }
 
                                 return menuRepository.update(sysMenu);

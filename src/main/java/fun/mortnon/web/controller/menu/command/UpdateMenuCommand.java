@@ -47,5 +47,5 @@ public class UpdateMenuCommand {
      * 菜单权限
      */
     @NotEmpty
-    private List<String> permission;
+    private String permission;
 }

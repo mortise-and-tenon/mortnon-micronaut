@@ -2,6 +2,7 @@ package fun.mortnon.web.controller.role.command;
 
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -39,5 +40,5 @@ public class CreateRoleCommand {
      * 权限 id 列表
      */
     @NotNull
-    private List<Long> permissionList;
+    private List<Long> permissions;
 }

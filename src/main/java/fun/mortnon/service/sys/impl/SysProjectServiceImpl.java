@@ -96,6 +96,10 @@ public class SysProjectServiceImpl implements SysProjectService {
             return Mono.error(ParameterException.create("project id is not exists."));
         }
 
+        if (id == 1) {
+            return Mono.error(ParameterException.create("default data can't be deleted."));
+        }
+
         return projectRepository.existsById(id)
                 .flatMap(exists -> {
                     if (!exists) {

@@ -42,8 +42,8 @@ public class RoleController {
      * @param pageable
      * @return
      */
-    @Get
-    public Mono<MortnonResult<PageableData<List<SysRoleDTO>>>> queryRole(@Valid PageableQuery pageable) {
+    @Get("{?pageable*}")
+    public Mono<MortnonResult<PageableData<List<SysRoleDTO>>>> queryRole(PageableQuery pageable) {
         return sysRoleService.queryRoles(pageable.convert()).map(MortnonResult::successPageData);
     }
 

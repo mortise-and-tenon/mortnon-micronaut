@@ -23,6 +23,9 @@ micronaut:
         bearer:
           header-name: Authorization
           prefix: Bearer
+        generator:
+          access-token:
+            expiration: 28800
         signatures:
           secret:
             generator:
@@ -55,6 +58,10 @@ flyway:
 redis:
   # 如果使用 sentinel，REDIS_SCHEME 为 redis_sentinel，直连 redis REDIS_SCHEME 为 redis
   uri: ${REDIS_SCHEME:redis}://${REDIS_HOST:localhost}:${REDIS_PORT:6379}#mymaster
+
+# 提供 Jackson 庫配置，支持特定处能使用 JacksonConfiguration
+jackson:
+  propertyNamingStrategy: SNAKE_CASE
 
 mortnon:
   captcha:
