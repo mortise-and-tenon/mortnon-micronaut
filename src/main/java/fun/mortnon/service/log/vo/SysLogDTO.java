@@ -1,6 +1,8 @@
 package fun.mortnon.service.log.vo;
 
 import fun.mortnon.dal.sys.entity.SysLog;
+import fun.mortnon.dal.sys.entity.log.LogLevel;
+import fun.mortnon.dal.sys.entity.log.LogResult;
 import fun.mortnon.framework.json.InstantSerializer;
 import io.micronaut.context.MessageSource;
 import io.micronaut.core.annotation.Introspected;
@@ -32,6 +34,8 @@ public class SysLogDTO {
     /**
      * 国际化转义后的操作名字
      */
+    private String actionDesc;
+
     private String action;
 
     /**
@@ -52,12 +56,16 @@ public class SysLogDTO {
     /**
      * 国际化转义后的操作结果
      */
-    private String result;
+    private String resultDesc;
+
+    private LogResult result;
 
     /**
      * 国际化转义后操作级别
      */
-    private String level;
+    private String levelDesc;
+
+    private LogLevel level;
 
     /**
      * 操作时间
@@ -82,9 +90,12 @@ public class SysLogDTO {
         sysLogDTO.setProjectName(Optional.ofNullable(sysLog.getProjectName()).orElse(""));
         sysLogDTO.setTime(sysLog.getTime());
 
-        sysLogDTO.setAction(i18n(messageSource, sysLog.getAction(), lang));
-        sysLogDTO.setResult(i18n(messageSource, sysLog.getResult().getName(), lang));
-        sysLogDTO.setLevel(i18n(messageSource, sysLog.getLevel().getName(), lang));
+        sysLogDTO.setActionDesc(i18n(messageSource, sysLog.getAction(), lang));
+        sysLogDTO.setAction(sysLog.getAction());
+        sysLogDTO.setResultDesc(i18n(messageSource, sysLog.getResult().getName(), lang));
+        sysLogDTO.setResult(sysLog.getResult());
+        sysLogDTO.setLevelDesc(i18n(messageSource, sysLog.getLevel().getName(), lang));
+        sysLogDTO.setLevel(sysLog.getLevel());
 
         return sysLogDTO;
     }

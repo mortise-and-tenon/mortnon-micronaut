@@ -2,6 +2,7 @@ package fun.mortnon.service.log;
 
 import fun.mortnon.dal.sys.entity.SysLog;
 import fun.mortnon.service.log.vo.SysLogDTO;
+import fun.mortnon.web.controller.log.command.LogPageSearch;
 import fun.mortnon.web.vo.login.MortnonDefaultPageable;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
@@ -23,9 +24,9 @@ public interface SysLogService {
     /**
      * 查询操作日志
      *
-     * @param pageable
+     * @param pageSearch
      * @param lang
      * @return
      */
-    Mono<Page<SysLogDTO>> queryLogs(Pageable pageable, String lang);
+    Mono<Page<SysLogDTO>> queryLogs(LogPageSearch pageSearch, String lang);
 }

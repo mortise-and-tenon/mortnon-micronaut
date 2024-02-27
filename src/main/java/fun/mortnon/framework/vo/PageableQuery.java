@@ -5,12 +5,7 @@ import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
-import lombok.Data;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author dev2007
@@ -18,7 +13,6 @@ import java.util.List;
  */
 @Introspected
 @Serdeable(naming = SnakeCaseStrategy.class)
-@Data
 public class PageableQuery {
     public static final int MAX_PAGE_NUM = 10;
     int page;
