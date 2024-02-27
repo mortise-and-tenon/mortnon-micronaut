@@ -56,7 +56,7 @@ public enum ErrorCodeEnum {
     /**
      * 用户名或密码错误
      */
-    INVALID_USERNAME_OR_PASSWORD("A0210", "invalid username or password"),
+    INVALID_USERNAME_OR_PASSWORD("A0210", "invalid username or password", "result.login.userpwd.fail"),
 
     /**
      * 用户登录过期
@@ -106,6 +106,13 @@ public enum ErrorCodeEnum {
     ErrorCodeEnum(String errorCode, String description) {
         this.errorCode = errorCode;
         this.description = description;
+        this.i18n = description;
+    }
+
+    ErrorCodeEnum(String errorCode, String description, String i18n) {
+        this.errorCode = errorCode;
+        this.description = description;
+        this.i18n = i18n;
     }
 
     /**
@@ -118,6 +125,11 @@ public enum ErrorCodeEnum {
      * 描述信息
      */
     private final String description;
+
+    /**
+     * 国际化代码串
+     */
+    private final String i18n;
 
     /**
      * A级错误
@@ -166,5 +178,9 @@ public enum ErrorCodeEnum {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getI18n() {
+        return i18n;
     }
 }

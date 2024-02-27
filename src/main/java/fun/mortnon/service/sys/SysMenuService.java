@@ -12,6 +12,7 @@ import io.micronaut.data.model.Pageable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -21,9 +22,13 @@ import java.util.List;
 public interface SysMenuService {
     Mono<List<SysMenuDTO>> queryMenu();
 
+    Mono<SysMenuDTO> queryMenuById(Long id);
+
     Mono<SysMenu> createMenu(CreateMenuCommand createMenuCommand);
 
     Mono<Boolean> deleteMenu(Long id);
 
     Mono<SysMenu> updateMenu(UpdateMenuCommand updateMenuCommand);
+
+    Mono<List<SysMenuDTO>> queryUserMenu(Principal principal);
 }

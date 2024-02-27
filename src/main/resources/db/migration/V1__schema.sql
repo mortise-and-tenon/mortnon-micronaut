@@ -140,18 +140,19 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
     `url` VARCHAR(200) NOT NULL                             COMMENT '菜单 url',
     `icon` VARCHAR(100) NOT NULL DEFAULT ''                 COMMENT '菜单 图标',
     `permission` VARCHAR(20) DEFAULT NULL                   COMMENT '权限组',
+    `status` TINYINT DEFAULT 1,                             COMMENT '菜单状态',
     `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
     `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
 
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `order`, `url`, `icon`, `permission`)
 VALUES
-	(1, '首页', 0, 1, '/', 'IconHome', ''),
-	(2, '系统管理', 0, 2, '#', 'IconDesktop', ''),
-	(3, '用户管理', 2, 1, '/user', 'PersonIcon', 'USER_QUERY'),
-	(4, '角色管理', 2, 2, '/role', 'GroupsIcon', 'ROLE_QUERY'),
-	(5, '组织管理', 2, 3, '/project', 'AccountTreeIcon', 'PROJECT_QUERY'),
-	(6, '菜单管理', 2, 4, '/menu', 'MenuIcon', 'MENU_QUERY'),
-	(7, '日志管理', 2, 5, '/log', 'NoteIcon', 'LOG_QUERY');
+	(1, '首页', 0, 1, '/', 'home', ''),
+	(2, '系统管理', 0, 2, '/system', 'system', ''),
+	(3, '用户管理', 2, 1, '/user', 'user', 'USER_QUERY'),
+	(4, '角色管理', 2, 2, '/role', 'peoples', 'ROLE_QUERY'),
+	(5, '组织管理', 2, 3, '/project', 'tree', 'PROJECT_QUERY'),
+	(6, '菜单管理', 2, 4, '/menu', 'treetable', 'MENU_QUERY'),
+	(7, '日志管理', 2, 5, '/log', 'log', 'LOG_QUERY');
 
 COMMIT;

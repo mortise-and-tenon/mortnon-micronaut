@@ -21,4 +21,5 @@ public class SysMenu extends BaseEntity {
     private String url;
     private String icon;
     private String permission;
+    private boolean status;
 }

@@ -1,5 +1,6 @@
 package fun.mortnon.web.controller.menu.command;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
@@ -16,7 +17,7 @@ import java.util.List;
  * @date 2023/12/6
  */
 @Introspected
-@Serdeable(naming = SnakeCaseStrategy.class)
+@Serdeable
 @Data
 public class CreateMenuCommand {
     /**
@@ -49,6 +50,12 @@ public class CreateMenuCommand {
 
     @NotNull
     @Positive
+    @JsonProperty("parent_id")
     private Long parentId;
+
+    /**
+     * 菜单状态
+     */
+    private boolean status;
 
 }

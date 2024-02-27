@@ -1,5 +1,6 @@
 package fun.mortnon.service.login.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -13,9 +14,16 @@ import lombok.experimental.Accessors;
 @Serdeable
 public class MortnonCaptcha {
 
+    /**
+     * 是否启用验证码
+     */
+    private boolean enabled;
+
     /** key */
-    private String captchaKey;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String key;
 
     /** 图片 */
-    private String captchaImage;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String image;
 }

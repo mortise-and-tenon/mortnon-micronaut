@@ -1,8 +1,12 @@
 package fun.mortnon.service.sys.impl;
 
 import fun.mortnon.dal.sys.entity.SysMenu;
+import fun.mortnon.dal.sys.entity.SysPermission;
+import fun.mortnon.dal.sys.entity.SysRolePermission;
 import fun.mortnon.dal.sys.repository.MenuRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
+import fun.mortnon.dal.sys.repository.RolePermissionRepository;
+import fun.mortnon.dal.sys.repository.RoleRepository;
 import fun.mortnon.framework.exceptions.NotFoundException;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.exceptions.RepeatDataException;
@@ -20,6 +24,7 @@ import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Put;
+import io.micronaut.security.authentication.ServerAuthentication;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +34,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -46,9 +54,20 @@ public class SysMenuServiceImpl implements SysMenuService {
     @Inject
     private PermissionRepository permissionRepository;
 
+    @Inject
+    private RolePermissionRepository rolePermissionRepository;
+
+    @Inject
+    private RoleRepository roleRepository;
+
     @Override
     public Mono<List<SysMenuDTO>> queryMenu() {
         return menuRepository.findAll().collectList().map(menuList -> paresMenu(menuList, 0L));
+    }
+
+    @Override
+    public Mono<SysMenuDTO> queryMenuById(Long id) {
+        return menuRepository.findById(id).map(SysMenuDTO::convert);
     }
 
     private List<SysMenuDTO> paresMenu(List<SysMenu> menuList, Long menuId) {
@@ -78,6 +97,7 @@ public class SysMenuServiceImpl implements SysMenuService {
                     sysMenu.setIcon(createMenuCommand.getIcon());
                     sysMenu.setParentId(createMenuCommand.getParentId());
                     sysMenu.setPermission(createMenuCommand.getPermission());
+                    sysMenu.setStatus((createMenuCommand.isStatus()));
 
                     return menuRepository.save(sysMenu);
                 });
@@ -110,6 +130,9 @@ public class SysMenuServiceImpl implements SysMenuService {
 
                     return menuRepository.findById(updateMenuCommand.getId())
                             .flatMap(sysMenu -> {
+                                if (ObjectUtils.isNotEmpty(updateMenuCommand.getParentId())) {
+                                    sysMenu.setParentId(updateMenuCommand.getParentId());
+                                }
                                 if (StringUtils.isNotEmpty(updateMenuCommand.getName())) {
                                     sysMenu.setName(updateMenuCommand.getName());
                                 }
@@ -126,7 +149,34 @@ public class SysMenuServiceImpl implements SysMenuService {
                                     sysMenu.setPermission(updateMenuCommand.getPermission());
                                 }
 
+                                sysMenu.setStatus(updateMenuCommand.isStatus());
+
                                 return menuRepository.update(sysMenu);
+                            });
+                });
+    }
+
+    @Override
+    public Mono<List<SysMenuDTO>> queryUserMenu(Principal principal) {
+        if (!(principal instanceof ServerAuthentication)) {
+            return Mono.just(Collections.EMPTY_LIST);
+        }
+
+        ServerAuthentication userPrincipal = (ServerAuthentication) principal;
+        List<String> roles = (ArrayList<String>) userPrincipal.getAttributes().getOrDefault("roles", "");
+        return roleRepository.findByIdentifier(roles.get(0))
+                .flatMap(role -> {
+                    return rolePermissionRepository.findByRoleId(role.getId())
+                            .map(SysRolePermission::getPermissionId)
+                            .flatMap(pId -> permissionRepository.findById(pId))
+                            .collectList().flatMap(permissionList -> {
+                                List<String> identifierList = permissionList.stream().map(SysPermission::getIdentifier)
+                                        .collect(Collectors.toList());
+                                return menuRepository.findAll().collectList()
+                                        .map(list -> list.stream().filter(menu -> identifierList.contains(menu.getPermission()))
+                                                .map(SysMenuDTO::convert)
+                                                .collect(Collectors.toList()));
+
                             });
                 });
     }

@@ -19,7 +19,7 @@ public interface RoleRepository extends ReactorPageableRepository<SysRole, Long>
      * @param identifier
      * @return
      */
-    Flux<SysRole> findByIdentifier(String identifier);
+    Mono<SysRole> findByIdentifier(String identifier);
 
     /**
      * 是否存在同名或同标识符的角色

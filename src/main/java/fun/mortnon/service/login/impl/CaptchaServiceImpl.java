@@ -5,7 +5,6 @@ import cn.hutool.captcha.CircleCaptcha;
 import cn.hutool.captcha.ICaptcha;
 import cn.hutool.captcha.ShearCaptcha;
 import cn.hutool.captcha.generator.MathGenerator;
-import cn.hutool.captcha.generator.RandomGenerator;
 import fun.mortnon.framework.properties.CaptchaProperties;
 import fun.mortnon.service.login.CaptchaService;
 import fun.mortnon.service.login.LoginFactory;
@@ -43,6 +42,12 @@ public class CaptchaServiceImpl implements CaptchaService {
     public MortnonCaptcha generateCaptcha() {
         MortnonCaptcha mortnonCaptcha = new MortnonCaptcha();
 
+        //未启用验证码
+        if (!captchaProperties.isEnable()) {
+            mortnonCaptcha.setEnabled(false);
+            return mortnonCaptcha;
+        }
+
         String code = "";
         String imgBase64 = "";
 
@@ -61,10 +66,11 @@ public class CaptchaServiceImpl implements CaptchaService {
         }
 
 
-        mortnonCaptcha.setCaptchaKey(UUID.randomUUID().toString());
-        mortnonCaptcha.setCaptchaImage(imgBase64);
+        mortnonCaptcha.setEnabled(true);
+        mortnonCaptcha.setKey(UUID.randomUUID().toString());
+        mortnonCaptcha.setImage(imgBase64);
 
-        getStorageService().saveVerifyCode(mortnonCaptcha.getCaptchaKey(), code, captchaProperties.getExpireSeconds());
+        getStorageService().saveVerifyCode(mortnonCaptcha.getKey(), code, captchaProperties.getExpireSeconds());
 
         return mortnonCaptcha;
     }
@@ -91,9 +97,9 @@ public class CaptchaServiceImpl implements CaptchaService {
         // 使用后就清除验证码
         getStorageService().deleteVerifyCode(captchaKey);
 
-        if(captchaProperties.getType().equals(LoginConstants.CAPTCHA_TYPE_ARITHMETIC)){
+        if (captchaProperties.getType().equals(LoginConstants.CAPTCHA_TYPE_ARITHMETIC)) {
             MathGenerator mathGenerator = new MathGenerator();
-            return mathGenerator.verify(verifyCode,captchaCode);
+            return mathGenerator.verify(verifyCode, captchaCode);
         }
 
         return captchaCode.equalsIgnoreCase(verifyCode);

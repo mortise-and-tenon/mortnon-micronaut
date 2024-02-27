@@ -2,6 +2,7 @@ package fun.mortnon.service.log.impl;
 
 import fun.mortnon.dal.sys.entity.SysLog;
 import fun.mortnon.dal.sys.repository.LogRepository;
+import fun.mortnon.dal.sys.specification.Specifications;
 import fun.mortnon.service.log.SysLogService;
 import fun.mortnon.service.log.vo.SysLogDTO;
 import fun.mortnon.web.vo.login.MortnonDefaultPageable;
@@ -16,6 +17,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static io.micronaut.data.repository.jpa.criteria.PredicateSpecification.where;
 
 /**
  * @author dev2007
@@ -45,7 +48,9 @@ public class SysLogServiceImpl implements SysLogService {
             pageable = pageable.order(Sort.Order.desc("time"));
         }
 
-        return logRepository.findAll(pageable)
+        return logRepository.findAll(where(Specifications.propertyEqual("userName","user1")),pageable)
+
+//        return logRepository.findAll(pageable)
                 .map(k -> {
                     List<SysLogDTO> list = k.getContent().stream()
                             .map(log -> SysLogDTO.convert(log, messageSource, lang))

@@ -78,4 +78,10 @@ public class LogConstants {
      * 撤销分配用户角色、组织操作
      */
     public static final String ASSIGNMENT_DELETE = "log.action.assignment.delete";
+
+    public static final String MENU_CREATE = "log.action.menu.create";
+
+    public static final String MENU_UPDATE = "log.action.menu.update";
+
+    public static final String MENU_DELETE = "log.action.menu.delete";
 }

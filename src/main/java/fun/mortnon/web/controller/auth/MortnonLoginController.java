@@ -6,16 +6,17 @@ import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.login.CaptchaService;
 import fun.mortnon.service.sys.SysUserService;
-import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.vo.login.PasswordLoginCredentials;
 import io.micronaut.context.event.ApplicationEventPublisher;
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.async.annotation.SingleResult;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpResponse;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Consumes;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.Authenticator;
@@ -30,7 +31,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.security.Principal;
 
 /**
  * @author dev2007
@@ -86,20 +86,6 @@ public class MortnonLoginController extends LoginController {
                         return loginHandler.loginFailed(authenticationResponse, request);
                     }
                 }).switchIfEmpty(Mono.defer(() -> Mono.just(HttpResponse.unauthorized())));
-    }
-
-    /**
-     * 查询已登录用户自身信息
-     *
-     * @param principal
-     * @return
-     */
-    @Secured(SecurityRule.IS_AUTHENTICATED)
-    @Get("/user")
-    public Mono<MortnonResult<SysUserDTO>> queryUser(@Nullable Principal principal) {
-        return sysUserService.getUserByUsername(principal.getName())
-                .map(SysUserDTO::convert)
-                .map(MortnonResult::success);
     }
 
     /**

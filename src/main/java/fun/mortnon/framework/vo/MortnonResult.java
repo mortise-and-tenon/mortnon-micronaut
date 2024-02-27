@@ -2,11 +2,15 @@ package fun.mortnon.framework.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
+import io.micronaut.context.MessageSource;
 import io.micronaut.data.model.Page;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
+import jakarta.inject.Inject;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import javax.annotation.PostConstruct;
 
 /**
  * web层默认返回

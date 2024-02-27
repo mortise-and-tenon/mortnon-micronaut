@@ -1,5 +1,7 @@
 package fun.mortnon.web.controller.menu;
 
+import fun.mortnon.framework.aop.OperationLog;
+import fun.mortnon.framework.constants.LogConstants;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.sys.SysMenuService;
 import fun.mortnon.service.sys.vo.SysMenuDTO;
@@ -33,8 +35,17 @@ public class MenuController {
      * @return
      */
     @Get
-    public Mono<MortnonResult<List<SysMenuDTO>>> queryMenu() {
+    public Mono<MortnonResult<List<SysMenuDTO>>> queryMenuTree(){
         return sysMenuService.queryMenu().map(MortnonResult::success);
+    }
+
+    /**
+     * 按id查询菜单项
+     * @return
+     */
+    @Get("/{id}")
+    public Mono<MortnonResult<SysMenuDTO>> queryMenu(@NotNull @Positive Long id){
+        return sysMenuService.queryMenuById(id).map(MortnonResult::success);
     }
 
     /**
@@ -43,6 +54,7 @@ public class MenuController {
      * @param createMenuCommand
      * @return
      */
+    @OperationLog(LogConstants.MENU_CREATE)
     @Post
     public Mono<MutableHttpResponse<MortnonResult>> createRole(@NonNull CreateMenuCommand createMenuCommand) {
         return sysMenuService.createMenu(createMenuCommand)
@@ -57,6 +69,7 @@ public class MenuController {
      * @return
      */
     @Delete("/{id}")
+    @OperationLog(LogConstants.MENU_DELETE)
     public Mono<MutableHttpResponse<MortnonResult>> deleteMenu(@NotNull @Positive Long id) {
         return sysMenuService.deleteMenu(id).map(MortnonResult::success).map(HttpResponse::ok);
     }
@@ -67,6 +80,7 @@ public class MenuController {
      * @param updateMenuCommand
      * @return
      */
+    @OperationLog(LogConstants.MENU_UPDATE)
     @Put
     public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull UpdateMenuCommand updateMenuCommand) {
         return sysMenuService.updateMenu(updateMenuCommand).map(MortnonResult::success).map(HttpResponse::ok);

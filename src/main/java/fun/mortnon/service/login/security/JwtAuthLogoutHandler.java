@@ -1,5 +1,6 @@
 package fun.mortnon.service.login.security;
 
+import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.login.security.impl.TokenPersistence;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpRequest;

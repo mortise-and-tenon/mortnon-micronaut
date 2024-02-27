@@ -7,6 +7,7 @@ import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +56,17 @@ public class SysMenuDTO {
     private int order;
 
     /**
+     * 菜单状态
+     */
+    private boolean status;
+
+    /**
+     * 创建时间
+     */
+    @JsonProperty("gmt_create")
+    private Instant gmtCreate;
+
+    /**
      * 子菜单
      */
     private List<SysMenuDTO> children;
@@ -66,6 +78,8 @@ public class SysMenuDTO {
         sysMenuDTO.setUrl(sysMenu.getUrl());
         sysMenuDTO.setIcon(sysMenu.getIcon());
         sysMenuDTO.setOrder(sysMenu.getOrder());
+        sysMenuDTO.setStatus(sysMenu.isStatus());
+        sysMenuDTO.setGmtCreate(sysMenu.getGmtCreate());
 
         String permission = sysMenu.getPermission();
         sysMenuDTO.setPermission(permission);

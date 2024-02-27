@@ -1,7 +1,9 @@
 package fun.mortnon.web.controller.menu.command;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -18,6 +20,11 @@ import java.util.List;
 @Serdeable
 @Data
 public class UpdateMenuCommand {
+    /**
+     * 父菜单 id
+     */
+    @JsonProperty("parent_id")
+    private Long parentId;
     /**
      * 菜单 id
      */
@@ -48,4 +55,9 @@ public class UpdateMenuCommand {
      */
     @NotEmpty
     private String permission;
+
+    /**
+     * 菜单状态
+     */
+    private boolean status;
 }
