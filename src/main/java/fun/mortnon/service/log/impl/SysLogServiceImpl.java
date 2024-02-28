@@ -1,5 +1,6 @@
 package fun.mortnon.service.log.impl;
 
+import cn.hutool.core.io.FileUtil;
 import fun.mortnon.dal.sys.entity.SysLog;
 import fun.mortnon.dal.sys.repository.LogRepository;
 import fun.mortnon.dal.sys.specification.Specifications;
@@ -13,12 +14,26 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.server.types.files.StreamedFile;
+import io.micronaut.http.server.types.files.SystemFile;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import reactor.core.publisher.Mono;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,6 +77,37 @@ public class SysLogServiceImpl implements SysLogService {
                             .map(log -> SysLogDTO.convert(log, messageSource, lang))
                             .collect(Collectors.toList());
                     return Page.of(list, k.getPageable(), k.getTotalSize());
+                });
+    }
+
+    @Override
+    public Mono<SystemFile> exportFile(LogPageSearch pageSearch, String lang) {
+        return queryLogs(pageSearch, lang)
+                .map(pageData -> {
+                    List<SysLogDTO> contentList = pageData.getContent();
+                    Workbook workbook = new HSSFWorkbook();
+                    Sheet sheet = workbook.createSheet("操作日志");
+
+                    Row headerRow = sheet.createRow(0);
+                    Cell headerCell = headerRow.createCell(0);
+                    headerCell.setCellValue("日志编号");
+                    headerCell = headerRow.createCell(1);
+                    headerCell.setCellValue("用户操作");
+
+                    for (int index = 0; index < contentList.size(); index++) {
+                        Row row = sheet.createRow(index + 1);
+                        row.createCell(0).setCellValue(contentList.get(index).getId());
+                        row.createCell(1).setCellValue(contentList.get(index).getActionDesc());
+                    }
+                    String fileName = "operlog_" + Instant.now().getEpochSecond() + ".xlsx";
+                    File tmpFile = FileUtil.createTempFile(new File("tmp"));
+                    try (FileOutputStream outputStream = new FileOutputStream(tmpFile)) {
+                        workbook.write(outputStream);
+                    } catch (IOException e) {
+                        log.warn("write operlog file fail.");
+                    }
+
+                    return new SystemFile(tmpFile, MediaType.MICROSOFT_EXCEL_OPEN_XML_TYPE).attach(fileName);
                 });
     }
 

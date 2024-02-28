@@ -25,10 +25,11 @@
         <guava.version>31.1-jre</guava.version>
         <commons.collection.version>4.4</commons.collection.version>
         <commons.codec.version>1.15</commons.codec.version>
-        <commons.io.version>2.11.0</commons.io.version>
+        <commons.io.version>2.15.1</commons.io.version>
         <commons.lang3.version>3.12.0</commons.lang3.version>
         <hutool.version>5.8.18</hutool.version>
         <mysql.connector.version>8.0.32</mysql.connector.version>
+        <poi.version>5.2.5</poi.version>
         <exec.mainClass>fun.mortnon.Application</exec.mainClass>
     </properties>
 
@@ -134,6 +135,13 @@
             <artifactId>micronaut-redis-lettuce</artifactId>
             <version>5.3.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>ch.qos.logback</groupId>

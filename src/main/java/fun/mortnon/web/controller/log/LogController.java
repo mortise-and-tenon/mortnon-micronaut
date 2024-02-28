@@ -10,6 +10,7 @@ import fun.mortnon.web.controller.log.command.LogPageSearch;
 import fun.mortnon.web.vo.login.MortnonDefaultPageable;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.annotation.*;
+import io.micronaut.http.server.types.files.SystemFile;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
@@ -31,6 +32,7 @@ public class LogController {
 
     /**
      * 带参数查询的分页查询日志
+     *
      * @param pageSearch
      * @param lang
      * @return
@@ -38,5 +40,10 @@ public class LogController {
     @Get("{?pageSearch*}")
     public Mono<MortnonResult<PageableData<List<SysLogDTO>>>> queryUser(LogPageSearch pageSearch, @QueryValue(defaultValue = "zh") String lang) {
         return sysLogService.queryLogs(pageSearch, lang).map(MortnonResult::successPageData);
+    }
+
+    @Get("/export{?pageSearch*}")
+    public Mono<SystemFile> exportFile(LogPageSearch pageSearch, @QueryValue(defaultValue = "zh") String lang) {
+        return sysLogService.exportFile(pageSearch, lang);
     }
 }
