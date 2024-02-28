@@ -32,6 +32,11 @@ public class SysLog {
     private String action;
 
     /**
+     * 操作的描述
+     */
+    private String actionDesc;
+
+    /**
      * 用户名
      */
     private String userName;

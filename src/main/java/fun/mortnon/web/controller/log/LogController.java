@@ -29,6 +29,12 @@ public class LogController {
     @Inject
     private SysLogService sysLogService;
 
+    /**
+     * 带参数查询的分页查询日志
+     * @param pageSearch
+     * @param lang
+     * @return
+     */
     @Get("{?pageSearch*}")
     public Mono<MortnonResult<PageableData<List<SysLogDTO>>>> queryUser(LogPageSearch pageSearch, @QueryValue(defaultValue = "zh") String lang) {
         return sysLogService.queryLogs(pageSearch, lang).map(MortnonResult::successPageData);

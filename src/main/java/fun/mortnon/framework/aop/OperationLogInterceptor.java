@@ -9,6 +9,8 @@ import fun.mortnon.web.vo.login.PasswordLoginCredentials;
 import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
+import io.micronaut.context.MessageSource;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.type.MutableArgumentValue;
 import io.micronaut.http.HttpRequest;
@@ -24,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +52,12 @@ public class OperationLogInterceptor implements MethodInterceptor<Object, Object
     @Inject
     private SysUserService sysUserService;
 
+    @Inject
+    private MessageSource messageSource;
+
+    @Value("${mortnon.lang:zh}")
+    private String lang;
+
     @Nullable
     @Override
     public Object intercept(MethodInvocationContext<Object, Object> context) {
@@ -69,6 +78,9 @@ public class OperationLogInterceptor implements MethodInterceptor<Object, Object
 
     private Mono<? extends MutableHttpResponse<?>> afterPoint(MethodInvocationContext<Object, Object> context, HttpRequest<Object> request, MutableHttpResponse<?> response, String action) {
         SysLog sysLog = SysLogBuilder.build(request, response, action);
+        String actionDesc = messageSource.getMessage(action, MessageSource.MessageContext.of(new Locale(lang))).get();
+        sysLog.setActionDesc(actionDesc);
+
         return Flux.fromIterable(context.getParameters().entrySet())
                 .filter(entry -> {
                     MutableArgumentValue<?> value = entry.getValue();

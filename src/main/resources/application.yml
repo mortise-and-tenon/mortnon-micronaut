@@ -76,3 +76,4 @@ mortnon:
     consistency: true
     # 登录状态存储类型。Local：内存存储，Redis：redis存储
     login-storage-type: Redis
+  lang: zh

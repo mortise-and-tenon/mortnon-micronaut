@@ -32,7 +32,7 @@ public class SysLogDTO {
     private Long id;
 
     /**
-     * 国际化转义后的操作名字
+     * 操作描述
      */
     private String actionDesc;
 
@@ -90,7 +90,7 @@ public class SysLogDTO {
         sysLogDTO.setProjectName(Optional.ofNullable(sysLog.getProjectName()).orElse(""));
         sysLogDTO.setTime(sysLog.getTime());
 
-        sysLogDTO.setActionDesc(i18n(messageSource, sysLog.getAction(), lang));
+        sysLogDTO.setActionDesc(sysLog.getActionDesc());
         sysLogDTO.setAction(sysLog.getAction());
         sysLogDTO.setResultDesc(i18n(messageSource, sysLog.getResult().getName(), lang));
         sysLogDTO.setResult(sysLog.getResult());

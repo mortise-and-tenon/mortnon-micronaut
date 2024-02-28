@@ -120,6 +120,7 @@ FROM sys_permission;
 CREATE TABLE IF NOT EXISTS `sys_log` (
 	`id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY  COMMENT '操作日志 id',
 	`action` VARCHAR(255) NOT NULL                          COMMENT '操作行为',
+	`action_desc` VARCHAR(255) NOT NULL                     COMMENT '操作行为文字',
 	`user_name` VARCHAR(255) NOT NULL                       COMMENT '用户名',
 	`project_name` VARCHAR(255) NULL                        COMMENT '组织名',
 	`project_id` BIGINT NULL                                COMMENT '组织 id',

@@ -12,14 +12,36 @@ import java.time.Instant;
  */
 public class Specifications {
 
+    /**
+     * 字段数据一致的查询约束
+     * @param key
+     * @param value
+     * @return
+     * @param <T>
+     */
     public static <T> PredicateSpecification<T> propertyEqual(String key, String value) {
         return (root, criteriaBuilder) -> criteriaBuilder.equal(root.get(key), value);
     }
 
+    /**
+     * 字段数据包含的查询约束
+     * @param key
+     * @param value
+     * @return
+     * @param <T>
+     */
     public static <T> PredicateSpecification<T> propertyLike(String key, String value) {
         return (root, criteriaBuilder) -> criteriaBuilder.like(root.get(key), "%" + value + "%");
     }
 
+    /**
+     * 字段日期数据范围内查询约束
+     * @param key
+     * @param beginTime
+     * @param endTime
+     * @return
+     * @param <T>
+     */
     public static <T> PredicateSpecification<T> timeBetween(String key, Instant beginTime, Instant endTime) {
         return (root, criteriaBuilder) -> criteriaBuilder.between(root.get(key), beginTime, endTime);
     }

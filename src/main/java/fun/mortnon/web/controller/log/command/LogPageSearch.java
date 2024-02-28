@@ -9,6 +9,9 @@ import lombok.Data;
 import java.time.Instant;
 
 /**
+ * 模糊查询参数
+ * {key}={value}
+ *
  * @author dev2007
  * @date 2024/2/27
  */
@@ -22,6 +25,12 @@ public class LogPageSearch extends PageableQuery {
     private String action;
     private String result;
     private String level;
-    private Instant beginTime;
-    private Instant endTime;
+    /**
+     * 用于查询日志时间：开始时间
+     */
+    private String beginTime;
+    /**
+     * 用于查询日志时间：结束时间
+     */
+    private String endTime;
 }

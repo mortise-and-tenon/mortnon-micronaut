@@ -3,6 +3,7 @@ package fun.mortnon.service.log.impl;
 import fun.mortnon.dal.sys.entity.SysLog;
 import fun.mortnon.dal.sys.repository.LogRepository;
 import fun.mortnon.dal.sys.specification.Specifications;
+import fun.mortnon.framework.utils.DateTimeUtils;
 import fun.mortnon.service.log.SysLogService;
 import fun.mortnon.service.log.vo.SysLogDTO;
 import fun.mortnon.web.controller.log.command.LogPageSearch;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,7 +112,9 @@ public class SysLogServiceImpl implements SysLogService {
             }
         }
         if (ObjectUtils.isNotEmpty(pageSearch.getBeginTime()) && ObjectUtils.isNotEmpty(pageSearch.getEndTime())) {
-            PredicateSpecification<SysLog> subQuery = Specifications.timeBetween("time", pageSearch.getBeginTime(), pageSearch.getEndTime());
+            Instant beginInstant = DateTimeUtils.convert(pageSearch.getBeginTime());
+            Instant endInstant = DateTimeUtils.convert(pageSearch.getEndTime());
+            PredicateSpecification<SysLog> subQuery = Specifications.timeBetween("time", beginInstant, endInstant == Instant.EPOCH ? Instant.MAX : endInstant);
             if (query == null) {
                 query = subQuery;
             } else {
