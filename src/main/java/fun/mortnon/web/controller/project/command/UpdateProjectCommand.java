@@ -39,4 +39,20 @@ public class UpdateProjectCommand {
      */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Long parentId;
+
+    /**
+     * 先辈组织 id 序列
+     */
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private String ancestors;
+
+    /**
+     * 组织排序
+     */
+    private int order;
+
+    /**
+     * 组织状态
+     */
+    private boolean status;
 }

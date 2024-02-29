@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
 	`email` VARCHAR(128) DEFAULT NULL                       COMMENT '用户邮箱',
 	`phone` VARCHAR(32) DEFAULT NULL                        COMMENT '用户手机号',
 	`avatar` VARCHAR(1024) DEFAULT NULL                     COMMENT '用户头像',
-	`sex` TINYINT NOT NULL DEFAULT 1                        COMMENT '用户性别，0女，1男',
+	`sex` TINYINT(1) NOT NULL DEFAULT 1                     COMMENT '用户性别，0女，1男',
 	`gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
 	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
@@ -40,6 +40,9 @@ CREATE TABLE IF NOT EXISTS `sys_project`(
 	`name` VARCHAR(1024) NOT NULL                           COMMENT '组织名字',
 	`description` VARCHAR(1024) NULL                        COMMENT '组织描述',
 	`parent_id` BIGINT NULL                                 COMMENT '父组织 id',
+	`ancestors` VARCHAR(1024) NOT NULL                      COMMENT '先辈组织所有id'
+	`order` INT NOT NULL DEFAULT 1                          COMMENT '排序',
+	`status` TINYINT(1) NOT NULL DEFAULT 1                     COMMENT '状态',
 	`gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
 	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
@@ -101,7 +104,7 @@ VALUES ('查询用户','USER_QUERY','查看用户数据','/users/**','GET'),
     ('创建菜单','MENU_CREATE','创建菜单数据','/menus','POST'),
     ('修改菜单','MENU_DELETE','修改菜单数据','/menus/**','PUT'),
     ('删除菜单','MENU_DELETE','删除菜单数据','/menus/**','DELETE'),
-    ('查看日志','LOG_QUERY','查看日志数据','/logs','GET');
+    ('查看日志','LOG_QUERY','查看日志数据','/logs/**','GET');
 
 -- 角色权限关联表
 CREATE TABLE IF NOT EXISTS `sys_role_permission`(
@@ -141,7 +144,7 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
     `url` VARCHAR(200) NOT NULL                             COMMENT '菜单 url',
     `icon` VARCHAR(100) NOT NULL DEFAULT ''                 COMMENT '菜单 图标',
     `permission` VARCHAR(20) DEFAULT NULL                   COMMENT '权限组',
-    `status` TINYINT DEFAULT 1,                             COMMENT '菜单状态',
+    `status` TINYINT(1) DEFAULT 1,                          COMMENT '菜单状态',
     `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
     `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );

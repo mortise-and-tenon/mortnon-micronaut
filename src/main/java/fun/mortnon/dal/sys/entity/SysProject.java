@@ -29,4 +29,19 @@ public class SysProject extends BaseEntity {
      * 父组织 id
      */
     private Long parentId;
+
+    /**
+     * 先辈组织 id 序列
+     */
+    private String ancestors;
+
+    /**
+     * 组织排序
+     */
+    private int order;
+
+    /**
+     * 组织状态
+     */
+    private boolean status;
 }

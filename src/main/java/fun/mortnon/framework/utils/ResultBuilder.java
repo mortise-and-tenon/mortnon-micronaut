@@ -1,8 +1,10 @@
 package fun.mortnon.framework.utils;
 
 import fun.mortnon.framework.enums.ErrorCodeEnum;
+import fun.mortnon.framework.properties.CommonProperties;
 import fun.mortnon.framework.vo.MortnonResult;
 import io.micronaut.context.MessageSource;
+import io.micronaut.context.annotation.Value;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -14,13 +16,27 @@ import java.util.Locale;
  */
 @Singleton
 public class ResultBuilder {
-    @Inject
+
     private MessageSource messageSource;
 
-    private String lang = "zh";
+    private CommonProperties commonProperties;
+
+    private String lang;
+
+    @Inject
+    public ResultBuilder(MessageSource messageSource, CommonProperties commonProperties) {
+        this.messageSource = messageSource;
+        this.commonProperties = commonProperties;
+        this.lang = commonProperties.getLang();
+    }
 
     public MortnonResult build(ErrorCodeEnum errorCodeEnum) {
         String message = messageSource.getMessage(errorCodeEnum.getI18n(), errorCodeEnum.getDescription(), new Locale(lang));
+        return MortnonResult.fail(errorCodeEnum, message);
+    }
+
+    public MortnonResult build(ErrorCodeEnum errorCodeEnum, String i18nMessage) {
+        String message = messageSource.getMessage(i18nMessage, i18nMessage, new Locale(lang));
         return MortnonResult.fail(errorCodeEnum, message);
     }
 }

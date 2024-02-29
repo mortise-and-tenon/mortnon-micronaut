@@ -85,6 +85,8 @@ public class SysLogServiceImpl implements SysLogService {
 
     @Override
     public Mono<SystemFile> exportFile(LogPageSearch pageSearch, String lang) {
+        File tmpFile = FileUtil.createTempFile(new File("tmp"));
+
         return queryLogs(pageSearch, lang)
                 .map(pageData -> {
                     List<SysLogDTO> contentList = pageData.getContent();
@@ -105,7 +107,7 @@ public class SysLogServiceImpl implements SysLogService {
                         row.createCell(7).setCellValue(DateTimeUtils.convertStr(rowContent.getTime()));
                     }
                     String fileName = "operlog_" + Instant.now().getEpochSecond() + ".xlsx";
-                    File tmpFile = FileUtil.createTempFile(new File("tmp"));
+
                     try (FileOutputStream outputStream = new FileOutputStream(tmpFile)) {
                         workbook.write(outputStream);
                     } catch (IOException e) {
@@ -113,7 +115,7 @@ public class SysLogServiceImpl implements SysLogService {
                     }
 
                     return new SystemFile(tmpFile, MediaType.MICROSOFT_EXCEL_OPEN_XML_TYPE).attach(fileName);
-                });
+                }).doAfterTerminate(()->tmpFile.delete());
     }
 
     private static PredicateSpecification<SysLog> queryCondition(LogPageSearch pageSearch) {

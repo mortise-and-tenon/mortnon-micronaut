@@ -4,7 +4,10 @@ import fun.mortnon.dal.sys.entity.SysProject;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.r2dbc.annotation.R2dbcRepository;
 import io.micronaut.data.repository.reactive.ReactorPageableRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * @author dev2007
@@ -28,4 +31,6 @@ public interface ProjectRepository extends ReactorPageableRepository<SysProject,
      * @return
      */
     Mono<Boolean> existsByNameEqualsAndIdNotEquals(String name, Long id);
+
+    Mono<Long> deleteByIdIn(List<Long> idList);
 }

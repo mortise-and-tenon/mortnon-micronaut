@@ -34,4 +34,14 @@ public class CreateProjectCommand {
     @NotNull
     @Positive
     private Long parentId;
+
+    /**
+     * 组织排序
+     */
+    private int order;
+
+    /**
+     * 组织状态
+     */
+    private boolean status;
 }

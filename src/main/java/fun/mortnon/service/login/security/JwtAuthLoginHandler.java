@@ -1,6 +1,7 @@
 package fun.mortnon.service.login.security;
 
 import fun.mortnon.framework.enums.ErrorCodeEnum;
+import fun.mortnon.framework.utils.ResultBuilder;
 import fun.mortnon.framework.vo.MortnonResult;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
@@ -11,6 +12,7 @@ import io.micronaut.security.authentication.AuthenticationResponse;
 import io.micronaut.security.config.SecurityConfigurationProperties;
 import io.micronaut.security.token.jwt.bearer.AccessRefreshTokenLoginHandler;
 import io.micronaut.security.token.jwt.generator.AccessRefreshTokenGenerator;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 /**
@@ -23,6 +25,9 @@ import jakarta.inject.Singleton;
 @Requires(property = SecurityConfigurationProperties.PREFIX + ".authentication", value = "bearer")
 @Singleton
 public class JwtAuthLoginHandler extends AccessRefreshTokenLoginHandler {
+    @Inject
+    private ResultBuilder resultBuilder;
+
     /**
      * @param accessRefreshTokenGenerator AccessRefresh Token generator
      */
@@ -32,6 +37,6 @@ public class JwtAuthLoginHandler extends AccessRefreshTokenLoginHandler {
 
     @Override
     public MutableHttpResponse<?> loginFailed(AuthenticationResponse authenticationFailed, HttpRequest<?> request) {
-        return HttpResponse.unauthorized().body(MortnonResult.fail(ErrorCodeEnum.INVALID_USERNAME_OR_PASSWORD));
+        return HttpResponse.unauthorized().body(resultBuilder.build(ErrorCodeEnum.INVALID_USERNAME_OR_PASSWORD));
     }
 }

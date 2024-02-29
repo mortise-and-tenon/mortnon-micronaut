@@ -61,6 +61,29 @@ public class MortnonResult<T> {
         return result;
     }
 
+    public static MortnonResult success() {
+        MortnonResult result = new MortnonResult();
+        result.setErrorCode(ErrorCodeEnum.SUCCESS.getErrorCode());
+        result.setSuccess(true);
+        return result;
+    }
+
+    public static MortnonResult success(String message) {
+        MortnonResult result = new MortnonResult();
+        result.setErrorCode(ErrorCodeEnum.SUCCESS.getErrorCode());
+        result.setSuccess(true);
+        return result;
+    }
+
+    public static <T> MortnonResult success(T data,String message) {
+        MortnonResult result = new MortnonResult();
+        result.setData(data);
+        result.setErrorCode(ErrorCodeEnum.SUCCESS.getErrorCode());
+        result.setMessage(message);
+        result.setSuccess(true);
+        return result;
+    }
+
     public static MortnonResult successPageData(Page page) {
         PageableData pageableData = new PageableData(page.getPageNumber(), page.getTotalPages(), page.getSize(),
                 page.getTotalSize(), page.getContent());

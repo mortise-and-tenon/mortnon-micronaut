@@ -2,6 +2,7 @@ package fun.mortnon.framework.aop;
 
 import fun.mortnon.dal.sys.entity.SysLog;
 import fun.mortnon.dal.sys.entity.SysProject;
+import fun.mortnon.framework.properties.CommonProperties;
 import fun.mortnon.service.log.SysLogService;
 import fun.mortnon.service.log.SysLogBuilder;
 import fun.mortnon.service.sys.SysUserService;
@@ -55,8 +56,8 @@ public class OperationLogInterceptor implements MethodInterceptor<Object, Object
     @Inject
     private MessageSource messageSource;
 
-    @Value("${mortnon.lang:zh}")
-    private String lang;
+    @Inject
+    private CommonProperties commonProperties;
 
     @Nullable
     @Override
@@ -78,7 +79,7 @@ public class OperationLogInterceptor implements MethodInterceptor<Object, Object
 
     private Mono<? extends MutableHttpResponse<?>> afterPoint(MethodInvocationContext<Object, Object> context, HttpRequest<Object> request, MutableHttpResponse<?> response, String action) {
         SysLog sysLog = SysLogBuilder.build(request, response, action);
-        String actionDesc = messageSource.getMessage(action, MessageSource.MessageContext.of(new Locale(lang))).get();
+        String actionDesc = messageSource.getMessage(action, MessageSource.MessageContext.of(new Locale(commonProperties.getLang()))).get();
         sysLog.setActionDesc(actionDesc);
 
         return Flux.fromIterable(context.getParameters().entrySet())
