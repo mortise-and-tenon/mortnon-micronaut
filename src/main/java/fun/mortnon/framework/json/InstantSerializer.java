@@ -1,5 +1,6 @@
 package fun.mortnon.framework.json;
 
+import fun.mortnon.framework.utils.DateTimeUtils;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.core.type.Argument;
 import io.micronaut.serde.Encoder;
@@ -23,14 +24,12 @@ import java.time.format.DateTimeFormatter;
 @Replaces(InstantSerde.class)
 @Singleton
 public class InstantSerializer extends InstantSerde {
-    private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     protected InstantSerializer(SerdeConfiguration configuration) {
         super(configuration);
     }
 
     @Override
     protected void serializeWithoutFormat(Encoder encoder, EncoderContext context, Instant value, Argument<? extends Instant> type) throws IOException {
-        encoder.encodeString(formatter.format(LocalDateTime.ofInstant(value, ZoneId.systemDefault())));
+        encoder.encodeString(DateTimeUtils.convertStr(value));
     }
 }

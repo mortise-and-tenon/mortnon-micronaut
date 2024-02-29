@@ -5,6 +5,7 @@ import fun.mortnon.dal.sys.entity.SysLog;
 import fun.mortnon.dal.sys.repository.LogRepository;
 import fun.mortnon.dal.sys.specification.Specifications;
 import fun.mortnon.framework.utils.DateTimeUtils;
+import fun.mortnon.framework.utils.ExcelUtils;
 import fun.mortnon.service.log.SysLogService;
 import fun.mortnon.service.log.vo.SysLogDTO;
 import fun.mortnon.web.controller.log.command.LogPageSearch;
@@ -14,27 +15,27 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
-import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.server.types.files.StreamedFile;
 import io.micronaut.http.server.types.files.SystemFile;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,8 @@ public class SysLogServiceImpl implements SysLogService {
 
     @Inject
     private MessageSource messageSource;
+
+    private static final String[] FILE_CELL_NAME = {"日志编号", "用户操作", "操作人员", "所属组织", "IP 地址", "操作结果", "日志级别", "操作时间"};
 
     @Override
     public Mono<SysLog> createLog(SysLog sysLog) {
@@ -87,17 +90,19 @@ public class SysLogServiceImpl implements SysLogService {
                     List<SysLogDTO> contentList = pageData.getContent();
                     Workbook workbook = new HSSFWorkbook();
                     Sheet sheet = workbook.createSheet("操作日志");
-
-                    Row headerRow = sheet.createRow(0);
-                    Cell headerCell = headerRow.createCell(0);
-                    headerCell.setCellValue("日志编号");
-                    headerCell = headerRow.createCell(1);
-                    headerCell.setCellValue("用户操作");
+                    ExcelUtils.createHeader(sheet, Arrays.asList(FILE_CELL_NAME));
 
                     for (int index = 0; index < contentList.size(); index++) {
                         Row row = sheet.createRow(index + 1);
-                        row.createCell(0).setCellValue(contentList.get(index).getId());
-                        row.createCell(1).setCellValue(contentList.get(index).getActionDesc());
+                        SysLogDTO rowContent = contentList.get(index);
+                        row.createCell(0).setCellValue(rowContent.getId());
+                        row.createCell(1).setCellValue(rowContent.getActionDesc());
+                        row.createCell(2).setCellValue(rowContent.getUserName());
+                        row.createCell(3).setCellValue(rowContent.getProjectName());
+                        row.createCell(4).setCellValue(rowContent.getIp());
+                        row.createCell(5).setCellValue(rowContent.getResultDesc());
+                        row.createCell(6).setCellValue(rowContent.getLevelDesc());
+                        row.createCell(7).setCellValue(DateTimeUtils.convertStr(rowContent.getTime()));
                     }
                     String fileName = "operlog_" + Instant.now().getEpochSecond() + ".xlsx";
                     File tmpFile = FileUtil.createTempFile(new File("tmp"));

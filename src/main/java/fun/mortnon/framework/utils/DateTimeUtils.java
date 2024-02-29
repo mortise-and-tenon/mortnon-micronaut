@@ -11,7 +11,7 @@ import java.time.format.DateTimeParseException;
  * @date 2024/2/28
  */
 public class DateTimeUtils {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static Instant convert(String dateStr) {
         try {
@@ -20,5 +20,9 @@ public class DateTimeUtils {
         } catch (DateTimeParseException e) {
             return Instant.EPOCH;
         }
+    }
+
+    public static String convertStr(Instant date) {
+        return FORMATTER.format(LocalDateTime.ofInstant(date, ZoneId.systemDefault()));
     }
 }
