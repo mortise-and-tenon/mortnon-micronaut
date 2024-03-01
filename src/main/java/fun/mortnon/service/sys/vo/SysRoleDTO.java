@@ -3,8 +3,10 @@ package fun.mortnon.service.sys.vo;
 import fun.mortnon.dal.sys.entity.SysRole;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -12,7 +14,7 @@ import java.util.List;
  * @date 2023/2/17
  */
 @Introspected
-@Serdeable
+@Serdeable(naming = SnakeCaseStrategy.class)
 @Data
 public class SysRoleDTO {
     /**
@@ -36,9 +38,16 @@ public class SysRoleDTO {
     private String description;
 
     /**
+     * 角色状态
+     */
+    private boolean status;
+
+    /**
      * 角色权限集
      */
     private List<SysPermissionDTO> permissions;
+
+    private Instant gmtCreate;
 
     public static SysRoleDTO convert(SysRole sysRole) {
         SysRoleDTO sysRoleDTO = new SysRoleDTO();
@@ -46,6 +55,8 @@ public class SysRoleDTO {
         sysRoleDTO.setName(sysRole.getName());
         sysRoleDTO.setIdentifier(sysRole.getIdentifier());
         sysRoleDTO.setDescription(sysRole.getDescription());
+        sysRoleDTO.setStatus(sysRole.isStatus());
+        sysRoleDTO.setGmtCreate(sysRole.getGmtCreate());
         return sysRoleDTO;
     }
 }

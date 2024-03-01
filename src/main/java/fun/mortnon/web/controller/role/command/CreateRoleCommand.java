@@ -25,14 +25,14 @@ public class CreateRoleCommand {
     private String name;
 
     /**
-     * 标识符
+     * 角色标识符
      */
     @NotNull
     @NotEmpty
     private String identifier;
 
     /**
-     * 描述
+     * 角色描述
      */
     private String description;
 
@@ -41,4 +41,9 @@ public class CreateRoleCommand {
      */
     @NotNull
     private List<Long> permissions;
+
+    /**
+     * 角色状态
+     */
+    private boolean status;
 }

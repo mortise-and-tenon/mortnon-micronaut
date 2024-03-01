@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `sys_role`(
 	`name` VARCHAR(1024) NOT NULL                           COMMENT '角色名字',
 	`identifier` VARCHAR(64) NOT NULL                       COMMENT '角色标识符',
 	`description` VARCHAR(1024) NULL                        COMMENT '角色描述',
+	`status` TINYINT(1) NOT NULL DEFAULT 1                  COMMENT '角色状态',
 	`gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
 	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );

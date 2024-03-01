@@ -31,4 +31,9 @@ public class SysRole extends BaseEntity {
      * 角色描述
      */
     private String description;
+
+    /**
+     * 角色状态
+     */
+    private boolean status;
 }

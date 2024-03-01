@@ -29,7 +29,7 @@ public class UpdateRoleCommand {
     private String name;
 
     /**
-     * 描述
+     * 角色描述
      */
     private String description;
 
@@ -38,4 +38,9 @@ public class UpdateRoleCommand {
      */
     @NotNull
     private List<Long> permissions;
+
+    /**
+     * 角色状态
+     */
+    private Boolean status;
 }

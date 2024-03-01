@@ -21,6 +21,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -63,6 +64,7 @@ public class SysRoleServiceImpl implements SysRoleService {
                     sysRole.setName(createRoleCommand.getName());
                     sysRole.setIdentifier(createRoleCommand.getIdentifier());
                     sysRole.setDescription(createRoleCommand.getDescription());
+                    sysRole.setStatus(createRoleCommand.isStatus());
 
                     return roleRepository.save(sysRole);
                 })
@@ -120,6 +122,10 @@ public class SysRoleServiceImpl implements SysRoleService {
 
                     if (StringUtils.isNotEmpty(updateRoleCommand.getDescription())) {
                         role.setDescription(updateRoleCommand.getDescription());
+                    }
+
+                    if (ObjectUtils.isNotEmpty(updateRoleCommand.getStatus())) {
+                        role.setStatus(updateRoleCommand.getStatus());
                     }
 
                     SysRoleDTO roleData = SysRoleDTO.convert(role);
