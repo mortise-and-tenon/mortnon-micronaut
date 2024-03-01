@@ -1,16 +1,14 @@
 package fun.mortnon.service.sys;
 
-import fun.mortnon.dal.sys.entity.SysUser;
 import fun.mortnon.service.sys.vo.SysProjectDTO;
 import fun.mortnon.service.sys.vo.SysProjectTreeDTO;
-import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.project.command.CreateProjectCommand;
+import fun.mortnon.web.controller.project.command.ProjectPageSearch;
 import fun.mortnon.web.controller.project.command.UpdateProjectCommand;
-import fun.mortnon.web.controller.user.command.CreateUserCommand;
-import fun.mortnon.web.controller.user.command.UpdateUserCommand;
 import io.micronaut.data.model.Page;
-import io.micronaut.data.model.Pageable;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * @author dev2007
@@ -29,17 +27,26 @@ public interface SysProjectService {
     /**
      * 查询组织列表
      *
-     * @param pageable 分页数据
+     * @param pageSearch 搜索字段
      * @return
      */
-    Mono<Page<SysProjectDTO>> queryProjects(Pageable pageable);
+    Mono<Page<SysProjectDTO>> queryProjects(ProjectPageSearch pageSearch);
+
+    /**
+     * 按ID查询组织
+     *
+     * @param id
+     * @return
+     */
+    Mono<SysProjectDTO> queryProjectById(Long id);
 
     /**
      * 查询树型的全部组织数据
      *
+     * @param pageSearch 搜索字段
      * @return
      */
-    Mono<SysProjectTreeDTO> queryTreeProjects();
+    Mono<List<SysProjectTreeDTO>> queryTreeProjects(ProjectPageSearch pageSearch);
 
     /**
      * 删除组织

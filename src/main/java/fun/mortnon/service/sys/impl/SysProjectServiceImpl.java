@@ -3,6 +3,7 @@ package fun.mortnon.service.sys.impl;
 import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.repository.AssignmentRepository;
 import fun.mortnon.dal.sys.repository.ProjectRepository;
+import fun.mortnon.dal.sys.specification.Specifications;
 import fun.mortnon.framework.exceptions.NotFoundException;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.exceptions.RepeatDataException;
@@ -10,23 +11,26 @@ import fun.mortnon.framework.exceptions.UsedException;
 import fun.mortnon.service.sys.SysProjectService;
 import fun.mortnon.service.sys.vo.SysProjectDTO;
 import fun.mortnon.service.sys.vo.SysProjectTreeDTO;
-import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.project.command.CreateProjectCommand;
+import fun.mortnon.web.controller.project.command.ProjectPageSearch;
 import fun.mortnon.web.controller.project.command.UpdateProjectCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import io.micronaut.data.model.Sort;
+import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static io.micronaut.data.repository.jpa.criteria.PredicateSpecification.where;
 
 /**
  * @author dev2007
@@ -74,38 +78,71 @@ public class SysProjectServiceImpl implements SysProjectService {
     }
 
     @Override
-    public Mono<Page<SysProjectDTO>> queryProjects(Pageable pageable) {
-        return projectRepository.findAll(pageable)
+    public Mono<Page<SysProjectDTO>> queryProjects(ProjectPageSearch pageSearch) {
+        //默认按id正序排列
+        Pageable pageable = pageSearch.convert();
+        if (!pageable.isSorted()) {
+            pageable = pageable.order(Sort.Order.asc("id"));
+        }
+
+        return projectRepository.findAll(where(queryCondition(pageSearch)), pageable)
                 .map(k -> {
-                    List<SysProjectDTO> collect = k.getContent().stream().map(SysProjectDTO::convert).collect(Collectors.toList());
-                    return Page.of(collect, k.getPageable(), k.getTotalSize());
+                    List<SysProjectDTO> content = k.getContent().stream().map(SysProjectDTO::convert).collect(Collectors.toList());
+                    return Page.of(content, k.getPageable(), k.getTotalSize());
                 });
+    }
+
+    private PredicateSpecification<SysProject> queryCondition(ProjectPageSearch search) {
+        PredicateSpecification<SysProject> query = null;
+
+        if (StringUtils.isNotEmpty(search.getName())) {
+            query = Specifications.propertyLike("name", search.getName());
+        }
+
+        if (ObjectUtils.isNotEmpty(search.getStatus())) {
+            PredicateSpecification<SysProject> subQuery = Specifications.propertyEqual("status", search.getStatus());
+            if (query == null) {
+                query = subQuery;
+            } else {
+                query = query.and(subQuery);
+            }
+        }
+
+        return query;
     }
 
     @Override
-    public Mono<SysProjectTreeDTO> queryTreeProjects() {
-        return projectRepository.findAll()
+    public Mono<SysProjectDTO> queryProjectById(Long id) {
+        return projectRepository.findById(id).map(SysProjectDTO::convert);
+    }
+
+    @Override
+    public Mono<List<SysProjectTreeDTO>> queryTreeProjects(ProjectPageSearch pageSearch) {
+        return projectRepository.findAll(where(queryCondition(pageSearch)))
                 .collectList()
                 .map(list -> {
-                    SysProject root = list.stream().filter(data -> data.getParentId() == 0L).findAny().orElse(null);
-                    if (null == root) {
-                        log.warn("root project is empty.");
-                        return new SysProjectTreeDTO();
-                    }
-                    SysProjectTreeDTO rootNode = SysProjectTreeDTO.convert(root);
-                    return createTree(rootNode, list);
+                    List<SysProjectTreeDTO> tree = new ArrayList<>();
+                    list.forEach(node -> {
+                        boolean result = bindToParent(tree, node);
+                        if (!result) {
+                            tree.add(SysProjectTreeDTO.convert(node));
+                        }
+                    });
+                    return tree;
                 });
     }
 
-    private SysProjectTreeDTO createTree(SysProjectTreeDTO parentNode, List<SysProject> list) {
-
-        List<SysProject> childrenList = list.stream().filter(data -> data.getParentId().equals(parentNode.getId())).collect(Collectors.toList());
-        List<SysProjectTreeDTO> childrenNode = childrenList.stream().map(SysProjectTreeDTO::convert).collect(Collectors.toList());
-        parentNode.setChildren(childrenNode);
-
-        childrenNode.forEach(child -> createTree(child, list));
-
-        return parentNode;
+    private boolean bindToParent(List<SysProjectTreeDTO> list, SysProject node) {
+        for (SysProjectTreeDTO current : list) {
+            if (current.getId() == node.getParentId()) {
+                current.getChildren().add(SysProjectTreeDTO.convert(node));
+                return true;
+            }
+            if (current.getChildren().size() > 0) {
+                return bindToParent(current.getChildren(), node);
+            }
+        }
+        return false;
     }
 
     @Override

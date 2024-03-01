@@ -23,6 +23,10 @@ public class Specifications {
         return (root, criteriaBuilder) -> criteriaBuilder.equal(root.get(key), value);
     }
 
+    public static <T> PredicateSpecification<T> propertyEqual(String key, boolean value) {
+        return (root, criteriaBuilder) -> criteriaBuilder.equal(root.get(key), value);
+    }
+
     /**
      * 字段数据包含的查询约束
      * @param key

@@ -2,11 +2,13 @@ package fun.mortnon.service.sys.impl;
 
 import fun.mortnon.dal.sys.entity.SysMenu;
 import fun.mortnon.dal.sys.entity.SysPermission;
+import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.entity.SysRolePermission;
 import fun.mortnon.dal.sys.repository.MenuRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
 import fun.mortnon.dal.sys.repository.RolePermissionRepository;
 import fun.mortnon.dal.sys.repository.RoleRepository;
+import fun.mortnon.dal.sys.specification.Specifications;
 import fun.mortnon.framework.exceptions.NotFoundException;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.exceptions.RepeatDataException;
@@ -14,13 +16,17 @@ import fun.mortnon.framework.exceptions.UsedException;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.sys.SysMenuService;
 import fun.mortnon.service.sys.vo.SysMenuDTO;
+import fun.mortnon.service.sys.vo.SysProjectTreeDTO;
 import fun.mortnon.web.controller.menu.command.CreateMenuCommand;
+import fun.mortnon.web.controller.menu.command.MenuPageSearch;
 import fun.mortnon.web.controller.menu.command.UpdateMenuCommand;
+import fun.mortnon.web.controller.project.command.ProjectPageSearch;
 import fun.mortnon.web.controller.project.command.UpdateProjectCommand;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Put;
@@ -40,6 +46,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static io.micronaut.data.repository.jpa.criteria.PredicateSpecification.where;
 
 /**
  * @author dev2007
@@ -61,8 +69,39 @@ public class SysMenuServiceImpl implements SysMenuService {
     private RoleRepository roleRepository;
 
     @Override
-    public Mono<List<SysMenuDTO>> queryMenu() {
-        return menuRepository.findAll().collectList().map(menuList -> paresMenu(menuList, 0L));
+    public Mono<List<SysMenuDTO>> queryMenu(MenuPageSearch pageSearch) {
+        return menuRepository.findAll(where(queryCondition(pageSearch)))
+                .collectList().map(menuList -> convertTree(menuList));
+    }
+
+    private List<SysMenuDTO> convertTree(List<SysMenu> menuList) {
+        List<SysMenuDTO> tree = new ArrayList<>();
+        menuList.forEach(node -> {
+            boolean result = bindToParent(tree, node);
+            if (!result) {
+                tree.add(SysMenuDTO.convert(node));
+            }
+        });
+        return tree;
+    }
+
+    private PredicateSpecification<SysMenu> queryCondition(MenuPageSearch search) {
+        PredicateSpecification<SysMenu> query = null;
+
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(search.getName())) {
+            query = Specifications.propertyLike("name", search.getName());
+        }
+
+        if (ObjectUtils.isNotEmpty(search.getStatus())) {
+            PredicateSpecification<SysMenu> subQuery = Specifications.propertyEqual("status", search.getStatus());
+            if (query == null) {
+                query = subQuery;
+            } else {
+                query = query.and(subQuery);
+            }
+        }
+
+        return query;
     }
 
     @Override
@@ -70,17 +109,17 @@ public class SysMenuServiceImpl implements SysMenuService {
         return menuRepository.findById(id).map(SysMenuDTO::convert);
     }
 
-    private List<SysMenuDTO> paresMenu(List<SysMenu> menuList, Long menuId) {
-        List<SysMenuDTO> levelCurrentMenuList = menuList.stream().filter(menu -> menu.getParentId().equals(menuId))
-                .map(SysMenuDTO::convert)
-                .collect(Collectors.toList());
-
-        levelCurrentMenuList.forEach(levelCurrentMenu -> {
-            List<SysMenuDTO> childMenuList = paresMenu(menuList, levelCurrentMenu.getId());
-            levelCurrentMenu.setChildren(childMenuList);
-        });
-
-        return levelCurrentMenuList;
+    private boolean bindToParent(List<SysMenuDTO> list, SysMenu node) {
+        for (SysMenuDTO current : list) {
+            if (current.getId() == node.getParentId()) {
+                current.getChildren().add(SysMenuDTO.convert(node));
+                return true;
+            }
+            if (current.getChildren().size() > 0) {
+                return bindToParent(current.getChildren(), node);
+            }
+        }
+        return false;
     }
 
     @Override
@@ -165,20 +204,20 @@ public class SysMenuServiceImpl implements SysMenuService {
         ServerAuthentication userPrincipal = (ServerAuthentication) principal;
         List<String> roles = (ArrayList<String>) userPrincipal.getAttributes().getOrDefault("roles", "");
         return roleRepository.findByIdentifier(roles.get(0))
-                .flatMap(role -> {
-                    return rolePermissionRepository.findByRoleId(role.getId())
-                            .map(SysRolePermission::getPermissionId)
-                            .flatMap(pId -> permissionRepository.findById(pId))
-                            .collectList().flatMap(permissionList -> {
-                                List<String> identifierList = permissionList.stream().map(SysPermission::getIdentifier)
-                                        .collect(Collectors.toList());
-                                return menuRepository.findAll().collectList()
-                                        .map(list -> list.stream().filter(menu -> identifierList.contains(menu.getPermission()))
-                                                .map(SysMenuDTO::convert)
-                                                .collect(Collectors.toList()));
-
-                            });
-                });
+                .flatMap(role ->
+                        rolePermissionRepository.findByRoleId(role.getId())
+                                .map(SysRolePermission::getPermissionId)
+                                .flatMap(pId -> permissionRepository.findById(pId))
+                                .collectList()
+                ).flatMap(permissionList -> {
+                    List<String> identifierList = permissionList.stream().map(SysPermission::getIdentifier)
+                            .collect(Collectors.toList());
+                    return menuRepository.findAll().collectList()
+                            .map(list -> list.stream().filter(menu -> identifierList.contains(menu.getPermission())
+                                            || StringUtils.isEmpty(menu.getPermission()))
+                                    .collect(Collectors.toList()));
+                })
+                .map(menuList -> convertTree(menuList));
     }
 
 }

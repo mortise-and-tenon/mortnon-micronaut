@@ -35,11 +35,6 @@ public class SysProjectTreeDTO {
     private String description;
 
     /**
-     * 先辈组织 id 序列
-     */
-    private String ancestors;
-
-    /**
      * 子组织
      */
     private List<SysProjectTreeDTO> children;
@@ -64,10 +59,10 @@ public class SysProjectTreeDTO {
         sysProjectTreeDTO.setId(sysProject.getId());
         sysProjectTreeDTO.setName(sysProject.getName());
         sysProjectTreeDTO.setDescription(sysProject.getDescription() == null ? "" : sysProject.getDescription());
-        sysProjectTreeDTO.setAncestors(sysProject.getAncestors());
         sysProjectTreeDTO.setOrder(sysProject.getOrder());
         sysProjectTreeDTO.setStatus(sysProject.isStatus());
         sysProjectTreeDTO.setTime(sysProject.getGmtCreate());
+        sysProjectTreeDTO.setChildren(new ArrayList<>());
         return sysProjectTreeDTO;
     }
 }

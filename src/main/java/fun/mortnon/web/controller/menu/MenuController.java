@@ -6,6 +6,7 @@ import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.sys.SysMenuService;
 import fun.mortnon.service.sys.vo.SysMenuDTO;
 import fun.mortnon.web.controller.menu.command.CreateMenuCommand;
+import fun.mortnon.web.controller.menu.command.MenuPageSearch;
 import fun.mortnon.web.controller.menu.command.UpdateMenuCommand;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpResponse;
@@ -32,19 +33,21 @@ public class MenuController {
     /**
      * 查询所有菜单项
      *
+     * @param pageSearch
      * @return
      */
-    @Get
-    public Mono<MortnonResult<List<SysMenuDTO>>> queryMenuTree(){
-        return sysMenuService.queryMenu().map(MortnonResult::success);
+    @Get("{?pageSearch*}")
+    public Mono<MortnonResult<List<SysMenuDTO>>> queryMenuTree(MenuPageSearch pageSearch) {
+        return sysMenuService.queryMenu(pageSearch).map(MortnonResult::success);
     }
 
     /**
      * 按id查询菜单项
+     *
      * @return
      */
     @Get("/{id}")
-    public Mono<MortnonResult<SysMenuDTO>> queryMenu(@NotNull @Positive Long id){
+    public Mono<MortnonResult<SysMenuDTO>> queryMenu(@NotNull @Positive Long id) {
         return sysMenuService.queryMenuById(id).map(MortnonResult::success);
     }
 

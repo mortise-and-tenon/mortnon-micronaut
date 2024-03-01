@@ -85,6 +85,8 @@ public class SysMenuDTO {
         sysMenuDTO.setPermission(permission);
 
         sysMenuDTO.setParentId(sysMenu.getParentId());
+        sysMenuDTO.setChildren(new ArrayList<>());
+
         return sysMenuDTO;
     }
 }

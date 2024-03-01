@@ -5,6 +5,7 @@ import fun.mortnon.service.sys.vo.SysMenuDTO;
 import fun.mortnon.service.sys.vo.SysPermissionDTO;
 import fun.mortnon.service.sys.vo.SysProjectDTO;
 import fun.mortnon.web.controller.menu.command.CreateMenuCommand;
+import fun.mortnon.web.controller.menu.command.MenuPageSearch;
 import fun.mortnon.web.controller.menu.command.UpdateMenuCommand;
 import fun.mortnon.web.controller.project.command.UpdateProjectCommand;
 import io.micronaut.data.model.Page;
@@ -20,7 +21,13 @@ import java.util.List;
  * @date 2023/12/5
  */
 public interface SysMenuService {
-    Mono<List<SysMenuDTO>> queryMenu();
+    /**
+     * 查询树型的菜单数据
+     *
+     * @param pageSearch
+     * @return
+     */
+    Mono<List<SysMenuDTO>> queryMenu(MenuPageSearch pageSearch);
 
     Mono<SysMenuDTO> queryMenuById(Long id);
 

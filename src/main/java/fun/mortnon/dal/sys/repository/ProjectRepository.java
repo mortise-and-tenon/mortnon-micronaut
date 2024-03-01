@@ -1,8 +1,12 @@
 package fun.mortnon.dal.sys.repository;
 
+import fun.mortnon.dal.sys.entity.SysLog;
 import fun.mortnon.dal.sys.entity.SysProject;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.r2dbc.annotation.R2dbcRepository;
+import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.data.repository.reactive.ReactorPageableRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,6 +19,11 @@ import java.util.List;
  */
 @R2dbcRepository(dialect = Dialect.MYSQL)
 public interface ProjectRepository extends ReactorPageableRepository<SysProject, Long> {
+
+    Flux<SysProject> findAll(PredicateSpecification<SysProject> where);
+
+    Mono<Page<SysProject>> findAll(PredicateSpecification<SysProject> where, Pageable pageable);
+
     /**
      * 是否存在同名
      *

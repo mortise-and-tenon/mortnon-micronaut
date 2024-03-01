@@ -5,19 +5,19 @@ import fun.mortnon.framework.constants.LogConstants;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.framework.vo.PageableData;
 import fun.mortnon.service.sys.SysProjectService;
-import fun.mortnon.service.sys.SysRoleService;
 import fun.mortnon.service.sys.vo.SysProjectDTO;
 import fun.mortnon.service.sys.vo.SysProjectTreeDTO;
-import fun.mortnon.service.sys.vo.SysRoleDTO;
 import fun.mortnon.web.controller.project.command.CreateProjectCommand;
+import fun.mortnon.web.controller.project.command.ProjectPageSearch;
 import fun.mortnon.web.controller.project.command.UpdateProjectCommand;
-import fun.mortnon.web.controller.role.command.CreateRoleCommand;
-import fun.mortnon.web.controller.role.command.UpdateRoleCommand;
 import io.micronaut.core.annotation.NonNull;
-import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Delete;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.Put;
 import jakarta.inject.Inject;
 import reactor.core.publisher.Mono;
 
@@ -40,22 +40,28 @@ public class ProjectController {
     /**
      * 查询组织
      *
-     * @param pageable
+     * @param pageSearch
      * @return
      */
-    @Get
-    public Mono<MortnonResult<PageableData<List<SysProjectDTO>>>> queryProject(@Valid Pageable pageable) {
-        return sysProjectService.queryProjects(pageable).map(MortnonResult::successPageData);
+    @Get("{?pageSearch*}")
+    public Mono<MortnonResult<PageableData<List<SysProjectDTO>>>> queryProject(ProjectPageSearch pageSearch) {
+        return sysProjectService.queryProjects(pageSearch).map(MortnonResult::successPageData);
     }
 
     /**
      * 查询树型的组织信息
      *
+     * @param pageSearch
      * @return
      */
-    @Get("/tree")
-    public Mono<MortnonResult<SysProjectTreeDTO>> queryTreeProject() {
-        return sysProjectService.queryTreeProjects().map(MortnonResult::success);
+    @Get("/tree{?pageSearch*}")
+    public Mono<MortnonResult<List<SysProjectTreeDTO>>> queryTreeProject(ProjectPageSearch pageSearch) {
+        return sysProjectService.queryTreeProjects(pageSearch).map(MortnonResult::success);
+    }
+
+    @Get("/{id}")
+    public Mono<MortnonResult<PageableData<List<SysProjectDTO>>>> queryProjectById(@NotNull @Positive Long id) {
+        return sysProjectService.queryProjectById(id).map(MortnonResult::success);
     }
 
     /**
