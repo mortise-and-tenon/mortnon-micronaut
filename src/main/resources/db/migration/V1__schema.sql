@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
 	`phone` VARCHAR(32) DEFAULT NULL                        COMMENT '用户手机号',
 	`avatar` VARCHAR(1024) DEFAULT NULL                     COMMENT '用户头像',
 	`sex` TINYINT(1) NOT NULL DEFAULT 1                     COMMENT '用户性别，0女，1男',
+	`status` TINYINT(1) NOT NULL DEFAULT 1                  COMMENT '用户状态'
 	`gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
 	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
@@ -57,8 +58,8 @@ VALUES ('Mornton总公司','',0),
 CREATE TABLE IF NOT EXISTS `sys_assignment`(
 	`id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY  COMMENT '关联 id',
 	`user_id` BIGINT NOT NULL                               COMMENT '用户 id',
-	`project_id` BIGINT NOT NULL                            COMMENT '组织 id',
-	`role_id` BIGINT NOT NULL                               COMMENT '角色 id',
+	`project_id` BIGINT NULL                                COMMENT '组织 id',
+	`role_id` BIGINT NULL                                   COMMENT '角色 id',
 	FOREIGN KEY (user_id) REFERENCES sys_user(id),
 	FOREIGN KEY (role_id) REFERENCES sys_role(id),
 	FOREIGN KEY (project_id) REFERENCES sys_project(id)

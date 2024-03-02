@@ -30,6 +30,13 @@ public interface AssignmentRepository extends ReactorPageableRepository<SysAssig
     Flux<SysAssignment> findByRoleId(Long roleId);
 
     /**
+     * 查找分配了角色的关联
+     * @param
+     * @return
+     */
+    Flux<SysAssignment> findByRoleIdIsNotNull();
+
+    /**
      * 按用户 id 判断是否存在关联关系
      *
      * @param userId
@@ -54,6 +61,24 @@ public interface AssignmentRepository extends ReactorPageableRepository<SysAssig
     Mono<Boolean> existsByProjectId(Long projectId);
 
     /**
+     * 按用户和组织查找是否存在关联关系
+     *
+     * @param userId
+     * @param projectId
+     * @return
+     */
+    Mono<Boolean> existsByUserIdEqualsAndProjectIdEquals(Long userId, Long projectId);
+
+    /**
+     * 按用户和角色查询是否存在关联关系
+     *
+     * @param userId
+     * @param roleId
+     * @return
+     */
+    Mono<Boolean> existsByUserIdEqualsAndRoleIdEquals(Long userId, Long roleId);
+
+    /**
      * 判断关联是否存在
      *
      * @param userId
@@ -62,6 +87,24 @@ public interface AssignmentRepository extends ReactorPageableRepository<SysAssig
      * @return
      */
     Mono<Boolean> existsByUserIdEqualsAndProjectIdEqualsAndRoleIdEquals(Long userId, Long projectId, Long roleId);
+
+    /**
+     * 按用户和组织查询指定的关联
+     *
+     * @param userId
+     * @param projectId
+     * @return
+     */
+    Mono<SysAssignment> findByUserIdEqualsAndProjectIdEquals(Long userId, Long projectId);
+
+    /**
+     * 按用户和角色查询指定关联
+     *
+     * @param userId
+     * @param roleId
+     * @return
+     */
+    Mono<SysAssignment> findByUserIdEqualsAndRoleIdEquals(Long userId, Long roleId);
 
     /**
      * 删除指定的关联

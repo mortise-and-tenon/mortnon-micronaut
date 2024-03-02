@@ -6,6 +6,8 @@ import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
 
+import java.time.Instant;
+
 
 /**
  * 系统用户
@@ -58,4 +60,15 @@ public class SysUser extends BaseEntity {
      * 性别
      */
     private Integer sex;
+
+
+    /**
+     * 用户状态
+     */
+    private boolean status;
+
+    /**
+     * 用户创建时间
+     */
+    private Instant gmtCreate;
 }

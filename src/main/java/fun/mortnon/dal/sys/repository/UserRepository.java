@@ -1,11 +1,17 @@
 package fun.mortnon.dal.sys.repository;
 
+import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.entity.SysUser;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.r2dbc.annotation.R2dbcRepository;
+import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.data.repository.reactive.ReactorPageableRepository;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * 系统用户仓库
@@ -64,4 +70,6 @@ public interface UserRepository extends ReactorPageableRepository<SysUser, Long>
      * @return
      */
     Mono<Boolean> existsByIdEqualsOrUserNameEquals(Long id, String userName);
+
+    Mono<Page<SysUser>> findAll(PredicateSpecification<SysUser> where, Pageable pageable);
 }

@@ -20,6 +20,11 @@ public class SysPermissionDTO {
     private Long id;
 
     /**
+     * 权限名称
+     */
+    private String name;
+
+    /**
      * 权限标识符
      */
     private String identifier;
@@ -42,6 +47,7 @@ public class SysPermissionDTO {
     public static SysPermissionDTO convert(SysPermission sysPermission) {
         SysPermissionDTO sysPermissionDTO = new SysPermissionDTO();
         sysPermissionDTO.setId(sysPermission.getId());
+        sysPermissionDTO.setName(sysPermission.getName());
         sysPermissionDTO.setIdentifier(sysPermission.getIdentifier());
         sysPermissionDTO.setDescription(sysPermission.getDescription());
         sysPermissionDTO.setApi(sysPermission.getApi());
