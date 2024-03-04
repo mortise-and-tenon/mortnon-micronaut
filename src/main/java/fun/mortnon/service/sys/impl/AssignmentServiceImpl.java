@@ -1,7 +1,6 @@
 package fun.mortnon.service.sys.impl;
 
 import fun.mortnon.dal.sys.entity.SysAssignment;
-import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.entity.SysUser;
 import fun.mortnon.dal.sys.repository.AssignmentRepository;
 import fun.mortnon.dal.sys.repository.ProjectRepository;
@@ -13,10 +12,12 @@ import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.exceptions.RepeatDataException;
 import fun.mortnon.service.sys.AssignmentService;
 import fun.mortnon.service.sys.PublicService;
+import fun.mortnon.service.sys.vo.ProjectRoleDTO;
 import fun.mortnon.service.sys.vo.SysUserDTO;
-import fun.mortnon.web.controller.project.command.ProjectPageSearch;
+import fun.mortnon.web.controller.user.command.AssignmentCommand;
 import fun.mortnon.web.controller.user.command.RevokeCommand;
 import fun.mortnon.web.controller.user.command.UserPageSearch;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
@@ -27,8 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,52 +64,129 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public Mono<Page<SysUserDTO>> queryAssignmentUser(UserPageSearch pageSearch) {
+        boolean isSearchProject = false;
+        boolean isSearchRole = false;
 
-        return assignmentRepository.findByRoleId(pageSearch.getRoleId())
-                .map(assignment -> assignment.getUserId())
-                .collectList()
-                .flatMap(userIdList -> {
-                    //默认按id正序排列
-                    Pageable pageable = pageSearch.convert();
-                    if (!pageable.isSorted()) {
-                        pageable = pageable.order(Sort.Order.asc("id"));
-                    }
-                    return userRepository.findAll(where(queryCondition(pageSearch, userIdList, null)), pageable);
-                })
-                .map(page -> {
-                    List<SysUserDTO> list = page.getContent().stream().map(SysUserDTO::convert).collect(Collectors.toList());
-                    return Page.of(list, page.getPageable(), page.getTotalSize());
-                });
-    }
-
-    @Override
-    public Mono<Page<SysUserDTO>> queryUnassignmentUser(UserPageSearch pageSearch) {
-        return assignmentRepository.findByRoleIdIsNotNull()
-                .map(SysAssignment::getUserId)
-                .collectList()
-                .flatMap(existsUserIdList -> {
-                    //默认按id正序排列
-                    Pageable pageable = pageSearch.convert();
-                    if (!pageable.isSorted()) {
-                        pageable = pageable.order(Sort.Order.asc("id"));
-                    }
-                    return userRepository.findAll(where(queryCondition(pageSearch, null, existsUserIdList)), pageable);
-                })
-                .map(page -> {
-                    List<SysUserDTO> list = page.getContent().stream().map(SysUserDTO::convert).collect(Collectors.toList());
-                    return Page.of(list, page.getPageable(), page.getTotalSize());
-                });
-    }
-
-    private PredicateSpecification<SysUser> queryCondition(UserPageSearch search, List<Long> userIdList, List<Long> notInUserIdList) {
-        PredicateSpecification<SysUser> query = null;
-
-        if (CollectionUtils.isNotEmpty(userIdList)) {
-            query = Specifications.idInList("id", userIdList);
+        if (ObjectUtils.isNotEmpty(pageSearch.getProjectId())) {
+            isSearchProject = true;
         }
 
-        if (CollectionUtils.isNotEmpty(notInUserIdList)) {
-            query = Specifications.idNotInList("id", notInUserIdList);
+        if (ObjectUtils.isNotEmpty(pageSearch.getRoleId())) {
+            isSearchRole = true;
+        }
+
+        if (!isSearchProject && !isSearchRole) {
+            isSearchProject = true;
+        }
+
+
+        if (isSearchProject) {
+            return assignmentRepository.findByProjectIdIsNotNull()
+                    .collectList()
+                    .flatMap(assignmentList -> {
+                        List<Long> assignmentUserList = assignmentList.stream().filter(assignment -> {
+                                    if (pageSearch.isUnassignment()) {
+                                        return true;
+                                    }
+                                    return assignment.getProjectId().equals(pageSearch.getProjectId());
+                                }).map(SysAssignment::getUserId)
+                                .collect(Collectors.toList());
+                        return queryUserAssignmentUser(pageSearch, assignmentUserList);
+                    })
+                    .flatMap(page -> convertUserData(page));
+        }
+
+        return assignmentRepository.findByRoleIdIsNotNull()
+                .collectList()
+                .flatMap(assignmentList -> {
+                    List<Long> assignmentUserList = assignmentList.stream().filter(assignment -> {
+                                if (pageSearch.isUnassignment()) {
+                                    return true;
+                                }
+                                return assignment.getRoleId().equals(pageSearch.getRoleId());
+                            }).map(SysAssignment::getUserId)
+                            .collect(Collectors.toList());
+                    return queryUserAssignmentUser(pageSearch, assignmentUserList);
+                })
+                .flatMap(page -> convertUserData(page));
+    }
+
+    private Mono<Page<SysUserDTO>> convertUserData(Page<SysUser> page) {
+        List<SysUserDTO> list = page.getContent().stream().map(SysUserDTO::convert).collect(Collectors.toList());
+        return Flux.fromIterable(list)
+                .flatMap(user ->
+                        assignmentRepository.findByUserId(user.getId())
+                                .flatMap(assignment -> {
+                                    if (ObjectUtils.isNotEmpty(assignment.getProjectId())) {
+                                        return projectRepository.findById(assignment.getProjectId())
+                                                .map(project -> {
+                                                    ProjectRoleDTO projectRoleDTO = new ProjectRoleDTO();
+                                                    projectRoleDTO.setProjectId(project.getId());
+                                                    projectRoleDTO.setProjectName(project.getName());
+                                                    return projectRoleDTO;
+                                                })
+                                                .flatMap(projectRoleDTO -> {
+                                                    if (ObjectUtils.isNotEmpty(assignment.getRoleId())) {
+                                                        return roleRepository.findById(assignment.getRoleId())
+                                                                .map(role -> {
+                                                                    projectRoleDTO.setRoleId(role.getId());
+                                                                    projectRoleDTO.setRoleName(role.getName());
+                                                                    return projectRoleDTO;
+                                                                });
+                                                    }
+                                                    return Mono.just(projectRoleDTO);
+                                                });
+                                    }
+
+                                    if (ObjectUtils.isNotEmpty(assignment.getRoleId())) {
+                                        return roleRepository.findById(assignment.getRoleId())
+                                                .map(role -> {
+                                                    ProjectRoleDTO projectRoleDTO = new ProjectRoleDTO();
+                                                    projectRoleDTO.setRoleId(role.getId());
+                                                    projectRoleDTO.setRoleName(role.getName());
+                                                    return projectRoleDTO;
+                                                });
+                                    }
+
+                                    return Mono.empty();
+                                })
+                                .collectList()
+                                .map(projectRoleDTOS -> {
+                                    user.setProjectRoles(projectRoleDTOS);
+                                    return user;
+                                })
+                )
+                .collectList()
+                .map(userDTOList -> {
+                    return Page.of(userDTOList, page.getPageable(), page.getTotalSize());
+                });
+    }
+
+    private Mono<Page<SysUser>> queryUserAssignmentUser(UserPageSearch pageSearch, List<Long> assignmentUserList) {
+        //默认按id正序排列
+        Pageable pageable = pageSearch.convert();
+        if (!pageable.isSorted()) {
+            pageable = pageable.order(Sort.Order.asc("id"));
+        }
+
+        //查找未分配的
+        if (pageSearch.isUnassignment()) {
+            return userRepository.findAll(where(queryCondition(pageSearch, null, assignmentUserList)), pageable);
+        }
+        //查找已分配的
+        return userRepository.findAll(where(queryCondition(pageSearch, assignmentUserList, null)), pageable);
+    }
+
+    private PredicateSpecification<SysUser> queryCondition(UserPageSearch search, List<Long> includeUserIdList,
+                                                           List<Long> excludeUserIdList) {
+        PredicateSpecification<SysUser> query = null;
+
+        if (CollectionUtils.isNotEmpty(includeUserIdList)) {
+            query = Specifications.idInList("id", includeUserIdList);
+        }
+
+        if (CollectionUtils.isNotEmpty(excludeUserIdList)) {
+            query = Specifications.idNotInList("id", excludeUserIdList);
         }
 
         if (StringUtils.isNotEmpty(search.getUserName())) {
@@ -158,49 +238,76 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public Mono<Boolean> assignmentUser(Long userId, Long projectId, Long roleId) {
-        if (null == userId || userId <= 0) {
+    public Mono<Boolean> assignmentUser(AssignmentCommand assignmentCommand) {
+        if ((ObjectUtils.isEmpty(assignmentCommand.getUserId()) || assignmentCommand.getUserId() <= 0)
+                && CollectionUtils.isEmpty(assignmentCommand.getUserIdList())) {
             return Mono.error(ParameterException.create("user id is wrong."));
         }
 
-        if (null == projectId || projectId <= 0) {
-            return Mono.error(ParameterException.create("project id is wrong."));
+        if (CollectionUtils.isEmpty(assignmentCommand.getUserIdList())) {
+            assignmentCommand.setUserIdList(new ArrayList<>());
+            assignmentCommand.getUserIdList().add(assignmentCommand.getUserId());
         }
 
-        if (null == roleId || roleId <= 0) {
-            return Mono.error(ParameterException.create("role id is wrong."));
+        final boolean isProject = ObjectUtils.isNotEmpty(assignmentCommand.getProjectId());
+
+        final boolean isRole = ObjectUtils.isNotEmpty(assignmentCommand.getRoleId());
+
+        if (!isProject && !isRole) {
+            return Mono.error(ParameterException.create("project and role id all are wrong."));
         }
 
-        return userRepository.existsById(userId)
+        return validateAssignment(assignmentCommand, isProject, isRole)
                 .flatMap(exists -> {
+                    //组织或角色id不存在
                     if (!exists) {
-                        log.warn("user id [{}] is not exists.", userId);
-                        return Mono.error(NotFoundException.create("user id is not exists."));
-                    }
-                    return projectRepository.existsById(projectId);
-                })
-                .flatMap(exists -> {
-                    if (!exists) {
-                        log.warn("project id [{}] is not exists.");
-                        return Mono.error(NotFoundException.create("project id is not exists."));
-                    }
-                    return roleRepository.existsById(roleId);
-                })
-                .flatMap(exists -> {
-                    if (!exists) {
-                        log.warn("role id [{}] is not exists.", roleId);
-                        return Mono.error(NotFoundException.create("role id is not exists."));
-                    }
-                    return assignmentRepository.existsByUserIdEqualsAndProjectIdEqualsAndRoleIdEquals(userId, projectId, roleId);
-                })
-                .flatMap(exists -> {
-                    if (exists) {
-                        log.warn("assignment,user [{}],project [{}],role [{}],is exists.", userId, projectId, roleId);
-                        return Mono.error(RepeatDataException.create("assignment is exists."));
+                        return Mono.error(NotFoundException.create(isProject ? "project is not exists." : "role is not exists."));
                     }
 
-                    return publicService.saveAssignment(userId, projectId, roleId);
-                }).thenReturn(true);
+                    //处理已部分分配的用户数据
+                    return assignmentRepository.findByUserIdIn(assignmentCommand.getUserIdList())
+                            .flatMap(assignment -> {
+                                if (isProject) {
+                                    assignment.setProjectId(assignmentCommand.getProjectId());
+                                }
+                                if (isRole) {
+                                    assignment.setRoleId(assignmentCommand.getRoleId());
+                                }
+                                return assignmentRepository.update(assignment);
+                            })
+                            .collectList()
+                            .map(assignmentList -> {
+                                //处理完全未分配的用户数据
+                                List<Long> userIdList = assignmentCommand.getUserIdList();
+
+                                return userIdList.stream().filter(userId -> assignmentList.stream().anyMatch(assignment -> !assignment.getUserId().equals(userId)))
+                                        .map(userId -> {
+                                            return new SysAssignment(userId, assignmentCommand.getProjectId(),
+                                                    assignmentCommand.getRoleId());
+                                        })
+                                        .collect(Collectors.toList());
+                            })
+                            .flatMap(newAssignmentList ->
+                                    Flux.fromIterable(newAssignmentList)
+                                            .flatMap(assignment -> assignmentRepository.save(assignment))
+                                            .collectList()
+                            )
+                            .map(list -> list.size() > 0);
+                });
+    }
+
+    private Mono<Boolean> validateAssignment(AssignmentCommand assignmentCommand, final boolean isProject, boolean isRole) {
+        return Mono.defer(() -> {
+            if (isProject) {
+                return projectRepository.existsById(assignmentCommand.getProjectId());
+            }
+            return Mono.just(true);
+        }).flatMap(projectExists -> {
+            if (isRole) {
+                return roleRepository.existsById(assignmentCommand.getRoleId()).map(roleExists -> (roleExists || projectExists));
+            }
+            return Mono.just(true);
+        });
     }
 
     @Override

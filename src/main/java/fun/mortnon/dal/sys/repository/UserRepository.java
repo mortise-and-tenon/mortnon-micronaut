@@ -1,6 +1,5 @@
 package fun.mortnon.dal.sys.repository;
 
-import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.entity.SysUser;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
@@ -72,4 +71,6 @@ public interface UserRepository extends ReactorPageableRepository<SysUser, Long>
     Mono<Boolean> existsByIdEqualsOrUserNameEquals(Long id, String userName);
 
     Mono<Page<SysUser>> findAll(PredicateSpecification<SysUser> where, Pageable pageable);
+
+    Mono<Boolean> existsByIdInList(List<Long> userIdList);
 }

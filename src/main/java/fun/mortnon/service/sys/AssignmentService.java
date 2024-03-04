@@ -1,6 +1,7 @@
 package fun.mortnon.service.sys;
 
 import fun.mortnon.service.sys.vo.SysUserDTO;
+import fun.mortnon.web.controller.user.command.AssignmentCommand;
 import fun.mortnon.web.controller.user.command.RevokeCommand;
 import fun.mortnon.web.controller.user.command.UserPageSearch;
 import io.micronaut.data.model.Page;
@@ -20,17 +21,13 @@ public interface AssignmentService {
      */
     Mono<Page<SysUserDTO>> queryAssignmentUser(UserPageSearch pageSearch);
 
-    Mono<Page<SysUserDTO>> queryUnassignmentUser(UserPageSearch pageSearch);
-
     /**
      * 关联用户、组织和角色
      *
-     * @param userId
-     * @param projectId
-     * @param roleId
+     * @param assignmentCommand
      * @return
      */
-    Mono<Boolean> assignmentUser(Long userId, Long projectId, Long roleId);
+    Mono<Boolean> assignmentUser(AssignmentCommand assignmentCommand);
 
     /**
      * 移除关联用户、组织和角色

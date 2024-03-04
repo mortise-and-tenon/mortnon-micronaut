@@ -26,7 +26,6 @@ public class ProjectRoleDTO {
     /**
      * 组织名字
      */
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String projectName;
 
     /**
@@ -37,6 +36,5 @@ public class ProjectRoleDTO {
     /**
      * 角色名字
      */
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String roleName;
 }

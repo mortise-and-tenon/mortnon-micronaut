@@ -6,10 +6,12 @@ import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.framework.vo.PageableData;
 import fun.mortnon.service.sys.AssignmentService;
 import fun.mortnon.service.sys.vo.SysUserDTO;
+import fun.mortnon.web.controller.user.command.AssignmentCommand;
 import fun.mortnon.web.controller.user.command.RevokeCommand;
 import fun.mortnon.web.controller.user.command.UserPageSearch;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
+import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
@@ -18,6 +20,7 @@ import io.micronaut.http.annotation.Put;
 import jakarta.inject.Inject;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -32,7 +35,7 @@ public class AssignmentController {
     private AssignmentService assignmentService;
 
     /**
-     * 查询指定角色分配的用户
+     * 查询指定角色分配的或未分配的用户
      *
      * @param pageSearch
      * @return
@@ -53,7 +56,20 @@ public class AssignmentController {
     @OperationLog(LogConstants.ASSIGNMENT_CREATE)
     @Put("/user/{userId}/project/{projectId}/role/{roleId}")
     public Mono<MutableHttpResponse<MortnonResult>> assignmentUser(Long userId, Long projectId, Long roleId) {
-        return assignmentService.assignmentUser(userId, projectId, roleId).map(MortnonResult::success).map(HttpResponse::ok);
+        AssignmentCommand assignmentCommand = new AssignmentCommand(userId, projectId, roleId);
+        return assignmentService.assignmentUser(assignmentCommand).map(MortnonResult::success).map(HttpResponse::ok);
+    }
+
+    /**
+     * 更新/分配用户的组织、角色
+     *
+     * @param assignmentCommand
+     * @return
+     */
+    @OperationLog(LogConstants.ASSIGNMENT_CREATE)
+    @Put
+    public Mono<MutableHttpResponse<MortnonResult>> assignmentUserWithRoleProject(@Valid @Body AssignmentCommand assignmentCommand) {
+        return assignmentService.assignmentUser(assignmentCommand).map(MortnonResult::success).map(HttpResponse::ok);
     }
 
     /**

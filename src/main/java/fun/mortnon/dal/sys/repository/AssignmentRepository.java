@@ -7,6 +7,8 @@ import io.micronaut.data.repository.reactive.ReactorPageableRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 /**
  * @author dev2007
  * @date 2023/2/9
@@ -21,6 +23,8 @@ public interface AssignmentRepository extends ReactorPageableRepository<SysAssig
      */
     Flux<SysAssignment> findByUserId(Long userId);
 
+    Flux<SysAssignment> findByUserIdIn(List<Long> userIdList);
+
     /**
      * 按角色 id 查找关联关系
      *
@@ -28,6 +32,12 @@ public interface AssignmentRepository extends ReactorPageableRepository<SysAssig
      * @return
      */
     Flux<SysAssignment> findByRoleId(Long roleId);
+
+    /**
+     * 查找分配了组织的关联
+     * @return
+     */
+    Flux<SysAssignment> findByProjectIdIsNotNull();
 
     /**
      * 查找分配了角色的关联

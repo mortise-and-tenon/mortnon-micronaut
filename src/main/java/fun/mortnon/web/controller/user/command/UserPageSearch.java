@@ -19,13 +19,25 @@ import javax.validation.constraints.Positive;
 @Serdeable(naming = SnakeCaseStrategy.class)
 @Introspected
 public class UserPageSearch extends PageableQuery {
+
+    /**
+     * 是否查询未分配的
+     */
+    private boolean unassignment;
     /**
      * 角色id
      */
-    @NotNull
     @Positive
     @JsonProperty(value = "role_id")
     private Long roleId;
+
+
+    /**
+     * 组织id
+     */
+    @Positive
+    @JsonProperty(value = "project_id")
+    private Long projectId;
 
     /**
      * 用户名

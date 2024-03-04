@@ -16,6 +16,17 @@ import lombok.Data;
 @Data
 @Serdeable
 public class SysAssignment {
+
+    public SysAssignment() {
+
+    }
+
+    public SysAssignment(Long userId, Long projectId, Long roleId) {
+        this.userId = userId;
+        this.projectId = projectId;
+        this.roleId = roleId;
+    }
+
     /**
      * 主键
      */
