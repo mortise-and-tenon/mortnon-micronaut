@@ -7,6 +7,7 @@ import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.CaseUtils;
 
 /**
  * 分页、排序参数
@@ -46,7 +47,7 @@ public class PageableQuery {
                 }
             }
 
-            pageable = Pageable.from(page, size, Sort.of(new Sort.Order(property, direction, ignoreCase)));
+            pageable = Pageable.from(page, size, Sort.of(new Sort.Order(CaseUtils.toCamelCase(property,false,new char[]{'_'}), direction, ignoreCase)));
         } else {
             pageable = Pageable.from(page, size);
         }

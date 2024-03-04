@@ -114,7 +114,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     private Mono<Page<SysUserDTO>> convertUserData(Page<SysUser> page) {
         List<SysUserDTO> list = page.getContent().stream().map(SysUserDTO::convert).collect(Collectors.toList());
         return Flux.fromIterable(list)
-                .flatMap(user ->
+                .flatMapSequential(user ->
                         assignmentRepository.findByUserId(user.getId())
                                 .flatMap(assignment -> {
                                     if (ObjectUtils.isNotEmpty(assignment.getProjectId())) {
@@ -163,10 +163,10 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     private Mono<Page<SysUser>> queryUserAssignmentUser(UserPageSearch pageSearch, List<Long> assignmentUserList) {
-        //默认按id正序排列
+        //默认按用户名正序排列
         Pageable pageable = pageSearch.convert();
         if (!pageable.isSorted()) {
-            pageable = pageable.order(Sort.Order.asc("id"));
+            pageable = pageable.order(Sort.Order.asc("userName"));
         }
 
         //查找未分配的
