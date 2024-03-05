@@ -1,8 +1,12 @@
 package fun.mortnon.dal.sys.repository;
 
 import fun.mortnon.dal.sys.entity.SysRole;
+import fun.mortnon.dal.sys.entity.SysUser;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.r2dbc.annotation.R2dbcRepository;
+import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.data.repository.reactive.ReactorPageableRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -38,4 +42,12 @@ public interface RoleRepository extends ReactorPageableRepository<SysRole, Long>
      * @return
      */
     Mono<Boolean> existsByIdNotEqualsAndNameEquals(Long id, String name);
+
+    /**
+     * 带条件的分页查询
+     * @param where
+     * @param pageable
+     * @return
+     */
+    Mono<Page<SysRole>> findAll(PredicateSpecification<SysRole> where, Pageable pageable);
 }

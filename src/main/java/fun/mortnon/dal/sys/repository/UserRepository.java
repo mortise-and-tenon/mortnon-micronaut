@@ -70,6 +70,12 @@ public interface UserRepository extends ReactorPageableRepository<SysUser, Long>
      */
     Mono<Boolean> existsByIdEqualsOrUserNameEquals(Long id, String userName);
 
+    /**
+     * 带条件的分页查询
+     * @param where
+     * @param pageable
+     * @return
+     */
     Mono<Page<SysUser>> findAll(PredicateSpecification<SysUser> where, Pageable pageable);
 
     Mono<Boolean> existsByIdInList(List<Long> userIdList);

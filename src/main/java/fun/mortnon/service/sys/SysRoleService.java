@@ -2,6 +2,7 @@ package fun.mortnon.service.sys;
 
 import fun.mortnon.service.sys.vo.SysRoleDTO;
 import fun.mortnon.web.controller.role.command.CreateRoleCommand;
+import fun.mortnon.web.controller.role.command.RolePageSearch;
 import fun.mortnon.web.controller.role.command.UpdateRoleCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
@@ -32,10 +33,10 @@ public interface SysRoleService {
     /**
      * 查询角色列表
      *
-     * @param pageable
+     * @param pageSearch
      * @return
      */
-    Mono<Page<SysRoleDTO>> queryRoles(Pageable pageable);
+    Mono<Page<SysRoleDTO>> queryRoles(RolePageSearch pageSearch);
 
 
     /**

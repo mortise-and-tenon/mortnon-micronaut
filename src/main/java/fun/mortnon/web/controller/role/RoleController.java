@@ -9,6 +9,7 @@ import fun.mortnon.framework.vo.PageableQuery;
 import fun.mortnon.service.sys.SysRoleService;
 import fun.mortnon.service.sys.vo.SysRoleDTO;
 import fun.mortnon.web.controller.role.command.CreateRoleCommand;
+import fun.mortnon.web.controller.role.command.RolePageSearch;
 import fun.mortnon.web.controller.role.command.UpdateRoleCommand;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.model.Pageable;
@@ -39,12 +40,12 @@ public class RoleController {
     /**
      * 查询角色
      *
-     * @param pageable
+     * @param pageSearch
      * @return
      */
-    @Get("{?pageable*}")
-    public Mono<MortnonResult<PageableData<List<SysRoleDTO>>>> queryRole(PageableQuery pageable) {
-        return sysRoleService.queryRoles(pageable.convert()).map(MortnonResult::successPageData);
+    @Get("{?pageSearch*}")
+    public Mono<MortnonResult<PageableData<List<SysRoleDTO>>>> queryRole(RolePageSearch pageSearch) {
+        return sysRoleService.queryRoles(pageSearch).map(MortnonResult::successPageData);
     }
 
     /**

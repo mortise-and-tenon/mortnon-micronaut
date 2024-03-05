@@ -2,10 +2,12 @@ package fun.mortnon.service.sys.impl;
 
 import fun.mortnon.dal.sys.entity.SysRole;
 import fun.mortnon.dal.sys.entity.SysRolePermission;
+import fun.mortnon.dal.sys.entity.SysUser;
 import fun.mortnon.dal.sys.repository.AssignmentRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
 import fun.mortnon.dal.sys.repository.RolePermissionRepository;
 import fun.mortnon.dal.sys.repository.RoleRepository;
+import fun.mortnon.dal.sys.specification.Specifications;
 import fun.mortnon.framework.exceptions.NotFoundException;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.exceptions.RepeatDataException;
@@ -14,9 +16,13 @@ import fun.mortnon.service.sys.SysRoleService;
 import fun.mortnon.service.sys.vo.SysPermissionDTO;
 import fun.mortnon.service.sys.vo.SysRoleDTO;
 import fun.mortnon.web.controller.role.command.CreateRoleCommand;
+import fun.mortnon.web.controller.role.command.RolePageSearch;
 import fun.mortnon.web.controller.role.command.UpdateRoleCommand;
+import fun.mortnon.web.controller.user.command.UserPageSearch;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import io.micronaut.data.model.Sort;
+import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +36,8 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static io.micronaut.data.repository.jpa.criteria.PredicateSpecification.where;
 
 /**
  * @author dev2007
@@ -158,11 +166,17 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public Mono<Page<SysRoleDTO>> queryRoles(Pageable pageable) {
-        return roleRepository.findAll(pageable).flatMap(page ->
+    public Mono<Page<SysRoleDTO>> queryRoles(RolePageSearch pageSearch) {
+        //默认按id正序排列
+        Pageable pageable = pageSearch.convert();
+        if (!pageable.isSorted()) {
+            pageable = pageable.order(Sort.Order.asc("id"));
+        }
+
+        return roleRepository.findAll(where(queryCondition(pageSearch)),pageable).flatMap(page ->
                 //将分页数据中的原始角色信息转换为 DTO，并循环角色 DTO 进行数据处理
                 Flux.fromStream(page.getContent().stream().map(SysRoleDTO::convert))
-                        .flatMap(role ->
+                        .flatMapSequential(role ->
                                 //查询角色对应的权限数据，并添加到角色 DTO 中
                                 rolePermissionRepository.findByRoleId(role.getId())
                                         .flatMap(rp -> permissionRepository.findById(rp.getPermissionId()))
@@ -180,6 +194,35 @@ public class SysRoleServiceImpl implements SysRoleService {
                         //转换为分页数据
                         .map(roleList -> Page.of(roleList, page.getPageable(), page.getTotalSize()))
         );
+    }
+
+    private PredicateSpecification<SysRole> queryCondition(RolePageSearch pageSearch) {
+        PredicateSpecification<SysRole> query = null;
+
+        if (StringUtils.isNotEmpty(pageSearch.getName())) {
+            query = Specifications.propertyLike("name", pageSearch.getName());
+        }
+
+        if (StringUtils.isNotEmpty(pageSearch.getIdentifier())) {
+            PredicateSpecification<SysRole> subQuery = Specifications.propertyLike("identifier", pageSearch.getIdentifier());
+            if (query == null) {
+                query = subQuery;
+            } else {
+                query = query.and(subQuery);
+            }
+        }
+
+        if (ObjectUtils.isNotEmpty(pageSearch.getStatus())) {
+            PredicateSpecification<SysRole> subQuery = Specifications.propertyEqual("status", pageSearch.getStatus());
+            if (query == null) {
+                query = subQuery;
+            } else {
+                query = query.and(subQuery);
+            }
+        }
+
+
+        return query;
     }
 
     @Override
