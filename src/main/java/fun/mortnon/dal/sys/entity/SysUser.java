@@ -66,9 +66,4 @@ public class SysUser extends BaseEntity {
      * 用户状态
      */
     private boolean status;
-
-    /**
-     * 用户创建时间
-     */
-    private Instant gmtCreate;
 }

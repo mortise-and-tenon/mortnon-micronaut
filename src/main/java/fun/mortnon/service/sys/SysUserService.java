@@ -7,6 +7,7 @@ import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.CreateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
+import fun.mortnon.web.controller.user.command.UserPageSearch;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import reactor.core.publisher.Flux;
@@ -32,15 +33,15 @@ public interface SysUserService {
      * @param id 用户 id
      * @return 用户信息
      */
-    Mono<SysUser> getUserById(Long id);
+    Mono<SysUserDTO> getUserById(Long id);
 
     /**
      * 查询用户列表
      *
-     * @param pageable 分页数据
+     * @param pageSearch 查询分页条件
      * @return
      */
-    Mono<Page<SysUserDTO>> queryUsers(Pageable pageable);
+    Mono<Page<SysUserDTO>> queryUsers(UserPageSearch pageSearch);
 
     /**
      * 按用户名查询用户
@@ -59,12 +60,20 @@ public interface SysUserService {
     Mono<Boolean> deleteUser(Long userId);
 
     /**
+     * 批量删除用户
+     *
+     * @param ids
+     * @return
+     */
+    Mono<Boolean> batchDeleteUser(String ids);
+
+    /**
      * 更新用户
      *
      * @param updateUserCommand
      * @return
      */
-    Mono<SysUser> updateUser(UpdateUserCommand updateUserCommand);
+    Mono<SysUserDTO> updateUser(UpdateUserCommand updateUserCommand);
 
     /**
      * 查询用户对应角色

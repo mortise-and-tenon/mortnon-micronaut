@@ -56,15 +56,15 @@ public class CreateUserCommand {
     private String phone;
 
     /**
-     * 头像
-     */
-    private String head;
-
-    /**
      * 性别
      */
     @NotNull
     private Integer sex;
+
+    /**
+     * 状态
+     */
+    private boolean status;
 
     /**
      * 分配的组织、角色

@@ -35,12 +35,14 @@ public interface AssignmentRepository extends ReactorPageableRepository<SysAssig
 
     /**
      * 查找分配了组织的关联
+     *
      * @return
      */
     Flux<SysAssignment> findByProjectIdIsNotNull();
 
     /**
      * 查找分配了角色的关联
+     *
      * @param
      * @return
      */
@@ -133,4 +135,12 @@ public interface AssignmentRepository extends ReactorPageableRepository<SysAssig
      * @return
      */
     Mono<Long> deleteByUserId(Long userId);
+
+    /**
+     * 按用户id批量删除关联
+     *
+     * @param userIdList
+     * @return
+     */
+    Mono<Long> deleteByUserIdInList(List<Long> userIdList);
 }

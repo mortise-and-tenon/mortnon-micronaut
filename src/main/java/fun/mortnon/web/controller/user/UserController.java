@@ -12,6 +12,7 @@ import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.CreateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
+import fun.mortnon.web.controller.user.command.UserPageSearch;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
@@ -42,12 +43,12 @@ public class UserController {
     /**
      * 查询用户列表
      *
-     * @param pageable
+     * @param pageSearch
      * @return
      */
-    @Get("{?pageable*}")
-    public Mono<MortnonResult<PageableData<List<SysUserDTO>>>> queryUser(PageableQuery pageable) {
-        return sysUserService.queryUsers(pageable.convert()).map(MortnonResult::successPageData);
+    @Get("{?pageSearch*}")
+    public Mono<MortnonResult<PageableData<List<SysUserDTO>>>> queryUser(UserPageSearch pageSearch) {
+        return sysUserService.queryUsers(pageSearch).map(MortnonResult::successPageData);
     }
 
     /**
@@ -73,7 +74,6 @@ public class UserController {
     @Put
     public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull @Valid UpdateUserCommand updateUserCommand) {
         return sysUserService.updateUser(updateUserCommand)
-                .map(SysUserDTO::convert)
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok);
     }
@@ -92,6 +92,14 @@ public class UserController {
                 .map(HttpResponse::ok);
     }
 
+    @OperationLog(LogConstants.USER_DELETE)
+    @Delete("/batch/{ids}")
+    public Mono<MutableHttpResponse<MortnonResult>> deleteBatch(@NotNull String ids) {
+        return sysUserService.batchDeleteUser(ids)
+                .map(MortnonResult::success)
+                .map(HttpResponse::ok);
+    }
+
     /**
      * 获取指定用户
      *
@@ -100,7 +108,7 @@ public class UserController {
      */
     @Get("/{id}")
     public Mono<MutableHttpResponse<MortnonResult>> queryUser(@NotNull @Positive Long id) {
-        return sysUserService.getUserById(id).map(SysUserDTO::convert)
+        return sysUserService.getUserById(id)
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok);
     }

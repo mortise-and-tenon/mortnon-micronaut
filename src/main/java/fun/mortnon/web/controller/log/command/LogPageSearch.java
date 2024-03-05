@@ -25,10 +25,12 @@ public class LogPageSearch extends PageableQuery {
     private String action;
     private String result;
     private String level;
+
     /**
      * 用于查询日志时间：开始时间
      */
     private String beginTime;
+
     /**
      * 用于查询日志时间：结束时间
      */

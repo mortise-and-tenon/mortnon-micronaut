@@ -42,11 +42,13 @@ public class UserPageSearch extends PageableQuery {
     /**
      * 用户名
      */
+    @JsonProperty(value = "user_name")
     private String userName;
 
     /**
      * 用户昵称
      */
+    @JsonProperty(value = "nick_name")
     private String nickName;
 
     /**
@@ -63,4 +65,9 @@ public class UserPageSearch extends PageableQuery {
      * 用户手机号
      */
     private String phone;
+
+    /**
+     * 用户状态
+     */
+    private Boolean status;
 }
