@@ -17,7 +17,7 @@ import java.util.List;
  * @date 2023/12/6
  */
 @Introspected
-@Serdeable
+@Serdeable(naming = SnakeCaseStrategy.class)
 @Data
 public class CreateMenuCommand {
     /**
@@ -50,12 +50,11 @@ public class CreateMenuCommand {
 
     @NotNull
     @Positive
-    @JsonProperty("parent_id")
     private Long parentId;
 
     /**
      * 菜单状态
      */
-    private boolean status;
+    private Boolean status;
 
 }

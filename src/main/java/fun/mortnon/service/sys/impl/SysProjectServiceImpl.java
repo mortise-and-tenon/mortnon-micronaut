@@ -222,7 +222,7 @@ public class SysProjectServiceImpl implements SysProjectService {
                 .flatMap(exists -> {
                     if (!exists) {
                         log.warn("create project fail,parent id [{}] is not exists.");
-                        return Mono.error(NotFoundException.create("result.project.parent.not.exists"));
+                        return Mono.error(NotFoundException.create("result.project.parent.not.exists.fail"));
                     }
 
                     return projectRepository.findById(updateProjectCommand.getId());

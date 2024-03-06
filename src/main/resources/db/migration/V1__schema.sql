@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
 	`phone` VARCHAR(32) DEFAULT NULL                        COMMENT '用户手机号',
 	`avatar` VARCHAR(1024) DEFAULT NULL                     COMMENT '用户头像',
 	`sex` TINYINT(1) NOT NULL DEFAULT 1                     COMMENT '用户性别，0女，1男',
-	`status` TINYINT(1) NOT NULL DEFAULT 1                  COMMENT '用户状态'
+	`status` TINYINT(1) NOT NULL DEFAULT 1                  COMMENT '用户状态',
 	`gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
 	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
@@ -42,16 +42,16 @@ CREATE TABLE IF NOT EXISTS `sys_project`(
 	`name` VARCHAR(1024) NOT NULL                           COMMENT '组织名字',
 	`description` VARCHAR(1024) NULL                        COMMENT '组织描述',
 	`parent_id` BIGINT NULL                                 COMMENT '父组织 id',
-	`ancestors` VARCHAR(1024) NOT NULL                      COMMENT '先辈组织所有id'
+	`ancestors` VARCHAR(1024) NOT NULL                      COMMENT '先辈组织所有id',
 	`order` INT NOT NULL DEFAULT 1                          COMMENT '排序',
 	`status` TINYINT(1) NOT NULL DEFAULT 1                     COMMENT '状态',
 	`gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
 	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
 
-INSERT INTO `sys_project`(name,description,parent_id)
-VALUES ('Mortnon总公司','',0),
-    ('子公司一','',1);
+INSERT INTO `sys_project`(name,description,parent_id,ancestors)
+VALUES ('Mortnon总公司','',0,""),
+    ('子公司一','',1,"1");
 
 
 -- 用户、角色、组织关联表
@@ -142,11 +142,11 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
     `id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY  COMMENT '菜单 id',
     `name` VARCHAR(64) NOT NULL                             COMMENT '菜单名字',
     `parent_id` BIGINT DEFAULT 0 NOT NULL                   COMMENT '父菜单 id',
-    `order` INT(4) DEFAULT 0                                COMMENT '菜单排序',
+    `order` INT(4) DEFAULT 1                                COMMENT '菜单排序',
     `url` VARCHAR(200) NOT NULL                             COMMENT '菜单 url',
     `icon` VARCHAR(100) NOT NULL DEFAULT ''                 COMMENT '菜单 图标',
     `permission` VARCHAR(20) DEFAULT NULL                   COMMENT '权限组',
-    `status` TINYINT(1) DEFAULT 1,                          COMMENT '菜单状态',
+    `status` TINYINT(1) DEFAULT 1                          COMMENT '菜单状态',
     `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
     `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
@@ -154,11 +154,11 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `order`, `url`, `icon`, `permission`)
 VALUES
 	(1, '首页', 0, 1, '/', 'home', ''),
-	(2, '系统管理', 0, 2, '/system', 'system', ''),
-	(3, '用户管理', 2, 1, '/user', 'user', 'USER_QUERY'),
-	(4, '角色管理', 2, 2, '/role', 'peoples', 'ROLE_QUERY'),
-	(5, '组织管理', 2, 3, '/project', 'tree', 'PROJECT_QUERY'),
-	(6, '菜单管理', 2, 4, '/menu', 'treetable', 'MENU_QUERY'),
-	(7, '日志管理', 2, 5, '/log', 'log', 'LOG_QUERY');
+	(2, '系统管理', 0, 1, '/system', 'system', ''),
+	(3, '用户管理', 2, 1, '/system/user', 'user', 'USER_QUERY'),
+	(4, '角色管理', 2, 2, '/system/role', 'peoples', 'ROLE_QUERY'),
+	(5, '组织管理', 2, 3, '/system/project', 'tree', 'PROJECT_QUERY'),
+	(6, '菜单管理', 2, 4, '/system/menu', 'treetable', 'MENU_QUERY'),
+	(7, '日志管理', 2, 5, '/system/log', 'log', 'LOG_QUERY');
 
 COMMIT;

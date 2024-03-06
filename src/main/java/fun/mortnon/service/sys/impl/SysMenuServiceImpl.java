@@ -2,54 +2,39 @@ package fun.mortnon.service.sys.impl;
 
 import fun.mortnon.dal.sys.entity.SysMenu;
 import fun.mortnon.dal.sys.entity.SysPermission;
-import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.entity.SysRolePermission;
 import fun.mortnon.dal.sys.repository.MenuRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
 import fun.mortnon.dal.sys.repository.RolePermissionRepository;
 import fun.mortnon.dal.sys.repository.RoleRepository;
 import fun.mortnon.dal.sys.specification.Specifications;
-import fun.mortnon.framework.exceptions.NotFoundException;
 import fun.mortnon.framework.exceptions.ParameterException;
-import fun.mortnon.framework.exceptions.RepeatDataException;
-import fun.mortnon.framework.exceptions.UsedException;
-import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.sys.SysMenuService;
 import fun.mortnon.service.sys.vo.SysMenuDTO;
-import fun.mortnon.service.sys.vo.SysProjectTreeDTO;
+import fun.mortnon.service.sys.vo.SysMenuTreeDTO;
 import fun.mortnon.web.controller.menu.command.CreateMenuCommand;
-import fun.mortnon.web.controller.menu.command.MenuPageSearch;
+import fun.mortnon.web.controller.menu.command.MenuSearch;
 import fun.mortnon.web.controller.menu.command.UpdateMenuCommand;
-import fun.mortnon.web.controller.project.command.ProjectPageSearch;
-import fun.mortnon.web.controller.project.command.UpdateProjectCommand;
-import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.util.StringUtils;
-import io.micronaut.data.model.Page;
-import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
-import io.micronaut.http.HttpResponse;
-import io.micronaut.http.MutableHttpResponse;
-import io.micronaut.http.annotation.Put;
 import io.micronaut.security.authentication.ServerAuthentication;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.micronaut.data.repository.jpa.criteria.PredicateSpecification.where;
 
 /**
+ * 菜单服务
+ *
  * @author dev2007
  * @date 2023/12/5
  */
@@ -69,23 +54,49 @@ public class SysMenuServiceImpl implements SysMenuService {
     private RoleRepository roleRepository;
 
     @Override
-    public Mono<List<SysMenuDTO>> queryMenu(MenuPageSearch pageSearch) {
+    public Mono<List<SysMenuTreeDTO>> queryMenu(MenuSearch pageSearch) {
         return menuRepository.findAll(where(queryCondition(pageSearch)))
-                .collectList().map(menuList -> convertTree(menuList));
+                .collectList()
+                .map(menuList -> convertTree(menuList));
     }
 
-    private List<SysMenuDTO> convertTree(List<SysMenu> menuList) {
-        List<SysMenuDTO> tree = new ArrayList<>();
+    /**
+     * 转换树形
+     *
+     * @param menuList
+     * @return
+     */
+    private List<SysMenuTreeDTO> convertTree(List<SysMenu> menuList) {
+        List<SysMenuTreeDTO> tree = new ArrayList<>();
         menuList.forEach(node -> {
             boolean result = bindToParent(tree, node);
             if (!result) {
-                tree.add(SysMenuDTO.convert(node));
+                tree.add(SysMenuTreeDTO.convert(node));
             }
         });
         return tree;
     }
 
-    private PredicateSpecification<SysMenu> queryCondition(MenuPageSearch search) {
+    private boolean bindToParent(List<SysMenuTreeDTO> list, SysMenu node) {
+        for (SysMenuTreeDTO current : list) {
+            if (current.getId() == node.getParentId()) {
+                current.getChildren().add(SysMenuTreeDTO.convert(node));
+                return true;
+            }
+            if (current.getChildren().size() > 0) {
+                return bindToParent(current.getChildren(), node);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 组合过滤条件
+     *
+     * @param search
+     * @return
+     */
+    private PredicateSpecification<SysMenu> queryCondition(MenuSearch search) {
         PredicateSpecification<SysMenu> query = null;
 
         if (org.apache.commons.lang3.StringUtils.isNotEmpty(search.getName())) {
@@ -106,28 +117,23 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public Mono<SysMenuDTO> queryMenuById(Long id) {
-        return menuRepository.findById(id).map(SysMenuDTO::convert);
-    }
+        return menuRepository.existsById(id)
+                .flatMap(exists -> {
+                    if (!exists) {
+                        return Mono.error(ParameterException.create("result.menu.id.not.exists.fail"));
+                    }
 
-    private boolean bindToParent(List<SysMenuDTO> list, SysMenu node) {
-        for (SysMenuDTO current : list) {
-            if (current.getId() == node.getParentId()) {
-                current.getChildren().add(SysMenuDTO.convert(node));
-                return true;
-            }
-            if (current.getChildren().size() > 0) {
-                return bindToParent(current.getChildren(), node);
-            }
-        }
-        return false;
+                    return menuRepository.findById(id);
+                })
+                .map(SysMenuDTO::convert);
     }
 
     @Override
-    public Mono<SysMenu> createMenu(CreateMenuCommand createMenuCommand) {
+    public Mono<SysMenuDTO> createMenu(CreateMenuCommand createMenuCommand) {
         return permissionRepository.existsByIdentifier(createMenuCommand.getPermission())
                 .flatMap(exists -> {
                     if (!exists) {
-                        return Mono.error(ParameterException.create("permission is incorrect."));
+                        return Mono.error(ParameterException.create("result.permission.id.not.exists.fail"));
                     }
                     SysMenu sysMenu = new SysMenu();
                     sysMenu.setName(createMenuCommand.getName());
@@ -136,23 +142,22 @@ public class SysMenuServiceImpl implements SysMenuService {
                     sysMenu.setIcon(createMenuCommand.getIcon());
                     sysMenu.setParentId(createMenuCommand.getParentId());
                     sysMenu.setPermission(createMenuCommand.getPermission());
-                    sysMenu.setStatus((createMenuCommand.isStatus()));
+                    boolean status = ObjectUtils.isEmpty(createMenuCommand.getStatus()) ? true : createMenuCommand.getStatus();
+                    sysMenu.setStatus(status);
 
                     return menuRepository.save(sysMenu);
-                });
+                })
+                .map(SysMenuDTO::convert);
     }
 
     @Override
     public Mono<Boolean> deleteMenu(Long id) {
-        if (null == id || id <= 0) {
-            return Mono.error(ParameterException.create("menu id is not exists."));
-        }
-
         return menuRepository.existsById(id)
                 .flatMap(exists -> {
+                    //菜单不存在，幂等，直接响应成功
                     if (!exists) {
                         log.warn("delete menu fail,menu id [{}] is not exists.", id);
-                        return Mono.error(NotFoundException.create("menu id is not exists."));
+                        return Mono.just(1L);
                     }
                     return menuRepository.deleteById(id);
                 })
@@ -160,7 +165,7 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     @Override
-    public Mono<SysMenu> updateMenu(UpdateMenuCommand updateMenuCommand) {
+    public Mono<SysMenuDTO> updateMenu(UpdateMenuCommand updateMenuCommand) {
         return menuRepository.existsById(updateMenuCommand.getId())
                 .flatMap(exists -> {
                     if (!exists) {
@@ -187,16 +192,18 @@ public class SysMenuServiceImpl implements SysMenuService {
                                 if (StringUtils.isNotEmpty(updateMenuCommand.getPermission())) {
                                     sysMenu.setPermission(updateMenuCommand.getPermission());
                                 }
-
-                                sysMenu.setStatus(updateMenuCommand.isStatus());
+                                if (ObjectUtils.isNotEmpty(updateMenuCommand.getStatus())) {
+                                    sysMenu.setStatus(updateMenuCommand.getStatus());
+                                }
 
                                 return menuRepository.update(sysMenu);
                             });
-                });
+                })
+                .map(SysMenuDTO::convert);
     }
 
     @Override
-    public Mono<List<SysMenuDTO>> queryUserMenu(Principal principal) {
+    public Mono<List<SysMenuTreeDTO>> queryUserMenu(Principal principal) {
         if (!(principal instanceof ServerAuthentication)) {
             return Mono.just(Collections.EMPTY_LIST);
         }

@@ -1,16 +1,10 @@
 package fun.mortnon.service.sys;
 
-import fun.mortnon.dal.sys.entity.SysMenu;
 import fun.mortnon.service.sys.vo.SysMenuDTO;
-import fun.mortnon.service.sys.vo.SysPermissionDTO;
-import fun.mortnon.service.sys.vo.SysProjectDTO;
+import fun.mortnon.service.sys.vo.SysMenuTreeDTO;
 import fun.mortnon.web.controller.menu.command.CreateMenuCommand;
-import fun.mortnon.web.controller.menu.command.MenuPageSearch;
+import fun.mortnon.web.controller.menu.command.MenuSearch;
 import fun.mortnon.web.controller.menu.command.UpdateMenuCommand;
-import fun.mortnon.web.controller.project.command.UpdateProjectCommand;
-import io.micronaut.data.model.Page;
-import io.micronaut.data.model.Pageable;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
@@ -22,20 +16,50 @@ import java.util.List;
  */
 public interface SysMenuService {
     /**
-     * 查询树型的菜单数据
+     * 查询树形菜单
      *
      * @param pageSearch
      * @return
      */
-    Mono<List<SysMenuDTO>> queryMenu(MenuPageSearch pageSearch);
+    Mono<List<SysMenuTreeDTO>> queryMenu(MenuSearch pageSearch);
 
+    /**
+     * 查询指定菜单
+     *
+     * @param id 菜单 id
+     * @return
+     */
     Mono<SysMenuDTO> queryMenuById(Long id);
 
-    Mono<SysMenu> createMenu(CreateMenuCommand createMenuCommand);
+    /**
+     * 创建菜单
+     *
+     * @param createMenuCommand
+     * @return
+     */
+    Mono<SysMenuDTO> createMenu(CreateMenuCommand createMenuCommand);
 
+    /**
+     * 删除指定菜单
+     *
+     * @param id
+     * @return
+     */
     Mono<Boolean> deleteMenu(Long id);
 
-    Mono<SysMenu> updateMenu(UpdateMenuCommand updateMenuCommand);
+    /**
+     * 更新指定菜单
+     *
+     * @param updateMenuCommand
+     * @return
+     */
+    Mono<SysMenuDTO> updateMenu(UpdateMenuCommand updateMenuCommand);
 
-    Mono<List<SysMenuDTO>> queryUserMenu(Principal principal);
+    /**
+     * 查询登录用户的菜单
+     *
+     * @param principal 认证凭证
+     * @return
+     */
+    Mono<List<SysMenuTreeDTO>> queryUserMenu(Principal principal);
 }

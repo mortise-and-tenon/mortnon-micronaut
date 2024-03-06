@@ -6,7 +6,7 @@ import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.sys.SysMenuService;
 import fun.mortnon.service.sys.SysUserService;
-import fun.mortnon.service.sys.vo.SysMenuDTO;
+import fun.mortnon.service.sys.vo.SysMenuTreeDTO;
 import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
 import io.micronaut.core.annotation.Nullable;
@@ -63,7 +63,7 @@ public class ProfileController {
      * @return
      */
     @Get("/menus")
-    public Mono<MortnonResult<List<SysMenuDTO>>> queryMenuTree(@Nullable Principal principal) {
+    public Mono<MortnonResult<List<SysMenuTreeDTO>>> queryMenuTree(@Nullable Principal principal) {
         return sysMenuService.queryUserMenu(principal).map(MortnonResult::success);
     }
 

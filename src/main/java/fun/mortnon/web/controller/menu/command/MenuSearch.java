@@ -1,6 +1,5 @@
 package fun.mortnon.web.controller.menu.command;
 
-import fun.mortnon.framework.vo.PageableQuery;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
@@ -15,7 +14,7 @@ import lombok.Data;
 @Data
 @Serdeable(naming = SnakeCaseStrategy.class)
 @Introspected
-public class MenuPageSearch extends PageableQuery {
+public class MenuSearch {
     /**
      * 菜单名称
      */

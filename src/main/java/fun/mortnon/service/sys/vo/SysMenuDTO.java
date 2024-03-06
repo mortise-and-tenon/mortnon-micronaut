@@ -1,6 +1,5 @@
 package fun.mortnon.service.sys.vo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysMenu;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
@@ -9,12 +8,10 @@ import lombok.Data;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author dev2007
- * @date 2023/12/6
+ * @date 2024/3/6
  */
 @Introspected
 @Serdeable(naming = SnakeCaseStrategy.class)
@@ -63,13 +60,7 @@ public class SysMenuDTO {
     /**
      * 创建时间
      */
-    @JsonProperty("gmt_create")
     private Instant gmtCreate;
-
-    /**
-     * 子菜单
-     */
-    private List<SysMenuDTO> children;
 
     public static SysMenuDTO convert(SysMenu sysMenu) {
         SysMenuDTO sysMenuDTO = new SysMenuDTO();
@@ -85,7 +76,7 @@ public class SysMenuDTO {
         sysMenuDTO.setPermission(permission);
 
         sysMenuDTO.setParentId(sysMenu.getParentId());
-        sysMenuDTO.setChildren(new ArrayList<>());
+
 
         return sysMenuDTO;
     }

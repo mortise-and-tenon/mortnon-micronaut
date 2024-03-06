@@ -13,6 +13,8 @@ import javax.validation.constraints.Positive;
 import java.util.List;
 
 /**
+ * 菜单更新数据
+ *
  * @author dev2007
  * @date 2023/12/6
  */
@@ -23,7 +25,6 @@ public class UpdateMenuCommand {
     /**
      * 父菜单 id
      */
-    @JsonProperty("parent_id")
     private Long parentId;
     /**
      * 菜单 id
@@ -59,5 +60,5 @@ public class UpdateMenuCommand {
     /**
      * 菜单状态
      */
-    private boolean status;
+    private Boolean status;
 }
