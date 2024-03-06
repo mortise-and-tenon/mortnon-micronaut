@@ -5,7 +5,7 @@ import fun.mortnon.framework.vo.MortnonResult;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * 结果工具
+ * 响应结果工具
  *
  * @author dongfangzan
  * @date 14.4.21 10:31 上午
@@ -34,8 +34,7 @@ public class ResultUtil {
     public static <T> MortnonResult<T> success() {
         return new MortnonResult<T>()
                 .setSuccess(true)
-                .setErrorCode(ErrorCodeEnum.SUCCESS.getErrorCode())
-                .setMessage(ErrorCodeEnum.SUCCESS.getDescription());
+                .setErrorCode(ErrorCodeEnum.SUCCESS.getErrorCode());
     }
 
     /**

@@ -3,6 +3,8 @@ package fun.mortnon.service.login;
 import fun.mortnon.service.login.model.MortnonCaptcha;
 
 /**
+ * 验证码服务
+ *
  * @author dongfangzan
  * @date 30.4.21 10:26 上午
  */

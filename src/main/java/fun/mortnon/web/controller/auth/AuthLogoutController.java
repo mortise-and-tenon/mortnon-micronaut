@@ -18,13 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 /**
+ * 注销认证
+ *
  * @author dev2007
  * @date 2023/2/21
  */
 @Secured(SecurityRule.IS_ANONYMOUS)
 @Controller("/logout")
 @Slf4j
-public class MortnonLogoutController {
+public class AuthLogoutController {
     @Inject
     private LogoutHandler logoutHandler;
 

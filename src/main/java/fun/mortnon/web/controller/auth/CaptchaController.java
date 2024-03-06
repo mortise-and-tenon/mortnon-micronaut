@@ -10,6 +10,7 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
+import reactor.core.publisher.Mono;
 
 /**
  * 验证码
@@ -21,6 +22,9 @@ import jakarta.inject.Inject;
 @Controller("/captcha")
 public class CaptchaController {
 
+    /**
+     * 验证码服务
+     */
     @Inject
     private CaptchaService captchaService;
 
@@ -28,7 +32,7 @@ public class CaptchaController {
      * 获取验证码
      */
     @Get
-    public MortnonResult<MortnonCaptcha> captcha() {
-        return ResultUtil.success(captchaService.generateCaptcha());
+    public Mono<MortnonResult<MortnonCaptcha>> captcha() {
+        return Mono.just(ResultUtil.success(captchaService.generateCaptcha()));
     }
 }

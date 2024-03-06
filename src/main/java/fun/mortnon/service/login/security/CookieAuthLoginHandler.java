@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * micronaut.security.authentication=cookie 对应认证处理器
+ *
  * @author dev2007
  * @date 2023/3/7
  */
@@ -34,21 +36,44 @@ import java.util.List;
 @Requires(property = SecurityConfigurationProperties.PREFIX + ".authentication", value = "cookie")
 @Singleton
 public class CookieAuthLoginHandler extends JwtCookieLoginHandler {
+    /**
+     * 响应内容处理工具
+     */
     @Inject
     private ResultBuilder resultBuilder;
 
-    public CookieAuthLoginHandler(RedirectService redirectService, RedirectConfiguration redirectConfiguration, AccessTokenCookieConfiguration accessTokenCookieConfiguration, RefreshTokenCookieConfiguration refreshTokenCookieConfiguration, AccessTokenConfiguration accessTokenConfiguration, AccessRefreshTokenGenerator accessRefreshTokenGenerator, @Nullable PriorToLoginPersistence priorToLoginPersistence) {
-        super(redirectService, redirectConfiguration, accessTokenCookieConfiguration, refreshTokenCookieConfiguration, accessTokenConfiguration, accessRefreshTokenGenerator, priorToLoginPersistence);
+    public CookieAuthLoginHandler(RedirectService redirectService, RedirectConfiguration redirectConfiguration,
+                                  AccessTokenCookieConfiguration accessTokenCookieConfiguration,
+                                  RefreshTokenCookieConfiguration refreshTokenCookieConfiguration,
+                                  AccessTokenConfiguration accessTokenConfiguration,
+                                  AccessRefreshTokenGenerator accessRefreshTokenGenerator,
+                                  @Nullable PriorToLoginPersistence priorToLoginPersistence) {
+        super(redirectService, redirectConfiguration, accessTokenCookieConfiguration, refreshTokenCookieConfiguration,
+                accessTokenConfiguration, accessRefreshTokenGenerator, priorToLoginPersistence);
     }
 
+    /**
+     * 认证失败的响应
+     *
+     * @param authenticationFailed Object encapsulates the Login failure
+     * @param request              The {@link HttpRequest} being executed
+     * @return
+     */
     @Override
     public MutableHttpResponse<?> loginFailed(AuthenticationResponse authenticationFailed, HttpRequest<?> request) {
         return HttpResponse.unauthorized().body(resultBuilder.build(ErrorCodeEnum.INVALID_USERNAME_OR_PASSWORD));
     }
 
+    /**
+     * 认证成功的响应
+     *
+     * @param response The response
+     * @param cookies  Cookies to be added to the response
+     * @return
+     */
     @Override
     public MutableHttpResponse<?> applyCookies(MutableHttpResponse<?> response, List<Cookie> cookies) {
         return super.applyCookies(response, cookies)
-                .body(MortnonResult.success(null));
+                .body(MortnonResult.success());
     }
 }

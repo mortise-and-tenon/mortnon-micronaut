@@ -1,30 +1,28 @@
 package fun.mortnon.web.vo.login;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
-import lombok.experimental.Accessors;
-
-import javax.validation.constraints.NotNull;
 
 /**
+ * 认证数据
  * @author dongfangzan
  * @date 27.4.21 5:11 下午
  */
 @Data
-@Accessors(chain = true)
-@Serdeable
+@Introspected
+@Serdeable(naming = SnakeCaseStrategy.class)
 public class PasswordLoginCredentials extends UsernamePasswordCredentials {
     /**
-     * 验证码token
+     * 验证码 key
      */
-    @JsonProperty("verify_token")
-    private String verifyToken;
+    private String verifyKey;
 
     /**
      * 验证码
      */
-    private String code;
+    private String verifyCode;
 
 }

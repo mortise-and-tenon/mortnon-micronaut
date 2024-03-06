@@ -25,11 +25,20 @@ import java.util.UUID;
  */
 @Singleton
 public class CaptchaServiceImpl implements CaptchaService {
+    /**
+     * 验证码图片base64数据前缀
+     */
     private static final String BASE64_IMAGE = "data:image/png;base64,";
 
+    /**
+     * 验证码配置
+     */
     @Inject
     private CaptchaProperties captchaProperties;
 
+    /**
+     * 登录工厂
+     */
     @Inject
     private LoginFactory loginFactory;
 
@@ -84,7 +93,6 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     @Override
     public boolean verifyCaptcha(String captchaKey, String captchaCode) {
-
         if (StringUtils.isBlank(captchaKey) || StringUtils.isBlank(captchaCode)) {
             return false;
         }

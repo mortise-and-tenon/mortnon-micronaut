@@ -56,7 +56,7 @@ public enum ErrorCodeEnum {
     /**
      * 用户名或密码错误
      */
-    INVALID_USERNAME_OR_PASSWORD("A0210", "invalid username or password", "result.login.userpwd.fail"),
+    INVALID_USERNAME_OR_PASSWORD("A0210", "Invalid username or password", "result.login.userpwd.fail"),
 
     /**
      * 用户登录过期
@@ -66,7 +66,7 @@ public enum ErrorCodeEnum {
     /**
      * 验证码错误
      */
-    VERIFY_CODE_ERROR("A0240", "verify code error"),
+    VERIFY_CODE_ERROR("A0240", "Invalid verification code","result.login.code.fail"),
 
     /**
      * 访问未授权

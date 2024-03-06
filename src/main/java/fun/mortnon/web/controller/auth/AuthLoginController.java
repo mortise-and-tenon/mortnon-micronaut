@@ -3,9 +3,8 @@ package fun.mortnon.web.controller.auth;
 import fun.mortnon.framework.aop.OperationLog;
 import fun.mortnon.framework.constants.LogConstants;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
-import fun.mortnon.framework.vo.MortnonResult;
+import fun.mortnon.framework.utils.ResultBuilder;
 import fun.mortnon.service.login.CaptchaService;
-import fun.mortnon.service.sys.SysUserService;
 import fun.mortnon.web.vo.login.PasswordLoginCredentials;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.async.annotation.SingleResult;
@@ -33,35 +32,46 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 
 /**
+ * 登录认证
+ *
  * @author dev2007
  * @date 2023/2/10
  */
 @Secured(SecurityRule.IS_ANONYMOUS)
 @Controller("/login")
 @Slf4j
-public class MortnonLoginController extends LoginController {
+public class AuthLoginController extends LoginController {
+
+    /**
+     * 验证码服务
+     */
     private CaptchaService captchaService;
 
-    private SysUserService sysUserService;
+    /**
+     * 响应内容处理工具
+     */
+    private ResultBuilder resultBuilder;
 
     /**
      * @param authenticator  {@link Authenticator} collaborator
      * @param loginHandler   A collaborator which helps to build HTTP response depending on success or failure.
      * @param eventPublisher The application event publisher
      */
-    public MortnonLoginController(Authenticator authenticator, LoginHandler loginHandler,
-                                  ApplicationEventPublisher eventPublisher, CaptchaService captchaService,
-                                  SysUserService sysUserService) {
+    public AuthLoginController(Authenticator authenticator, LoginHandler loginHandler,
+                               ApplicationEventPublisher eventPublisher, CaptchaService captchaService, ResultBuilder resultBuilder) {
         super(authenticator, loginHandler, eventPublisher);
         this.captchaService = captchaService;
-        this.sysUserService = sysUserService;
+        this.resultBuilder = resultBuilder;
     }
 
     /**
-     * 登录
+     * 用户名、密码登录
+     * <p>
+     * 将按照配置 micronaut.security.authentication 选择对应的认证处理器进行认证处理
+     * CookieAuthLoginHandler 或 JwtAuthLoginHandler
      *
-     * @param passwordLoginCredentials
-     * @param request
+     * @param passwordLoginCredentials 认证凭证
+     * @param request                  Http 请求
      * @return
      */
     @OperationLog(LogConstants.LOGIN)
@@ -70,9 +80,10 @@ public class MortnonLoginController extends LoginController {
     @SingleResult
     public Publisher<MutableHttpResponse<?>> login(@Valid @Body PasswordLoginCredentials passwordLoginCredentials,
                                                    HttpRequest<?> request) {
+        //如果开启验证码，先校验验证码
         if (!verifyCaptcha(passwordLoginCredentials)) {
-            log.info("verify captcha fail.");
-            return Mono.just(HttpResponse.unauthorized().body(MortnonResult.fail(ErrorCodeEnum.VERIFY_CODE_ERROR)));
+            log.info("Verification code failed.");
+            return Mono.just(HttpResponse.unauthorized().body(resultBuilder.build(ErrorCodeEnum.VERIFY_CODE_ERROR)));
         }
 
         return Flux.from(authenticator.authenticate(request, passwordLoginCredentials))
@@ -85,7 +96,8 @@ public class MortnonLoginController extends LoginController {
                         eventPublisher.publishEvent(new LoginFailedEvent(authenticationResponse));
                         return loginHandler.loginFailed(authenticationResponse, request);
                     }
-                }).switchIfEmpty(Mono.defer(() -> Mono.just(HttpResponse.unauthorized())));
+                })
+                .switchIfEmpty(Mono.defer(() -> Mono.just(HttpResponse.unauthorized())));
     }
 
     /**
@@ -100,6 +112,6 @@ public class MortnonLoginController extends LoginController {
             return true;
         }
 
-        return captchaService.verifyCaptcha(passwordLoginCredentials.getVerifyToken(), passwordLoginCredentials.getCode());
+        return captchaService.verifyCaptcha(passwordLoginCredentials.getVerifyKey(), passwordLoginCredentials.getVerifyCode());
     }
 }

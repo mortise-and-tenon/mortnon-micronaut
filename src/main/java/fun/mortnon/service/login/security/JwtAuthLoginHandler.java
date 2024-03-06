@@ -16,7 +16,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 /**
- * 认证后处理
+ * micronaut.security.authentication=bearer 对应认证处理器
  *
  * @author dev2007
  * @date 2023/2/10

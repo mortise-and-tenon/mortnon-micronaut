@@ -126,25 +126,4 @@ public class UserController {
         updatePassword.setId(id);
         return sysUserService.updateUserPassword(updatePassword).map(MortnonResult::success).map(HttpResponse::ok);
     }
-
-    /**
-     * 修改自己密码
-     *
-     * @param authentication
-     * @param updatePasswordCommand
-     * @return
-     */
-    @OperationLog(LogConstants.USER_PASSWORD_UPDATE)
-    @Secured(SecurityRule.IS_AUTHENTICATED)
-    @Put("/password")
-    public Mono<MutableHttpResponse<MortnonResult>> updateUserPassword(Authentication authentication, @Body @NotNull UpdatePasswordCommand updatePasswordCommand) {
-        if (null == authentication) {
-            return Mono.error(ParameterException.create("auth is null."));
-        }
-
-        String userName = authentication.getName();
-        updatePasswordCommand.setId(0L);
-        updatePasswordCommand.setUserName(userName);
-        return sysUserService.updateSelfPassword(updatePasswordCommand).map(MortnonResult::success).map(HttpResponse::ok);
-    }
 }
