@@ -50,14 +50,23 @@ public class SysLogServiceImpl implements SysLogService {
     @Inject
     private MessageSource messageSource;
 
-    private static final String[] FILE_CELL_NAME = {"日志编号", "用户操作", "操作人员", "所属组织", "IP 地址", "操作结果", "日志级别", "操作时间"};
+    /**
+     * 表格的表头名称（中文）
+     */
+    private static final String[] FILE_CELL_NAME_ZH = {"日志编号", "用户操作", "操作人员", "所属组织", "IP 地址", "操作结果", "日志级别", "操作时间"};
+
+    /**
+     * 表格的表头名称（英文）
+     */
+    private static final String[] FILE_CELL_NAME_EN = {"LOG ID", "USER ACTION", "USER", "DEPARTMENT", "IP", "ACTION RESULT", "LOG LEVEL", "TIME"};
 
     @Override
     public Mono<SysLog> createLog(SysLog sysLog) {
-        return logRepository.save(sysLog).onErrorResume(e -> {
-            log.warn("create operation log fail for:", e);
-            return Mono.just(sysLog);
-        });
+        return logRepository.save(sysLog)
+                .onErrorResume(e -> {
+                    log.warn("Failed to create operation log due to:", e);
+                    return Mono.just(sysLog);
+                });
     }
 
     @Override
@@ -68,14 +77,12 @@ public class SysLogServiceImpl implements SysLogService {
             pageable = pageable.order(Sort.Order.desc("time"));
         }
 
-        PredicateSpecification<SysLog> query = queryCondition(pageSearch);
-
-        return logRepository.findAll(where(query), pageable)
-                .map(k -> {
-                    List<SysLogDTO> list = k.getContent().stream()
+        return logRepository.findAll(where(queryCondition(pageSearch)), pageable)
+                .map(page -> {
+                    List<SysLogDTO> list = page.getContent().stream()
                             .map(log -> SysLogDTO.convert(log, messageSource, lang))
                             .collect(Collectors.toList());
-                    return Page.of(list, k.getPageable(), k.getTotalSize());
+                    return Page.of(list, page.getPageable(), page.getTotalSize());
                 });
     }
 
@@ -87,8 +94,8 @@ public class SysLogServiceImpl implements SysLogService {
                 .map(pageData -> {
                     List<SysLogDTO> contentList = pageData.getContent();
                     Workbook workbook = new HSSFWorkbook();
-                    Sheet sheet = workbook.createSheet("操作日志");
-                    ExcelUtils.createHeader(sheet, Arrays.asList(FILE_CELL_NAME));
+                    Sheet sheet = workbook.createSheet(lang.startsWith("zh") ? "操作日志" : "OPERATION LOGS");
+                    ExcelUtils.createHeader(sheet, Arrays.asList(lang.startsWith("zh") ? FILE_CELL_NAME_ZH : FILE_CELL_NAME_EN));
 
                     for (int index = 0; index < contentList.size(); index++) {
                         Row row = sheet.createRow(index + 1);
@@ -107,13 +114,20 @@ public class SysLogServiceImpl implements SysLogService {
                     try (FileOutputStream outputStream = new FileOutputStream(tmpFile)) {
                         workbook.write(outputStream);
                     } catch (IOException e) {
-                        log.warn("write operlog file fail.");
+                        log.error("Failed to write to the operation log file,due to:", e);
                     }
 
                     return new SystemFile(tmpFile, MediaType.MICROSOFT_EXCEL_OPEN_XML_TYPE).attach(fileName);
-                }).doAfterTerminate(()->tmpFile.delete());
+                })
+                .doAfterTerminate(() -> tmpFile.delete());
     }
 
+    /**
+     * 组合过滤条件
+     *
+     * @param pageSearch
+     * @return
+     */
     private PredicateSpecification<SysLog> queryCondition(LogPageSearch pageSearch) {
         PredicateSpecification<SysLog> query = null;
 

@@ -15,5 +15,13 @@ import reactor.core.publisher.Mono;
  */
 @R2dbcRepository(dialect = Dialect.MYSQL)
 public interface LogRepository extends ReactorPageableRepository<SysLog, Long> {
+
+    /**
+     * 按条件分页查询
+     *
+     * @param spec
+     * @param pageable
+     * @return
+     */
     Mono<Page<SysLog>> findAll(PredicateSpecification<SysLog> spec, Pageable pageable);
 }

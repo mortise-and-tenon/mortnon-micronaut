@@ -27,21 +27,32 @@ import java.util.List;
  */
 @Controller("/logs")
 public class LogController {
+    /**
+     * 日志服务
+     */
     @Inject
     private SysLogService sysLogService;
 
     /**
-     * 带参数查询的分页查询日志
+     * 查询日志
      *
-     * @param pageSearch
-     * @param lang
+     * @param pageSearch 查询参数、分页、排序
+     * @param lang       语言
      * @return
      */
     @Get("{?pageSearch*}")
-    public Mono<MortnonResult<PageableData<List<SysLogDTO>>>> queryUser(LogPageSearch pageSearch, @QueryValue(defaultValue = "zh") String lang) {
+    public Mono<MortnonResult<PageableData<List<SysLogDTO>>>> queryUser(LogPageSearch pageSearch,
+                                                                        @QueryValue(defaultValue = "zh") String lang) {
         return sysLogService.queryLogs(pageSearch, lang).map(MortnonResult::successPageData);
     }
 
+    /**
+     * 导出日志
+     *
+     * @param pageSearch 查询参数、分页、排序
+     * @param lang       语言
+     * @return
+     */
     @Get("/export{?pageSearch*}")
     public Mono<SystemFile> exportFile(LogPageSearch pageSearch, @QueryValue(defaultValue = "zh") String lang) {
         return sysLogService.exportFile(pageSearch, lang);

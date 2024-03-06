@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `sys_project`(
 );
 
 INSERT INTO `sys_project`(name,description,parent_id)
-VALUES ('Mornton总公司','',0),
+VALUES ('Mortnon总公司','',0),
     ('子公司一','',1);
 
 
