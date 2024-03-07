@@ -23,6 +23,6 @@ public class ParameterExceptionHandler implements ExceptionHandler<ParameterExce
     private ResultBuilder resultBuilder;
 
     public HttpResponse handle(HttpRequest request, ParameterException exception) {
-        return HttpResponse.badRequest(resultBuilder.build(exception.getErrorCodeEnum(), exception.getMessage()));
+        return HttpResponse.badRequest(resultBuilder.build(exception.getErrorCodeEnum()));
     }
 }

@@ -7,6 +7,7 @@ import fun.mortnon.dal.sys.repository.ProjectRepository;
 import fun.mortnon.dal.sys.repository.RoleRepository;
 import fun.mortnon.dal.sys.repository.UserRepository;
 import fun.mortnon.dal.sys.specification.Specifications;
+import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.exceptions.NotFoundException;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.exceptions.RepeatDataException;
@@ -177,15 +178,31 @@ public class AssignmentServiceImpl implements AssignmentService {
         return userRepository.findAll(where(queryCondition(pageSearch, assignmentUserList, null)), pageable);
     }
 
+    /**
+     * 组合查询条件
+     *
+     * @param search
+     * @param includeUserIdList 要包含在内的用户
+     * @param excludeUserIdList 要排除的用户
+     * @return
+     */
     private PredicateSpecification<SysUser> queryCondition(UserPageSearch search, List<Long> includeUserIdList,
                                                            List<Long> excludeUserIdList) {
         PredicateSpecification<SysUser> query = null;
 
-        if (CollectionUtils.isNotEmpty(includeUserIdList)) {
+        if (includeUserIdList != null) {
+            //如果过滤数据完全为空，给定一个无效值
+            if (CollectionUtils.isEmpty(includeUserIdList)) {
+                includeUserIdList.add(-1L);
+            }
             query = Specifications.idInList("id", includeUserIdList);
         }
 
-        if (CollectionUtils.isNotEmpty(excludeUserIdList)) {
+        if (excludeUserIdList != null) {
+            //如果过滤数据完全为空，给定一个无效值
+            if (CollectionUtils.isEmpty(excludeUserIdList)) {
+                excludeUserIdList.add(-1L);
+            }
             query = Specifications.idNotInList("id", excludeUserIdList);
         }
 
@@ -313,7 +330,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     @Override
     public Mono<Boolean> revokeUser(RevokeCommand revokeCommand) {
         if (ObjectUtils.isEmpty(revokeCommand.getUserId()) || revokeCommand.getUserId() <= 0) {
-            return Mono.error(ParameterException.create("user id is wrong."));
+            return Mono.error(ParameterException.create(ErrorCodeEnum.USER_INFO_ERROR));
         }
 
         boolean isProject = true;
@@ -329,17 +346,17 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
         if (!isProject && !isRole) {
-            return Mono.error(ParameterException.create("project and role id all are wrong."));
+            return Mono.error(ParameterException.create(ErrorCodeEnum.USER_INFO_ERROR));
         }
 
-        if (isProject && isProject) {
+        if (isProject && isRole) {
             return assignmentRepository.existsByUserIdEqualsAndProjectIdEqualsAndRoleIdEquals(revokeCommand.getUserId(),
                             revokeCommand.getProjectId(), revokeCommand.getRoleId())
                     .flatMap(exists -> {
                         if (!exists) {
-                            log.warn("revoke assignment,user [{}],project [{}],role [{}],is not exists.", revokeCommand.getUserId(),
+                            log.warn("Failed to remove organization role assignment because user {}, organization {}, and role {} do not exist.", revokeCommand.getUserId(),
                                     revokeCommand.getProjectId(), revokeCommand.getRoleId());
-                            return Mono.error(RepeatDataException.create("assignment data is not exists."));
+                            return Mono.error(ParameterException.create(ErrorCodeEnum.USER_INFO_ERROR));
                         }
 
                         return assignmentRepository.deleteByUserIdEqualsAndProjectIdEqualsAndRoleIdEquals(revokeCommand.getUserId(),
@@ -353,9 +370,10 @@ public class AssignmentServiceImpl implements AssignmentService {
                             revokeCommand.getProjectId())
                     .flatMap(exists -> {
                         if (!exists) {
-                            log.warn("revoke assignment,user [{}],project [{}],is not exists.", revokeCommand.getUserId(),
+                            log.warn("Failed to remove organization role assignment because [user {}], organization {} do not exist.",
+                                    revokeCommand.getUserId(),
                                     revokeCommand.getProjectId());
-                            return Mono.error(RepeatDataException.create("assignment data is not exists."));
+                            return Mono.error(ParameterException.create(ErrorCodeEnum.USER_INFO_ERROR));
                         }
 
                         return assignmentRepository.findByUserIdEqualsAndProjectIdEquals(revokeCommand.getUserId(),
@@ -371,9 +389,10 @@ public class AssignmentServiceImpl implements AssignmentService {
                         revokeCommand.getRoleId())
                 .flatMap(exists -> {
                     if (!exists) {
-                        log.warn("revoke assignment,user [{}],role [{}],is not exists.", revokeCommand.getUserId(),
+                        log.warn("Failed to remove organization role assignment because [user {}], role {} do not exist.",
+                                revokeCommand.getUserId(),
                                 revokeCommand.getRoleId());
-                        return Mono.error(RepeatDataException.create("assignment data is not exists."));
+                        return Mono.error(ParameterException.create(ErrorCodeEnum.USER_INFO_ERROR));
                     }
 
                     return assignmentRepository.findByUserIdEqualsAndRoleIdEquals(revokeCommand.getUserId(), revokeCommand.getRoleId());

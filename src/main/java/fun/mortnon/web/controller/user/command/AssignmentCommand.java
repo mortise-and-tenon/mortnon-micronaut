@@ -29,21 +29,17 @@ public class AssignmentCommand {
     /**
      * 用户 id
      */
-    @JsonProperty(value = "user_id")
     private Long userId;
 
     /**
      * 组织 id
      */
-    @JsonProperty(value = "project_id")
     private Long projectId;
 
     /**
      * 角色 id
      */
-    @JsonProperty(value = "role_id")
     private Long roleId;
 
-    @JsonProperty(value = "user_id_list")
     private List<Long> userIdList;
 }

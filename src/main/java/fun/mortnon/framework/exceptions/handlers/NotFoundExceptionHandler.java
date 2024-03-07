@@ -24,6 +24,6 @@ public class NotFoundExceptionHandler implements ExceptionHandler<NotFoundExcept
 
     @Override
     public HttpResponse handle(HttpRequest request, NotFoundException exception) {
-        return HttpResponse.notFound(resultBuilder.build(exception.getErrorCodeEnum(), exception.getMessage()));
+        return HttpResponse.notFound(resultBuilder.build(exception.getErrorCodeEnum()));
     }
 }

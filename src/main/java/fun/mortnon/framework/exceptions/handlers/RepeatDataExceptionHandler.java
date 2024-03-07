@@ -24,6 +24,6 @@ public class RepeatDataExceptionHandler implements ExceptionHandler<RepeatDataEx
 
     @Override
     public HttpResponse handle(HttpRequest request, RepeatDataException exception) {
-        return HttpResponse.badRequest(resultBuilder.build(exception.getErrorCodeEnum(), exception.getMessage()));
+        return HttpResponse.badRequest(resultBuilder.build(exception.getErrorCodeEnum()));
     }
 }

@@ -28,6 +28,6 @@ public class UsedExceptionHandler implements ExceptionHandler<UsedException, Htt
 
     @Override
     public HttpResponse handle(HttpRequest request, UsedException exception) {
-        return HttpResponse.badRequest(resultBuilder.build(exception.getErrorCodeEnum(), exception.getMessage()));
+        return HttpResponse.badRequest(resultBuilder.build(exception.getErrorCodeEnum()));
     }
 }
