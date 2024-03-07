@@ -162,22 +162,29 @@ public class SysUserServiceImpl implements SysUserService {
      * @return
      */
     private Mono<ProjectRoleDTO> queryProjectRole(SysAssignment assignment) {
-        ProjectRoleDTO projectRoleDTO = new ProjectRoleDTO();
         if (ObjectUtils.isNotEmpty(assignment.getProjectId())) {
             return projectRepository.findById(assignment.getProjectId())
-                    .flatMap(project -> {
+                    .map(project -> {
+                        ProjectRoleDTO projectRoleDTO = new ProjectRoleDTO();
                         projectRoleDTO.setProjectId(project.getId());
                         projectRoleDTO.setProjectName(project.getName());
-                        return roleRepository.findById(assignment.getRoleId());
-                    })
-                    .map(role -> {
-                        projectRoleDTO.setRoleId(role.getId());
-                        projectRoleDTO.setRoleName(role.getName());
                         return projectRoleDTO;
+                    })
+                    .flatMap(pr -> {
+                        if (ObjectUtils.isEmpty(assignment.getRoleId())) {
+                            return Mono.just(pr);
+                        }
+                        return roleRepository.findById(assignment.getRoleId())
+                                .map(role -> {
+                                    pr.setRoleId(role.getId());
+                                    pr.setRoleName(role.getName());
+                                    return pr;
+                                });
                     });
         }
         return roleRepository.findById(assignment.getRoleId())
                 .map(role -> {
+                    ProjectRoleDTO projectRoleDTO = new ProjectRoleDTO();
                     projectRoleDTO.setRoleId(role.getId());
                     projectRoleDTO.setRoleName(role.getName());
                     return projectRoleDTO;
