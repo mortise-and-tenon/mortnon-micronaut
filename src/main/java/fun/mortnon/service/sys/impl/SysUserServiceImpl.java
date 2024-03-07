@@ -81,63 +81,69 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     public Mono<SysUserDTO> createUser(CreateUserCommand createUserCommand) {
         if (StringUtils.isEmpty(createUserCommand.getPassword()) || StringUtils.isEmpty(createUserCommand.getRepeatPassword())) {
-            return Mono.error(ParameterException.create("password is empty"));
+            return Mono.error(ParameterException.create("Password is empty"));
         }
 
         if (!createUserCommand.getPassword().equals(createUserCommand.getRepeatPassword())) {
-            return Mono.error(ParameterException.create("password is not match"));
+            return Mono.error(ParameterException.create("Password does not match."));
         }
 
         if (StringUtils.isEmpty(createUserCommand.getUserName())) {
-            return Mono.error(ParameterException.create("user name is empty"));
+            return Mono.error(ParameterException.create("Username is empty"));
         }
 
         if (StringUtils.isEmpty(createUserCommand.getNickName())) {
-            return Mono.error(ParameterException.create("nick name is empty"));
+            return Mono.error(ParameterException.create("Nickname is empty"));
         }
 
         return userRepository.existsByUserName(createUserCommand.getUserName())
                 .flatMap(exists -> {
                     if (exists) {
-                        log.warn("create user fail,repeat user name:{}", createUserCommand.getUserName());
-                        return Mono.error(RepeatDataException.create(ErrorCodeEnum.USERNAME_ALREADY_EXISTS, "user name is repeat."));
+                        log.warn("Failed to create user due to duplicate username : {}.", createUserCommand.getUserName());
+                        return Mono.error(RepeatDataException.create(ErrorCodeEnum.USERNAME_ALREADY_EXISTS));
                     }
                     SysUser sysUser = new SysUser();
                     sysUser.setUserName(createUserCommand.getUserName());
                     sysUser.setNickName(createUserCommand.getNickName());
                     sysUser.setPassword(createUserCommand.getPassword());
                     sysUser.setSex(createUserCommand.getSex());
-                    sysUser.setStatus(createUserCommand.isStatus());
+
+                    boolean status = ObjectUtils.isEmpty(createUserCommand.getStatus()) ? true : createUserCommand.getStatus();
+                    sysUser.setStatus(status);
+
                     sysUser.setEmail(createUserCommand.getEmail());
                     sysUser.setPhone(createUserCommand.getPhone());
                     hashPassword(sysUser);
 
-                    return userRepository.save(sysUser).map(SysUserDTO::convert);
+                    return userRepository.save(sysUser);
                 })
+                .map(SysUserDTO::convert)
                 .flatMap(userDTO -> {
                     if (CollectionUtils.isEmpty(createUserCommand.getProjectRoles())) {
                         return Mono.just(userDTO);
                     }
 
                     boolean existsEmpty = createUserCommand.getProjectRoles().stream()
-                            .anyMatch(k -> null == k.getProjectId() || k.getProjectId() <= 0 || null == k.getRoleId() || k.getRoleId() <= 0);
+                            .anyMatch(k -> null == k.getProjectId() || k.getProjectId() <= 0
+                                    || null == k.getRoleId() || k.getRoleId() <= 0);
                     if (existsEmpty) {
-                        return Mono.error(ParameterException.create("user project / role id is empty."));
+                        return Mono.error(ParameterException.create(ErrorCodeEnum.PROJECT_ROLE_ERROR));
                     }
                     return Flux.fromStream(createUserCommand.getProjectRoles().stream())
                             .flatMap(projectRoleDTO -> {
                                 return projectRepository.existsById(projectRoleDTO.getProjectId())
                                         .flatMap(projectExists -> {
                                             if (!projectExists) {
-                                                return Mono.error(NotFoundException.create("project is not exists."));
+                                                return Mono.error(NotFoundException.create(ErrorCodeEnum.PROJECT_NOT_EXIST));
                                             }
                                             return roleRepository.existsById(projectRoleDTO.getRoleId());
                                         })
                                         .flatMap(roleExists -> {
                                             if (!roleExists) {
-                                                return Mono.error(NotFoundException.create("role is not exists."));
+                                                return Mono.error(NotFoundException.create(ErrorCodeEnum.ROLE_NOT_EXIST));
                                             }
-                                            return publicService.saveAssignment(userDTO.getId(), projectRoleDTO.getProjectId(), projectRoleDTO.getRoleId());
+                                            return publicService.saveAssignment(userDTO.getId(), projectRoleDTO.getProjectId(),
+                                                    projectRoleDTO.getRoleId());
                                         });
                             })
                             .flatMap(assignment -> queryProjectRole(assignment))
@@ -178,6 +184,11 @@ public class SysUserServiceImpl implements SysUserService {
                 });
     }
 
+    /**
+     * Hash 密码，避免明文存储
+     *
+     * @param sysUser
+     */
     private void hashPassword(SysUser sysUser) {
         sysUser.setSalt(RandomStringUtils.randomAlphanumeric(6));
         String hashPassword = DigestUtils.sha256Hex(sysUser.getPassword() + sysUser.getSalt());
@@ -189,8 +200,8 @@ public class SysUserServiceImpl implements SysUserService {
         return userRepository.existsById(id)
                 .flatMap(result -> {
                     if (!result) {
-                        log.warn("query user fail,user id [{}] is not exists.", id);
-                        return Mono.error(NotFoundException.create("user not exists."));
+                        log.warn("Querying user failed, user id {} does not exist.", id);
+                        return Mono.error(NotFoundException.create(ErrorCodeEnum.USER_NOT_EXISTS));
                     }
                     return userRepository.findById(id);
                 })
@@ -226,7 +237,6 @@ public class SysUserServiceImpl implements SysUserService {
                         return assignmentRepository.existsByUserId(userDTO.getId())
                                 .flatMapMany(exists -> {
                                     if (!exists) {
-                                        log.info("query user [{}],assignment is empty.", userDTO.getId());
                                         return Mono.empty();
                                     }
 
@@ -255,6 +265,12 @@ public class SysUserServiceImpl implements SysUserService {
         });
     }
 
+    /**
+     * 组合查询条件
+     *
+     * @param pageSearch
+     * @return
+     */
     private PredicateSpecification<SysUser> queryCondition(UserPageSearch pageSearch) {
         PredicateSpecification<SysUser> query = null;
 
@@ -302,13 +318,14 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public Mono<Boolean> deleteUser(Long id) {
         if (id == 1) {
-            return Mono.error(ParameterException.create("default data can't be deleted."));
+            return Mono.error(ParameterException.create(ErrorCodeEnum.DEFAULT_USER_FORBID_DELETE));
         }
+
         return userRepository.existsById(id)
                 .flatMap(result -> {
                     if (!result) {
-                        log.warn("delete user fail,user id [{}] is not exists", id);
-                        return Mono.error(NotFoundException.create("user is not exists."));
+                        log.warn("Failed to delete user, user id {} does not exist.", id);
+                        return Mono.error(NotFoundException.create(ErrorCodeEnum.USER_NOT_EXISTS));
                     }
                     return assignmentRepository.deleteByUserId(id);
                 })
@@ -332,8 +349,8 @@ public class SysUserServiceImpl implements SysUserService {
         return userRepository.existsById(updateUserCommand.getId())
                 .flatMap(result -> {
                     if (!result) {
-                        log.warn("update user fail,user id [{}] is not exists.", updateUserCommand.getId());
-                        return Mono.error(NotFoundException.create("user is not exists."));
+                        log.warn("Failed to update user, user id {} does not exist.", updateUserCommand.getId());
+                        return Mono.error(NotFoundException.create(ErrorCodeEnum.USER_NOT_EXISTS));
                     }
                     return userRepository.findById(updateUserCommand.getId());
                 })
@@ -341,7 +358,7 @@ public class SysUserServiceImpl implements SysUserService {
                     Optional.ofNullable(validateUpdate.apply(updateUserCommand.getNickName())).ifPresent(t -> user.setNickName(t));
                     Optional.ofNullable(validateUpdate.apply(updateUserCommand.getEmail())).ifPresent(t -> user.setEmail(t));
                     Optional.ofNullable(validateUpdate.apply(updateUserCommand.getPhone())).ifPresent(t -> user.setPhone(t));
-                    Optional.ofNullable(updateUserCommand.getStatus()).ifPresent(t-> user.setStatus(t));
+                    Optional.ofNullable(updateUserCommand.getStatus()).ifPresent(t -> user.setStatus(t));
                     user.setSex(updateUserCommand.getSex());
 
                     return userRepository.update(user);
@@ -349,6 +366,9 @@ public class SysUserServiceImpl implements SysUserService {
                 .map(SysUserDTO::convert);
     }
 
+    /**
+     * 校验值是否不为空
+     */
     private Function<String, String> validateUpdate = data -> {
         if (StringUtils.isNotEmpty(data)) {
             return data;
@@ -373,17 +393,18 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public Mono<Boolean> updateUserPassword(UpdatePasswordCommand updatePasswordCommand) {
         if (null == updatePasswordCommand.getId() || updatePasswordCommand.getId() <= 0) {
-            return Mono.error(ParameterException.create("user info is incorrect."));
+            return Mono.error(ParameterException.create(ErrorCodeEnum.USER_INFO_ERROR));
         }
         if (!updatePasswordCommand.getPassword().equals(updatePasswordCommand.getRepeatPassword())) {
-            return Mono.error(ParameterException.create("password and repeat password is not match."));
+            log.warn("The two entered passwords do not match");
+            return Mono.error(ParameterException.create(ErrorCodeEnum.PASSWORD_NOT_MATCH));
         }
 
         return userRepository.existsById(updatePasswordCommand.getId())
                 .flatMap(exists -> {
                     if (!exists) {
-                        log.warn("update password fail,user id [{}] is not exists.", updatePasswordCommand.getId());
-                        return Mono.error(NotFoundException.create("user id is not exists."));
+                        log.warn("Failed to change user password, user id {} does not exist.", updatePasswordCommand.getId());
+                        return Mono.error(NotFoundException.create(ErrorCodeEnum.USER_NOT_EXISTS));
                     }
                     return userRepository.findById(updatePasswordCommand.getId());
                 })
@@ -398,22 +419,25 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public Mono<Boolean> updateSelfPassword(UpdatePasswordCommand updatePasswordCommand) {
         if (StringUtils.isEmpty(updatePasswordCommand.getUserName())) {
-            return Mono.error(ParameterException.create("user info is incorrect."));
+            log.warn("Username is empty.");
+            return Mono.error(ParameterException.create(ErrorCodeEnum.USER_INFO_ERROR));
         }
 
         if (StringUtils.isEmpty(updatePasswordCommand.getOldPassword())) {
-            return Mono.error(ParameterException.create("old password is empty."));
+            log.warn("Old password is empty.");
+            return Mono.error(ParameterException.create(ErrorCodeEnum.OLD_PASSWORD_IS_EMPTY));
         }
 
         if (!updatePasswordCommand.getPassword().equals(updatePasswordCommand.getRepeatPassword())) {
-            return Mono.error(ParameterException.create("password and repeat password is not match."));
+            log.warn("The two entered passwords do not match");
+            return Mono.error(ParameterException.create(ErrorCodeEnum.PASSWORD_NOT_MATCH));
         }
 
         return userRepository.existsByUserName(updatePasswordCommand.getUserName())
                 .flatMap(exists -> {
                     if (!exists) {
                         log.warn("update password fail,user name [{}] is not exists.", updatePasswordCommand.getUserName());
-                        return Mono.error(NotFoundException.create("user is not exists."));
+                        return Mono.error(NotFoundException.create(ErrorCodeEnum.USER_NOT_EXISTS));
                     }
                     return userRepository.findByUserName(updatePasswordCommand.getUserName());
                 })

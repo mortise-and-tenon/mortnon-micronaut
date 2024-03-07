@@ -23,6 +23,10 @@ public class RepeatDataException extends MortnonBaseException {
         return new RepeatDataException(ErrorCodeEnum.REPEAT_ERROR);
     }
 
+    public static RepeatDataException create(ErrorCodeEnum errorCodeEnum) {
+        return new RepeatDataException(errorCodeEnum);
+    }
+
     public static RepeatDataException create(ErrorCodeEnum errorCodeEnum, String message) {
         return new RepeatDataException(errorCodeEnum, message);
     }

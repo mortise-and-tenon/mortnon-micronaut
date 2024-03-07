@@ -19,6 +19,10 @@ public class ParameterException extends MortnonBaseException{
         super(errorCodeEnum, message);
     }
 
+    public static ParameterException create(ErrorCodeEnum errorCodeEnum) {
+        return new ParameterException(errorCodeEnum);
+    }
+
     public static ParameterException create() {
         return new ParameterException(ErrorCodeEnum.PARAM_ERROR);
     }

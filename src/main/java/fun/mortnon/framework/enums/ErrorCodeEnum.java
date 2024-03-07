@@ -29,16 +29,6 @@ public enum ErrorCodeEnum {
     PARAM_ERROR("A0002", "param error"),
 
     /**
-     * 用户注册错误
-     */
-    USER_REGISTER_ERROR("B0001", "user register error"),
-
-    /**
-     * 用户未统一隐私协议
-     */
-    DID_NOT_AGREE_PRIVACY_AGREEMENT("A0101", "user did not agree to privacy agreement"),
-
-    /**
      * 用户名校验失败
      */
     USER_NAME_CHECK_FAILED("A0110", "username check failed"),
@@ -46,12 +36,54 @@ public enum ErrorCodeEnum {
     /**
      * 用户名已存在
      */
-    USERNAME_ALREADY_EXISTS("A0111", "username already exists"),
+    USERNAME_ALREADY_EXISTS("A0111", "Username already exists", "result.user.name.repeat.fail"),
+
+    /**
+     * 用户不存在
+     */
+    USER_NOT_EXISTS("A0112", "User does not exist", "result.user.not.exist.fail"),
+
+    /**
+     * 用户信息错误
+     */
+    USER_INFO_ERROR("A0112", "User information error", "result.user.info.error.fail"),
+
+    /**
+     * 两次输入密码不匹配
+     */
+    PASSWORD_NOT_MATCH("A0113", "The two entered passwords do not match", "result.user.password.not.match.fail"),
+
+    /**
+     * 旧密码为空
+     */
+    OLD_PASSWORD_IS_EMPTY("A0114", "Old password is empty", "result.user.password.empty.fail"),
+
+    /**
+     * 默认用户禁止删除
+     */
+    DEFAULT_USER_FORBID_DELETE("A0113", "Default user data can't be deleted", "result.user.default.cant.delete.fail"),
+
 
     /**
      * 用户身份校验失败
      */
     USER_IDENTITY_CHECK_FAILED("A0120", "user identity check failed"),
+
+    /**
+     * 组织或角色信息错误
+     */
+    PROJECT_ROLE_ERROR("A0130", "Organization or role information error", "result.user.role.project.empty.fail"),
+
+    /**
+     * 组织不存在
+     */
+    PROJECT_NOT_EXIST("A0131", "Organization does not exist", "result.project.not.exist.fail"),
+
+    /**
+     * 角色不存在
+     */
+    ROLE_NOT_EXIST("A0140", "Role does not exist", "result.role.not.exist.fail"),
+
 
     /**
      * 用户名或密码错误
@@ -66,7 +98,7 @@ public enum ErrorCodeEnum {
     /**
      * 验证码错误
      */
-    VERIFY_CODE_ERROR("A0240", "Invalid verification code","result.login.code.fail"),
+    VERIFY_CODE_ERROR("A0240", "Invalid verification code", "result.login.code.fail"),
 
     /**
      * 访问未授权

@@ -19,6 +19,10 @@ public class NotFoundException extends MortnonBaseException {
         super(errorCodeEnum, message);
     }
 
+    public static NotFoundException create(ErrorCodeEnum errorCodeEnum) {
+        return new NotFoundException(errorCodeEnum);
+    }
+
     public static NotFoundException create() {
         return new NotFoundException(ErrorCodeEnum.NOT_EXISTS_ERROR);
     }

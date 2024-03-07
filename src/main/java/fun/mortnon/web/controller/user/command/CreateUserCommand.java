@@ -1,6 +1,5 @@
 package fun.mortnon.web.controller.user.command;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.service.sys.vo.ProjectRoleDTO;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
@@ -13,6 +12,8 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
+ * 创建用户数据
+ *
  * @author dev2007
  * @date 2023/2/8
  */
@@ -27,7 +28,7 @@ public class CreateUserCommand {
     private String userName;
 
     /**
-     * 昵称
+     * 姓名
      */
     @NotBlank
     private String nickName;
@@ -64,7 +65,7 @@ public class CreateUserCommand {
     /**
      * 状态
      */
-    private boolean status;
+    private Boolean status;
 
     /**
      * 分配的组织、角色

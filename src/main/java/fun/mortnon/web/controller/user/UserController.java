@@ -31,24 +31,30 @@ import javax.validation.constraints.Positive;
 import java.util.List;
 
 /**
+ * 用户
+ *
  * @author dev2007
  * @date 2023/2/7
  */
 @Controller("/users")
 @Slf4j
 public class UserController {
+    /**
+     * 用户服务
+     */
     @Inject
     private SysUserService sysUserService;
 
     /**
-     * 查询用户列表
+     * 查询用户
      *
-     * @param pageSearch
+     * @param pageSearch 查询参数、分页、排序
      * @return
      */
     @Get("{?pageSearch*}")
     public Mono<MortnonResult<PageableData<List<SysUserDTO>>>> queryUser(UserPageSearch pageSearch) {
-        return sysUserService.queryUsers(pageSearch).map(MortnonResult::successPageData);
+        return sysUserService.queryUsers(pageSearch)
+                .map(MortnonResult::successPageData);
     }
 
     /**
@@ -60,7 +66,8 @@ public class UserController {
     @OperationLog(LogConstants.USER_CREATE)
     @Post
     public Mono<MutableHttpResponse<MortnonResult>> save(@NonNull @Valid CreateUserCommand createUserCommand) {
-        return sysUserService.createUser(createUserCommand).map(data -> MortnonResult.success(data))
+        return sysUserService.createUser(createUserCommand)
+                .map(data -> MortnonResult.success(data))
                 .map(HttpResponse::created);
     }
 

@@ -28,17 +28,17 @@ public interface SysUserService {
     Mono<SysUserDTO> createUser(CreateUserCommand createUserCommand);
 
     /**
-     * 根据账户名获取用户信息
+     * 查询指定用户
      *
      * @param id 用户 id
-     * @return 用户信息
+     * @return
      */
     Mono<SysUserDTO> getUserById(Long id);
 
     /**
-     * 查询用户列表
+     * 查询用户
      *
-     * @param pageSearch 查询分页条件
+     * @param pageSearch 查询参数、分页、排序
      * @return
      */
     Mono<Page<SysUserDTO>> queryUsers(UserPageSearch pageSearch);
@@ -52,7 +52,7 @@ public interface SysUserService {
     Mono<SysUser> getUserByUsername(String userName);
 
     /**
-     * 删除用户
+     * 删除指定用户
      *
      * @param userId
      * @return
