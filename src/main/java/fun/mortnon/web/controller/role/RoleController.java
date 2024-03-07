@@ -34,44 +34,22 @@ import java.util.List;
 @Controller("/roles")
 @Slf4j
 public class RoleController {
+    /**
+     * 角色服务
+     */
     @Inject
     private SysRoleService sysRoleService;
 
     /**
      * 查询角色
      *
-     * @param pageSearch
+     * @param pageSearch 查询参数、分页、排序
      * @return
      */
     @Get("{?pageSearch*}")
     public Mono<MortnonResult<PageableData<List<SysRoleDTO>>>> queryRole(RolePageSearch pageSearch) {
-        return sysRoleService.queryRoles(pageSearch).map(MortnonResult::successPageData);
-    }
-
-    /**
-     * 创建角色
-     *
-     * @param createRoleCommand
-     * @return
-     */
-    @OperationLog(LogConstants.ROLE_CREATE)
-    @Post
-    public Mono<MutableHttpResponse<MortnonResult>> createRole(@Valid CreateRoleCommand createRoleCommand) {
-        return sysRoleService.createRole(createRoleCommand).map(k -> HttpResponse.created(MortnonResult.success(k)));
-    }
-
-    /**
-     * 删除指定角色
-     *
-     * @param id
-     * @return
-     */
-    @OperationLog(LogConstants.ROLE_DELETE)
-    @Delete("/{id}")
-    public Mono<MutableHttpResponse<MortnonResult>> deleteRole(@NotNull @Positive Long id) {
-        return sysRoleService.deleteRole(id)
-                .map(result -> result ? HttpResponse.ok(MortnonResult.success(null))
-                        : HttpResponse.badRequest(MortnonResult.fail(ErrorCodeEnum.PARAM_ERROR)));
+        return sysRoleService.queryRoles(pageSearch)
+                .map(MortnonResult::successPageData);
     }
 
     /**
@@ -88,9 +66,23 @@ public class RoleController {
     }
 
     /**
+     * 创建角色
+     *
+     * @param createRoleCommand 创建角色数据
+     * @return
+     */
+    @OperationLog(LogConstants.ROLE_CREATE)
+    @Post
+    public Mono<MutableHttpResponse<MortnonResult>> createRole(@Valid CreateRoleCommand createRoleCommand) {
+        return sysRoleService.createRole(createRoleCommand)
+                .map(MortnonResult::success)
+                .map(HttpResponse::created);
+    }
+
+    /**
      * 修改角色
      *
-     * @param updateRoleCommand
+     * @param updateRoleCommand 角色更新数据
      * @return
      */
     @OperationLog(LogConstants.ROLE_UPDATE)
@@ -98,7 +90,20 @@ public class RoleController {
     public Mono<MutableHttpResponse<MortnonResult>> update(@NonNull @Valid UpdateRoleCommand updateRoleCommand) {
         return sysRoleService.updateRole(updateRoleCommand)
                 .map(MortnonResult::success)
-                .map(HttpResponse::ok)
-                .onErrorReturn(HttpResponse.badRequest(MortnonResult.fail(ErrorCodeEnum.PARAM_ERROR)));
+                .map(HttpResponse::ok);
+    }
+
+    /**
+     * 删除指定角色
+     *
+     * @param id 角色 id
+     * @return
+     */
+    @OperationLog(LogConstants.ROLE_DELETE)
+    @Delete("/{id}")
+    public Mono<MutableHttpResponse<MortnonResult>> deleteRole(@NotNull @Positive Long id) {
+        return sysRoleService.deleteRole(id)
+                .map(MortnonResult::success)
+                .map(HttpResponse::ok);
     }
 }

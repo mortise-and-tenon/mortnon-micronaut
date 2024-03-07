@@ -14,7 +14,7 @@ import java.util.List;
  * @date 2023/2/22
  */
 @Introspected
-@Serdeable
+@Serdeable(naming = SnakeCaseStrategy.class)
 @Data
 public class CreateRoleCommand {
     /**

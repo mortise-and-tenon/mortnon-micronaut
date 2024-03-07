@@ -84,6 +84,26 @@ public enum ErrorCodeEnum {
      */
     ROLE_NOT_EXIST("A0140", "Role does not exist", "result.role.not.exist.fail"),
 
+    /**
+     * 角色名字重复
+     */
+    ROLE_NAME_REPEAT("A0141", "Role data duplication", "result.role.repeat.fail"),
+
+    /**
+     * 默认角色禁止删除
+     */
+    DEFAULT_ROLE_FORBID_DELETE("A0142", "Default role data can't be deleted", "result.role.default.cant.delete.fail"),
+
+    /**
+     * 角色已被使用
+     */
+    ROLE_USED("A0143", "Role has already been used", "result.role.used.fail"),
+
+
+    /**
+     * 权限数据不存在
+     */
+    PERMISSION_ERROR("A0150", "Permission data error", "result.permission.id.not.exists.fail"),
 
     /**
      * 用户名或密码错误

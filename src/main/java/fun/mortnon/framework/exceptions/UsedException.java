@@ -23,6 +23,10 @@ public class UsedException extends MortnonBaseException{
         return new UsedException(ErrorCodeEnum.USED_DATA_ERROR);
     }
 
+    public static UsedException create(ErrorCodeEnum errorCodeEnum) {
+        return new UsedException(errorCodeEnum);
+    }
+
     public static UsedException create(ErrorCodeEnum errorCodeEnum, String message) {
         return new UsedException(errorCodeEnum, message);
     }

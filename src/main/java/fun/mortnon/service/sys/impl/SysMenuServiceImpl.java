@@ -8,6 +8,7 @@ import fun.mortnon.dal.sys.repository.PermissionRepository;
 import fun.mortnon.dal.sys.repository.RolePermissionRepository;
 import fun.mortnon.dal.sys.repository.RoleRepository;
 import fun.mortnon.dal.sys.specification.Specifications;
+import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.service.sys.SysMenuService;
 import fun.mortnon.service.sys.vo.SysMenuDTO;
@@ -133,7 +134,7 @@ public class SysMenuServiceImpl implements SysMenuService {
         return permissionRepository.existsByIdentifier(createMenuCommand.getPermission())
                 .flatMap(exists -> {
                     if (!exists) {
-                        return Mono.error(ParameterException.create("result.permission.id.not.exists.fail"));
+                        return Mono.error(ParameterException.create(ErrorCodeEnum.PERMISSION_ERROR));
                     }
                     SysMenu sysMenu = new SysMenu();
                     sysMenu.setName(createMenuCommand.getName());
