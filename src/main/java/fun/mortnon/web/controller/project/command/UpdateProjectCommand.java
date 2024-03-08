@@ -10,6 +10,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 /**
+ * 修改组织数据
+ *
  * @author dev2007
  * @date 2023/2/24
  */
@@ -37,13 +39,11 @@ public class UpdateProjectCommand {
     /**
      * 组织父 id
      */
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Long parentId;
 
     /**
      * 先辈组织 id 序列
      */
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String ancestors;
 
     /**
@@ -54,5 +54,5 @@ public class UpdateProjectCommand {
     /**
      * 组织状态
      */
-    private boolean status;
+    private Boolean status;
 }

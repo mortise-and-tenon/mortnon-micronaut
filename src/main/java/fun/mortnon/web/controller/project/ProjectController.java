@@ -34,34 +34,46 @@ import java.util.List;
  */
 @Controller("/projects")
 public class ProjectController {
+    /**
+     * 组织服务
+     */
     @Inject
     private SysProjectService sysProjectService;
 
     /**
      * 查询组织
      *
-     * @param pageSearch
+     * @param pageSearch 查询参数、分页、排序
      * @return
      */
     @Get("{?pageSearch*}")
     public Mono<MortnonResult<PageableData<List<SysProjectDTO>>>> queryProject(ProjectPageSearch pageSearch) {
-        return sysProjectService.queryProjects(pageSearch).map(MortnonResult::successPageData);
+        return sysProjectService.queryProjects(pageSearch)
+                .map(MortnonResult::successPageData);
     }
 
     /**
      * 查询树型的组织信息
      *
-     * @param pageSearch
+     * @param pageSearch 查询参数、分页、排序
      * @return
      */
     @Get("/tree{?pageSearch*}")
     public Mono<MortnonResult<List<SysProjectTreeDTO>>> queryTreeProject(ProjectPageSearch pageSearch) {
-        return sysProjectService.queryTreeProjects(pageSearch).map(MortnonResult::success);
+        return sysProjectService.queryTreeProjects(pageSearch)
+                .map(MortnonResult::success);
     }
 
+    /**
+     * 查询指定组织
+     *
+     * @param id
+     * @return
+     */
     @Get("/{id}")
     public Mono<MortnonResult<PageableData<List<SysProjectDTO>>>> queryProjectById(@NotNull @Positive Long id) {
-        return sysProjectService.queryProjectById(id).map(MortnonResult::success);
+        return sysProjectService.queryProjectById(id)
+                .map(MortnonResult::success);
     }
 
     /**
@@ -81,25 +93,29 @@ public class ProjectController {
     /**
      * 删除组织
      *
-     * @param id
+     * @param id 组织 id
      * @return
      */
     @OperationLog(LogConstants.PROJECT_DELETE)
     @Delete("/{id}")
     public Mono<MutableHttpResponse<MortnonResult>> deleteProject(@NotNull @Positive Long id) {
-        return sysProjectService.deleteProject(id).map(MortnonResult::success).map(HttpResponse::ok);
+        return sysProjectService.deleteProject(id)
+                .map(MortnonResult::success)
+                .map(HttpResponse::ok);
     }
 
     /**
      * 修改组织
      *
-     * @param updateProjectCommand
+     * @param updateProjectCommand 修改组织数据
      * @return
      */
     @OperationLog(LogConstants.PROJECT_UPDATE)
     @Put
     public Mono<MutableHttpResponse<MortnonResult>> updateProject(@NonNull @Valid UpdateProjectCommand updateProjectCommand) {
-        return sysProjectService.updateProject(updateProjectCommand).map(MortnonResult::success).map(HttpResponse::ok);
+        return sysProjectService.updateProject(updateProjectCommand)
+                .map(MortnonResult::success)
+                .map(HttpResponse::ok);
     }
 
 }

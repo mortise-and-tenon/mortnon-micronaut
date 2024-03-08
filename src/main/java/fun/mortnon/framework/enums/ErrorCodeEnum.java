@@ -80,6 +80,36 @@ public enum ErrorCodeEnum {
     PROJECT_NOT_EXIST("A0131", "Organization does not exist", "result.project.not.exist.fail"),
 
     /**
+     * 组织名重复
+     */
+    PROJECT_REPEAT("A0132", "Department name duplication", "result.project.name.repeat.fail"),
+
+    /**
+     * 组织数据错误
+     */
+    PROJECT_ERROR("A0133", "Department data error", "result.project.data.invalid.fail"),
+
+    /**
+     * 父组织不存在
+     */
+    PARENT_PROJECT_NOT_EXIST("A0134", "Parent department does not exist", "result.project.parent.not.exist.fail"),
+
+    /**
+     * 默认组织禁止删除
+     */
+    DEFAULT_PROJECT_FORBID_DELETE("A0134", "Default department data can't be deleted", "result.project.default.cant.delete.fail"),
+
+    /**
+     * 组织已被使用
+     */
+    PROJECT_USED("A0135", "Department has already been used", "result.project.used.fail"),
+
+    /**
+     * 子组织已被使用
+     */
+    CHILD_PROJECT_USED("A0136", "Sub-departments in use", "result.project.child.delete.used.fail"),
+
+    /**
      * 角色不存在
      */
     ROLE_NOT_EXIST("A0140", "Role does not exist", "result.role.not.exist.fail"),
@@ -103,7 +133,17 @@ public enum ErrorCodeEnum {
     /**
      * 权限数据不存在
      */
-    PERMISSION_ERROR("A0150", "Permission data error", "result.permission.id.not.exists.fail"),
+    PERMISSION_ERROR("A0150", "Permission data error", "result.permission.id.not.exist.fail"),
+
+    /**
+     * 权限名字重复
+     */
+    PERMISSION_NAME_REPEAT("A0151", "Permission name duplication", "result.permission.repeat.fail"),
+
+    /**
+     * 权限被使用
+     */
+    PERMISSION_USED("A0152", "Permission has already been used", "result.permission.used.fail"),
 
     /**
      * 用户名或密码错误

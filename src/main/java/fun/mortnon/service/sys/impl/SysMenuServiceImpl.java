@@ -121,7 +121,7 @@ public class SysMenuServiceImpl implements SysMenuService {
         return menuRepository.existsById(id)
                 .flatMap(exists -> {
                     if (!exists) {
-                        return Mono.error(ParameterException.create("result.menu.id.not.exists.fail"));
+                        return Mono.error(ParameterException.create("result.menu.id.not.exist.fail"));
                     }
 
                     return menuRepository.findById(id);

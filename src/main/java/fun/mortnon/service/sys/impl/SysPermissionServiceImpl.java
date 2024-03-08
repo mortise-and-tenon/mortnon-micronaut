@@ -5,6 +5,7 @@ import fun.mortnon.dal.sys.entity.SysRolePermission;
 import fun.mortnon.dal.sys.repository.AssignmentRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
 import fun.mortnon.dal.sys.repository.RolePermissionRepository;
+import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.exceptions.RepeatDataException;
 import fun.mortnon.framework.exceptions.UsedException;
 import fun.mortnon.service.sys.SysPermissionService;
@@ -57,20 +58,21 @@ public class SysPermissionServiceImpl implements SysPermissionService {
                         createPermissionCommand.getIdentifier())
                 .flatMap(exists -> {
                     if (exists) {
-                        log.warn("create permission fail,permission name [{}],or identifier [{}] is empty.",
+                        log.warn("Failed to create permission, permission [{}] or identifier [{}] is empty.",
                                 createPermissionCommand.getName(), createPermissionCommand.getIdentifier());
-                        return Mono.error(RepeatDataException.create("permission name or identifier is repeat."));
+                        return Mono.error(RepeatDataException.create(ErrorCodeEnum.PERMISSION_NAME_REPEAT));
                     }
-                    return permissionRepository.save(sysPermission).map(SysPermissionDTO::convert);
-                });
+                    return permissionRepository.save(sysPermission);
+                })
+                .map(SysPermissionDTO::convert);
     }
 
     @Override
     public Mono<Boolean> deletePermission(Long id) {
         return rolePermissionRepository.existsByPermissionId(id).flatMap(exists -> {
             if (exists) {
-                log.warn("delete permission fail,permission [] is used by role.");
-                return Mono.error(UsedException.create("permission is used by role."));
+                log.warn("Failed to delete permission, permission [{}] has been used by a role.", id);
+                return Mono.error(UsedException.create(ErrorCodeEnum.PERMISSION_USED));
             }
 
             return permissionRepository.deleteById(id).map(result -> result.intValue() > 0);
@@ -86,6 +88,5 @@ public class SysPermissionServiceImpl implements SysPermissionService {
                 .collectList()
                 .flatMap(idList -> permissionRepository.findByIdIn(idList).collectList())
                 .map(permissionList -> permissionList.stream().map(SysPermissionDTO::convert).collect(Collectors.toList()));
-
     }
 }

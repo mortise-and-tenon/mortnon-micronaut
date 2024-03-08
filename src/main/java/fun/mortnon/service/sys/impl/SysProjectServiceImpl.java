@@ -4,6 +4,7 @@ import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.repository.AssignmentRepository;
 import fun.mortnon.dal.sys.repository.ProjectRepository;
 import fun.mortnon.dal.sys.specification.Specifications;
+import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.exceptions.NotFoundException;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.exceptions.RepeatDataException;
@@ -52,19 +53,20 @@ public class SysProjectServiceImpl implements SysProjectService {
         sysProject.setDescription(createProjectCommand.getDescription());
         sysProject.setParentId(createProjectCommand.getParentId());
         sysProject.setOrder(createProjectCommand.getOrder() > 0 ? createProjectCommand.getOrder() : 1);
-        sysProject.setStatus(createProjectCommand.isStatus());
+        boolean status = ObjectUtils.isNotEmpty(createProjectCommand.getStatus()) ? createProjectCommand.getStatus() : true;
+        sysProject.setStatus(status);
 
         return projectRepository.existsByName(createProjectCommand.getName())
                 .flatMap(exists -> {
                     if (exists) {
-                        log.warn("create project fail,project name [{}] is repeat.", createProjectCommand.getName());
-                        return Mono.error(RepeatDataException.create("result.project.name.repeat.fail"));
+                        log.warn("Failed to create organization, organization name {} duplicates.", createProjectCommand.getName());
+                        return Mono.error(RepeatDataException.create(ErrorCodeEnum.PROJECT_REPEAT));
                     }
 
                     return projectRepository.existsById(createProjectCommand.getParentId())
                             .flatMap(parentExists -> {
                                 if (!parentExists) {
-                                    return Mono.error(NotFoundException.create("result.project.id.invalid.fail"));
+                                    return Mono.error(NotFoundException.create(ErrorCodeEnum.PROJECT_ERROR));
                                 }
                                 return projectRepository.findById(createProjectCommand.getParentId());
                             });
@@ -92,6 +94,12 @@ public class SysProjectServiceImpl implements SysProjectService {
                 });
     }
 
+    /**
+     * 组织查询条件
+     *
+     * @param search
+     * @return
+     */
     private PredicateSpecification<SysProject> queryCondition(ProjectPageSearch search) {
         PredicateSpecification<SysProject> query = null;
 
@@ -148,47 +156,43 @@ public class SysProjectServiceImpl implements SysProjectService {
     @Override
     public Mono<Boolean> deleteProject(Long id) {
         if (null == id || id <= 0) {
-            return Mono.error(ParameterException.create("result.project.id.invalid.fail"));
+            log.warn("Failed to delete department, department id incorrect.");
+            return Mono.error(ParameterException.create(ErrorCodeEnum.PROJECT_ERROR));
         }
 
         if (id == 1) {
-            return Mono.error(ParameterException.create("result.data.default.delete.fail"));
+            log.warn("Department deletion failed, default department cannot be deleted.");
+            return Mono.error(ParameterException.create(ErrorCodeEnum.DEFAULT_PROJECT_FORBID_DELETE));
         }
 
         return projectRepository.existsById(id)
                 .flatMap(exists -> {
                     if (!exists) {
-                        log.warn("delete project fail,project id [{}] is not exists.", id);
-                        return Mono.error(NotFoundException.create("result.project.id.invalid.fail"));
+                        log.warn("Department deletion failed, department id {} does not exist.", id);
+                        return Mono.error(NotFoundException.create(ErrorCodeEnum.PROJECT_ERROR));
                     }
                     return assignmentRepository.existsByProjectId(id);
                 })
                 .flatMap(exists -> {
                     if (exists) {
-                        log.warn("delete project fail,project id [{}] is used.");
-                        return Mono.error(UsedException.create("result.project.delete.used.fail"));
+                        log.warn("Department deletion failed, department {} has been used.", id);
+                        return Mono.error(UsedException.create(ErrorCodeEnum.PROJECT_USED));
                     }
 
-                    return projectRepository.existsById(id)
-                            .flatMap(projectExists -> {
-                                if (!projectExists) {
-                                    log.info("project {}  is deleted.", id);
-                                    return Mono.just(new ArrayList<Long>());
+                    return projectRepository.findAll()
+                            .flatMap(project -> {
+                                List<Long> idList = Arrays.stream(project.getAncestors().split(","))
+                                        .map(Long::parseLong)
+                                        .collect(Collectors.toList());
+                                //如果是子组织，要进行判断。子组织已使用，当前组织也不可删除
+                                if (idList.contains(id)) {
+                                    return assignmentRepository.existsByProjectId(project.getId())
+                                            .map(used -> used ? -1L : project.getId());
                                 }
-                                return projectRepository.findAll()
-                                        .flatMap(project -> {
-                                            List<Long> idList = Arrays.stream(project.getAncestors().split(","))
-                                                    .map(Long::parseLong)
-                                                    .collect(Collectors.toList());
-                                            //如果是子组织，要进行判断。已使用，当前组织也不可删除
-                                            if (idList.contains(id)) {
-                                                return assignmentRepository.existsByProjectId(project.getId())
-                                                        .map(used -> used ? -1L : project.getId());
-                                            }
 
-                                            return Mono.just(0L);
-                                        }).collectList();
-                            });
+                                return Mono.just(0L);
+                            }).collectList();
+
                 })
                 .flatMap(list -> {
                     list = list.stream().filter(value -> value != 0L).collect(Collectors.toList());
@@ -198,7 +202,8 @@ public class SysProjectServiceImpl implements SysProjectService {
                     }
                     //有子组织被使用，不能删除
                     if (list.contains(-1L)) {
-                        return Mono.error(UsedException.create("result.project.child.delete.used.fail"));
+                        log.warn("Sub-organization is in use, unable to delete organization {}.", id);
+                        return Mono.error(UsedException.create(ErrorCodeEnum.CHILD_PROJECT_USED));
                     }
                     list.add(id);
                     return projectRepository.deleteByIdIn(list).map(size -> size > 0);
@@ -207,13 +212,15 @@ public class SysProjectServiceImpl implements SysProjectService {
 
     @Override
     public Mono<SysProjectDTO> updateProject(UpdateProjectCommand updateProjectCommand) {
+        //查找是否会重名
         return projectRepository.existsByNameEqualsAndIdNotEquals(updateProjectCommand.getName(), updateProjectCommand.getId())
                 .flatMap(exists -> {
                     if (exists) {
-                        log.warn("update project fail,project id [{}],name [{}] is repeat.", updateProjectCommand.getId(),
+                        log.warn("Modification of the department failed, the department id [{}] has the same name [{}].", updateProjectCommand.getId(),
                                 updateProjectCommand.getName());
-                        return Mono.error(RepeatDataException.create("project name is repeat."));
+                        return Mono.error(RepeatDataException.create(ErrorCodeEnum.PROJECT_REPEAT));
                     }
+                    //判断父组织id是否正确
                     if (null != updateProjectCommand.getParentId() && updateProjectCommand.getParentId() > 0) {
                         return projectRepository.existsById(updateProjectCommand.getParentId());
                     }
@@ -221,13 +228,22 @@ public class SysProjectServiceImpl implements SysProjectService {
                 })
                 .flatMap(exists -> {
                     if (!exists) {
-                        log.warn("create project fail,parent id [{}] is not exists.");
-                        return Mono.error(NotFoundException.create("result.project.parent.not.exists.fail"));
+                        log.warn("Failed to create department, parent department id {} does not exist.", updateProjectCommand.getParentId());
+                        return Mono.error(NotFoundException.create(ErrorCodeEnum.PARENT_PROJECT_NOT_EXIST));
                     }
 
-                    return projectRepository.findById(updateProjectCommand.getId());
+                    //判断组织id存在，查找对应数据
+                    return projectRepository.existsById(updateProjectCommand.getId())
+                            .flatMap(projectExists -> {
+                                if (!projectExists) {
+                                    log.warn("Failed to create department, department id {} does not exist.", updateProjectCommand.getId());
+                                    return Mono.error(NotFoundException.create(ErrorCodeEnum.PROJECT_NOT_EXIST));
+                                }
+                                return projectRepository.findById(updateProjectCommand.getId());
+                            });
                 })
                 .flatMap(project -> {
+                    //更新组织数据
                     if (StringUtils.isNotEmpty(updateProjectCommand.getName())) {
                         project.setName(updateProjectCommand.getName());
                     }
@@ -238,13 +254,18 @@ public class SysProjectServiceImpl implements SysProjectService {
                         project.setOrder(updateProjectCommand.getOrder());
                     }
 
-                    project.setStatus(updateProjectCommand.isStatus());
+                    boolean status = ObjectUtils.isNotEmpty(updateProjectCommand.getStatus()) ? updateProjectCommand.getStatus() : true;
+                    project.setStatus(status);
 
                     if (null != updateProjectCommand.getParentId() && updateProjectCommand.getParentId() > 0) {
                         project.setParentId(updateProjectCommand.getParentId());
+                        //拼接所有父组织id串
                         return projectRepository.findById(updateProjectCommand.getParentId())
                                 .map(parentNode -> {
-                                    project.setAncestors(parentNode.getAncestors() + "," + updateProjectCommand.getParentId());
+                                    String ancestors = parentNode.getAncestors() +
+                                            (StringUtils.isNotEmpty(parentNode.getAncestors()) ? "," : "") + updateProjectCommand.getParentId();
+
+                                    project.setAncestors(ancestors);
                                     return project;
                                 });
                     }

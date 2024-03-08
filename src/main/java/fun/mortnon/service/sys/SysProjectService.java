@@ -11,13 +11,15 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 /**
+ * 组织服务
+ *
  * @author dev2007
  * @date 2023/2/24
  */
 public interface SysProjectService {
 
     /**
-     * 保存组织
+     * 新建组织
      *
      * @param createProjectCommand
      * @return
@@ -27,7 +29,7 @@ public interface SysProjectService {
     /**
      * 查询组织列表
      *
-     * @param pageSearch 搜索字段
+     * @param pageSearch
      * @return
      */
     Mono<Page<SysProjectDTO>> queryProjects(ProjectPageSearch pageSearch);
@@ -43,7 +45,7 @@ public interface SysProjectService {
     /**
      * 查询树型的全部组织数据
      *
-     * @param pageSearch 搜索字段
+     * @param pageSearch
      * @return
      */
     Mono<List<SysProjectTreeDTO>> queryTreeProjects(ProjectPageSearch pageSearch);

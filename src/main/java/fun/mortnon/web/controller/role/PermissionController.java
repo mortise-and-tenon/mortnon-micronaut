@@ -21,26 +21,38 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
+ * 权限
+ *
  * @author dev2007
  * @date 2023/2/20
  */
 @Controller("/permissions")
 public class PermissionController {
 
+    /**
+     * 权限服务
+     */
     @Inject
     private SysPermissionService sysPermissionService;
 
     /**
-     * 查询所有权限
+     * 查询权限
      *
      * @param pageable
      * @return
      */
     @Get
     public Mono<MortnonResult<PageableData<List<SysPermissionDTO>>>> queryPermission(@Valid Pageable pageable) {
-        return sysPermissionService.queryPermission(pageable).map(MortnonResult::successPageData);
+        return sysPermissionService.queryPermission(pageable)
+                .map(MortnonResult::successPageData);
     }
 
+    /**
+     * 创建权限
+     *
+     * @param createPermissionCommand
+     * @return
+     */
     @Post
     public Mono<MutableHttpResponse> createPermission(@NotNull @Valid CreatePermissionCommand createPermissionCommand) {
         return sysPermissionService.createPermission(createPermissionCommand)
@@ -48,10 +60,16 @@ public class PermissionController {
                 .map(HttpResponse::created);
     }
 
+    /**
+     * 删除权限
+     *
+     * @param id
+     * @return
+     */
     @Delete("/{id}")
     public Mono<MutableHttpResponse> deletePermission(Long id) {
         return sysPermissionService.deletePermission(id)
-                .map(result -> result ? HttpResponse.ok(MortnonResult.success(null))
-                        : HttpResponse.badRequest(MortnonResult.fail(ErrorCodeEnum.PARAM_ERROR)));
+                .map(MortnonResult::success)
+                .map(HttpResponse::ok);
     }
 }

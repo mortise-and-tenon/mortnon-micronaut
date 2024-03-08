@@ -10,6 +10,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 /**
+ * 创建组织数据
+ *
  * @author dev2007
  * @date 2023/2/24
  */
@@ -43,5 +45,5 @@ public class CreateProjectCommand {
     /**
      * 组织状态
      */
-    private boolean status;
+    private Boolean status;
 }
