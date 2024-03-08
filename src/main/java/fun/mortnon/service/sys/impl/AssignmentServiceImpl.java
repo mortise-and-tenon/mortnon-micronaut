@@ -10,7 +10,6 @@ import fun.mortnon.dal.sys.specification.Specifications;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.exceptions.NotFoundException;
 import fun.mortnon.framework.exceptions.ParameterException;
-import fun.mortnon.framework.exceptions.RepeatDataException;
 import fun.mortnon.service.sys.AssignmentService;
 import fun.mortnon.service.sys.PublicService;
 import fun.mortnon.service.sys.vo.ProjectRoleDTO;
@@ -18,7 +17,6 @@ import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.AssignmentCommand;
 import fun.mortnon.web.controller.user.command.RevokeCommand;
 import fun.mortnon.web.controller.user.command.UserPageSearch;
-import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
@@ -258,7 +256,12 @@ public class AssignmentServiceImpl implements AssignmentService {
     public Mono<Boolean> assignmentUser(AssignmentCommand assignmentCommand) {
         if ((ObjectUtils.isEmpty(assignmentCommand.getUserId()) || assignmentCommand.getUserId() <= 0)
                 && CollectionUtils.isEmpty(assignmentCommand.getUserIdList())) {
-            return Mono.error(ParameterException.create("user id is wrong."));
+            return Mono.error(ParameterException.create(ErrorCodeEnum.USER_INFO_ERROR));
+        }
+
+        if (assignmentCommand.getUserId() == 1) {
+            log.warn("Changing the default user is prohibited.");
+            return Mono.error(ParameterException.create(ErrorCodeEnum.DEFAULT_USER_FORBID_DELETE));
         }
 
         if (CollectionUtils.isEmpty(assignmentCommand.getUserIdList())) {
@@ -271,14 +274,15 @@ public class AssignmentServiceImpl implements AssignmentService {
         final boolean isRole = ObjectUtils.isNotEmpty(assignmentCommand.getRoleId());
 
         if (!isProject && !isRole) {
-            return Mono.error(ParameterException.create("project and role id all are wrong."));
+            log.warn("Organization and role data are error");
+            return Mono.error(ParameterException.create(ErrorCodeEnum.PROJECT_ROLE_DATA_ERROR));
         }
 
         return validateAssignment(assignmentCommand, isProject, isRole)
                 .flatMap(exists -> {
                     //组织或角色id不存在
                     if (!exists) {
-                        return Mono.error(NotFoundException.create(isProject ? "project is not exists." : "role is not exists."));
+                        return Mono.error(NotFoundException.create(isProject ? ErrorCodeEnum.PROJECT_ERROR : ErrorCodeEnum.ROLE_ERROR));
                     }
 
                     //处理已部分分配的用户数据
@@ -331,6 +335,11 @@ public class AssignmentServiceImpl implements AssignmentService {
     public Mono<Boolean> revokeUser(RevokeCommand revokeCommand) {
         if (ObjectUtils.isEmpty(revokeCommand.getUserId()) || revokeCommand.getUserId() <= 0) {
             return Mono.error(ParameterException.create(ErrorCodeEnum.USER_INFO_ERROR));
+        }
+
+        if (revokeCommand.getUserId() == 1) {
+            log.warn("Changing the default user is prohibited.");
+            return Mono.error(ParameterException.create(ErrorCodeEnum.DEFAULT_USER_FORBID_DELETE));
         }
 
         boolean isProject = true;

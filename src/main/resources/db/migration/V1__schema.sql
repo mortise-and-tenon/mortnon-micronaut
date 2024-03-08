@@ -158,7 +158,7 @@ VALUES
 	(2, '系统管理', 0, 1, '/system', 'system', ''),
 	(3, '用户管理', 2, 1, '/system/user', 'user', 'USER_QUERY'),
 	(4, '角色管理', 2, 2, '/system/role', 'peoples', 'ROLE_QUERY'),
-	(5, '组织管理', 2, 3, '/system/project', 'tree', 'PROJECT_QUERY'),
+	(5, '部门管理', 2, 3, '/system/project', 'tree', 'PROJECT_QUERY'),
 	(6, '菜单管理', 2, 4, '/system/menu', 'treetable', 'MENU_QUERY'),
 	(7, '日志管理', 2, 5, '/system/log', 'log', 'LOG_QUERY');
 

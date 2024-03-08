@@ -63,6 +63,11 @@ public enum ErrorCodeEnum {
      */
     DEFAULT_USER_FORBID_DELETE("A0113", "Default user data can't be deleted", "result.user.default.cant.delete.fail"),
 
+    /**
+     * 默认用户禁止变更
+     */
+    DEFAULT_USER_FORBID_UPDATE("A0114", "Changing default user is prohibited", "result.user.default.forbid.fail"),
+
 
     /**
      * 用户身份校验失败
@@ -131,6 +136,12 @@ public enum ErrorCodeEnum {
 
 
     /**
+     * 角色数据错误
+     */
+    ROLE_ERROR("A0144", "Role does not exist", "result.role.data.invalid.fail"),
+
+
+    /**
      * 权限数据不存在
      */
     PERMISSION_ERROR("A0150", "Permission data error", "result.permission.id.not.exist.fail"),
@@ -144,6 +155,11 @@ public enum ErrorCodeEnum {
      * 权限被使用
      */
     PERMISSION_USED("A0152", "Permission has already been used", "result.permission.used.fail"),
+
+    /**
+     * 组织角色数据错误
+     */
+    PROJECT_ROLE_DATA_ERROR("A0160", "Organization or role data error", "result.project.role.error.fail"),
 
     /**
      * 用户名或密码错误
