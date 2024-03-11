@@ -1,8 +1,6 @@
 package fun.mortnon.dal.sys.entity;
 
 import fun.mortnon.dal.base.entity.BaseEntity;
-import io.micronaut.data.annotation.GeneratedValue;
-import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.serde.annotation.Serdeable;
@@ -17,19 +15,19 @@ import lombok.Data;
 @Serdeable
 @MappedEntity
 @Data
-public class SysPermission extends BaseEntity {
-    /**
-     * 权限名字
-     */
-    private String name;
-
+public class SysApi extends BaseEntity {
     /**
      * 权限标识值
      */
     private String identifier;
 
     /**
-     * 权限描述
+     * 适用 API
      */
-    private String description;
+    private String api;
+
+    /**
+     * API 方法
+     */
+    private HttpMethod method;
 }

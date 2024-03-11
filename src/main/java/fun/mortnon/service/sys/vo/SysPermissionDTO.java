@@ -50,8 +50,6 @@ public class SysPermissionDTO {
         sysPermissionDTO.setName(sysPermission.getName());
         sysPermissionDTO.setIdentifier(sysPermission.getIdentifier());
         sysPermissionDTO.setDescription(sysPermission.getDescription());
-        sysPermissionDTO.setApi(sysPermission.getApi());
-        sysPermissionDTO.setMethod(sysPermission.getMethod());
         return sysPermissionDTO;
     }
 }

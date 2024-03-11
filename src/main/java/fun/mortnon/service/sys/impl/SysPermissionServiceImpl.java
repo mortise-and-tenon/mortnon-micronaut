@@ -1,7 +1,9 @@
 package fun.mortnon.service.sys.impl;
 
+import fun.mortnon.dal.sys.entity.SysApi;
 import fun.mortnon.dal.sys.entity.SysPermission;
 import fun.mortnon.dal.sys.entity.SysRolePermission;
+import fun.mortnon.dal.sys.repository.ApiRepository;
 import fun.mortnon.dal.sys.repository.AssignmentRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
 import fun.mortnon.dal.sys.repository.RolePermissionRepository;
@@ -37,6 +39,9 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     @Inject
     private AssignmentRepository assignmentRepository;
 
+    @Inject
+    private ApiRepository apiRepository;
+
     @Override
     public Mono<Page<SysPermissionDTO>> queryPermission(Pageable pageable) {
         return permissionRepository.findAll(pageable).map(k -> {
@@ -51,8 +56,10 @@ public class SysPermissionServiceImpl implements SysPermissionService {
         sysPermission.setName(createPermissionCommand.getName());
         sysPermission.setIdentifier(createPermissionCommand.getIdentifier());
         sysPermission.setDescription(createPermissionCommand.getDescription());
-        sysPermission.setApi(createPermissionCommand.getApi());
-        sysPermission.setMethod(createPermissionCommand.getMethod());
+
+        SysApi sysApi = new SysApi();
+        sysApi.setApi(createPermissionCommand.getApi());
+        sysApi.setMethod(createPermissionCommand.getMethod());
 
         return permissionRepository.existsByNameEqualsOrIdentifierEquals(createPermissionCommand.getName(),
                         createPermissionCommand.getIdentifier())
@@ -62,9 +69,22 @@ public class SysPermissionServiceImpl implements SysPermissionService {
                                 createPermissionCommand.getName(), createPermissionCommand.getIdentifier());
                         return Mono.error(RepeatDataException.create(ErrorCodeEnum.PERMISSION_NAME_REPEAT));
                     }
+                    return apiRepository.existsByIdentifierAndMethod(createPermissionCommand.getIdentifier(), createPermissionCommand.getMethod());
+
+                })
+                .flatMap(apiExists -> {
+                    if (apiExists) {
+                        log.warn("API [{},{}] has already been registered.", createPermissionCommand.getApi(), createPermissionCommand.getMethod());
+                        return Mono.error(RepeatDataException.create(ErrorCodeEnum.API_REGISTERED));
+                    }
                     return permissionRepository.save(sysPermission);
                 })
-                .map(SysPermissionDTO::convert);
+                .map(SysPermissionDTO::convert)
+                .map(sysPermissionDTO -> {
+                    sysPermissionDTO.setApi(createPermissionCommand.getApi());
+                    sysPermissionDTO.setMethod(createPermissionCommand.getMethod());
+                    return sysPermissionDTO;
+                });
     }
 
     @Override

@@ -157,6 +157,11 @@ public enum ErrorCodeEnum {
     PERMISSION_USED("A0152", "Permission has already been used", "result.permission.used.fail"),
 
     /**
+     * API 已注册
+     */
+    API_REGISTERED("A0153", "API has already been registered", "result.api.registered.fail"),
+
+    /**
      * 组织角色数据错误
      */
     PROJECT_ROLE_DATA_ERROR("A0160", "Organization or role data error", "result.project.role.error.fail"),

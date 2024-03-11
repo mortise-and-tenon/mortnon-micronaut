@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS `sys_project`(
 );
 
 INSERT INTO `sys_project`(name,description,parent_id,ancestors)
-VALUES ('Mortnon总公司','',0,""),
-    ('子公司一','',1,"1");
+VALUES ('Mortnon科技有限公司','',0,""),
+    ('研究开发部','',1,"1");
 
 
 -- 用户、角色、组织关联表
@@ -76,38 +76,62 @@ CREATE TABLE `sys_permission`(
 	`name` VARCHAR(64) NOT NULL                             COMMENT '权限名字',
 	`identifier` VARCHAR(64) NOT NULL                       COMMENT '权限标识符',
 	`description` VARCHAR(1024) NULL                        COMMENT '权限描述',
-	`api` VARCHAR(1024) NOT NULL                            COMMENT '权限控制的 api',
-	`method` ENUM('GET','PUT','POST','DELETE','PATCH') NOT NULL DEFAULT 'GET'   COMMENT '权限控制的 api 的方法',
 	`gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
 	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
 
-INSERT INTO `sys_permission`(name,identifier,description,api,method)
-VALUES ('查询用户','USER_QUERY','查看用户数据','/users/**','GET'),
-    ('创建用户','USER_CREATE','创建用户数据','/users','POST'),
-    ('修改用户','USER_MODIFY','修改用户数据','/users','PUT'),
-    ('删除用户','USER_DELETE','删除用户数据','/users/**','DELETE'),
-    ("查询用户分派","USER_ASSIGNMENT",'分派用户组织角色','/assignment/**','GET'),
-    ("用户分派","USER_ASSIGNMENT",'分派用户组织角色','/assignment/**','POST'),
-    ('分派用户','USER_ASSIGNMENT','分派用户','/assignment/**','PUT'),
-    ("撤销用户分派","USER_ASSIGNMENT",'分派用户组织角色','/assignment/**','DELETE'),
-    ('修改密码','PASSWORD_MODIFY','修改用户密码','/users/password/**','PUT'),
-    ('查询角色','ROLE_QUERY','查询角色数据','/roles/**','GET'),
-    ('创建角色','ROLE_CREATE','创建角色数据','/roles','POST'),
-    ('修改角色','ROLE_MODIFY','修改角色数据','/roles','PUT'),
-    ('删除角色','ROLE_DELETE','删除角色数据','/roles/**','DELETE'),
-    ('查询权限','PERMISSION_QUERY','查询权限数据','/permissions','GET'),
-    ('创建权限','PERMISSION_CREATE','创建权限数据','/permissions','POST'),
-    ('删除权限','PERMISSION_DELETE','删除权限数据','/permissions/**','DELETE'),
-    ('查询组织','PROJECT_QUERY','查询组织数据','/projects/**','GET'),
-    ('创建组织','PROJECT_CREATE','创建组织数据','/projects','POST'),
-    ('修改组织','PROJECT_MODIFY','修改组织数据','/projects','PUT'),
-    ('删除组织','PROJECT_DELETE','删除组织数据','/projects/**','DELETE'),
-    ('查询菜单','MENU_QUERY','查询菜单数据','/menus/**','GET'),
-    ('创建菜单','MENU_CREATE','创建菜单数据','/menus','POST'),
-    ('修改菜单','MENU_DELETE','修改菜单数据','/menus/**','PUT'),
-    ('删除菜单','MENU_DELETE','删除菜单数据','/menus/**','DELETE'),
-    ('查看日志','LOG_QUERY','查看日志数据','/logs/**','GET');
+
+INSERT INTO `sys_permission`(name,identifier,description)
+VALUES ('查询用户','USER_QUERY','查看用户数据'),
+    ('维护用户','USER_UPDATE','维护用户数据'),
+    ("维护用户分派","USER_ASSIGNMENT",'维护用户分派'),
+    ('查询角色','ROLE_QUERY','查询角色数据'),
+    ('维护角色','ROLE_UPDATE','维护角色'),
+    ('查询组织','PROJECT_QUERY','查询组织数据'),
+    ('维护组织','PROJECT_UPDATE','创建组织数据'),
+    ('查询菜单','MENU_QUERY','查询菜单数据'),
+    ('维护菜单','MENU_UPDATE','维护菜单数据'),
+    ('查看日志','LOG_QUERY','查看日志数据');
+
+-- 权限控制的API表
+CREATE TABLE IF NOT EXISTS `sys_api`(
+	`id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY  COMMENT 'API id',
+	`identifier` VARCHAR(64) NOT NULL                       COMMENT '对应的权限标识符',
+	`api` VARCHAR(1024) NOT NULL                            COMMENT '控制的 api',
+	`method` ENUM('GET','PUT','POST','DELETE','PATCH') NOT NULL DEFAULT 'GET'   COMMENT '控制的 api 的方法',
+	`gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
+	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
+);
+
+INSERT INTO `sys_api`(identifier,api,method)
+VALUES
+    ('USER_QUERY','/users','GET'),
+    ('USER_QUERY','/users/**','GET'),
+    ('USER_UPDATE','/users','POST'),
+    ('USER_UPDATE','/users','PUT'),
+    ('USER_UPDATE','/users/**','DELETE'),
+    ('USER_ASSIGNMENT','/assignment/**','GET'),
+    ('USER_ASSIGNMENT','/assignment/**','POST'),
+    ('USER_ASSIGNMENT','/assignment/**','PUT'),
+    ('USER_ASSIGNMENT','/assignment/**','DELETE'),
+    ('USER_UPDATE','/users/password/**','PUT'),
+    ('ROLE_QUERY','/roles','GET'),
+    ('ROLE_QUERY','/roles/**','GET'),
+    ('ROLE_UPDATE','/roles','POST'),
+    ('ROLE_UPDATE','/roles','PUT'),
+    ('ROLE_UPDATE','/roles/**','DELETE'),
+    ('PROJECT_QUERY','/projects','GET'),
+    ('PROJECT_QUERY','/projects/**','GET'),
+    ('PROJECT_UPDATE','/projects','POST'),
+    ('PROJECT_UPDATE','/projects','PUT'),
+    ('PROJECT_UPDATE','/projects/**','DELETE'),
+    ('MENU_QUERY','/menus','GET'),
+    ('MENU_QUERY','/menus/**','GET'),
+    ('MENU_UPDATE','/menus','POST'),
+    ('MENU_UPDATE','/menus','PUT'),
+    ('MENU_UPDATE','/menus/**','DELETE'),
+    ('LOG_QUERY','/logs','GET'),
+    ('LOG_QUERY','/logs/**','GET');
 
 -- 角色权限关联表
 CREATE TABLE IF NOT EXISTS `sys_role_permission`(
@@ -146,8 +170,8 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
     `order` INT(4) DEFAULT 1                                COMMENT '菜单排序',
     `url` VARCHAR(200) NOT NULL                             COMMENT '菜单 url',
     `icon` VARCHAR(100) NOT NULL DEFAULT ''                 COMMENT '菜单 图标',
-    `permission` VARCHAR(20) DEFAULT NULL                   COMMENT '权限组',
-    `status` TINYINT(1) DEFAULT 1                          COMMENT '菜单状态',
+    `permission` VARCHAR(200) DEFAULT NULL                  COMMENT '权限组',
+    `status` TINYINT(1) DEFAULT 1                           COMMENT '菜单状态',
     `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
     `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
@@ -156,7 +180,7 @@ INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `order`, `url`, `icon`, `perm
 VALUES
 	(1, '首页', 0, 1, '/', 'home', ''),
 	(2, '系统管理', 0, 1, '/system', 'system', ''),
-	(3, '用户管理', 2, 1, '/system/user', 'user', 'USER_QUERY'),
+	(3, '用户管理', 2, 1, '/system/user', 'user', 'USER_QUERY,PROJECT_QUERY'),
 	(4, '角色管理', 2, 2, '/system/role', 'peoples', 'ROLE_QUERY'),
 	(5, '部门管理', 2, 3, '/system/project', 'tree', 'PROJECT_QUERY'),
 	(6, '菜单管理', 2, 4, '/system/menu', 'treetable', 'MENU_QUERY'),

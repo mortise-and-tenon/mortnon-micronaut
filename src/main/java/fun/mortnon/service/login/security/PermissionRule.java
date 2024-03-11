@@ -1,7 +1,9 @@
 package fun.mortnon.service.login.security;
 
+import fun.mortnon.dal.sys.entity.SysApi;
 import fun.mortnon.dal.sys.entity.SysPermission;
 import fun.mortnon.dal.sys.entity.SysRolePermission;
+import fun.mortnon.dal.sys.repository.ApiRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
 import fun.mortnon.dal.sys.repository.RolePermissionRepository;
 import fun.mortnon.dal.sys.repository.RoleRepository;
@@ -34,14 +36,17 @@ public class PermissionRule implements SecurityRule {
     private final AntPathMatcher pathMatcher;
     private RoleRepository roleRepository;
     private PermissionRepository permissionRepository;
+    private ApiRepository apiRepository;
+
     private RolePermissionRepository rolePermissionRepository;
 
     public PermissionRule(RoleRepository roleRepository, PermissionRepository permissionRepository,
-                          RolePermissionRepository rolePermissionRepository) {
+                          RolePermissionRepository rolePermissionRepository, ApiRepository apiRepository) {
         this.pathMatcher = PathMatcher.ANT;
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
         this.rolePermissionRepository = rolePermissionRepository;
+        this.apiRepository = apiRepository;
     }
 
     @Override
@@ -58,7 +63,7 @@ public class PermissionRule implements SecurityRule {
             return Mono.just(SecurityRuleResult.REJECTED);
         }
 
-        Predicate<SysPermission> predicate = p -> pathMatcher.matches(p.getApi(), path)
+        Predicate<SysApi> predicate = p -> pathMatcher.matches(p.getApi(), path)
                 && httpMethod.equals(p.getMethod());
 
         return Flux.fromIterable(roles)
@@ -66,9 +71,10 @@ public class PermissionRule implements SecurityRule {
                 .flatMap(role -> rolePermissionRepository.findByRoleId(role.getId()))
                 .map(SysRolePermission::getPermissionId)
                 .flatMap(pId -> permissionRepository.findById(pId))
-                .filter(permission -> predicate.test(permission))
+                .flatMap(permission -> apiRepository.findByIdentifierAndMethod(permission.getIdentifier(), httpMethod))
+                .filter(api -> predicate.test(api))
                 .collectList()
-                .map(apiList -> CollectionUtils.isNotEmpty(apiList) ? SecurityRuleResult.ALLOWED:SecurityRuleResult.REJECTED)
+                .map(apiList -> CollectionUtils.isNotEmpty(apiList) ? SecurityRuleResult.ALLOWED : SecurityRuleResult.REJECTED)
                 .defaultIfEmpty(SecurityRuleResult.REJECTED);
     }
 }

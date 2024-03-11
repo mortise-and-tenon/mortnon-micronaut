@@ -27,6 +27,7 @@ import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -221,8 +222,11 @@ public class SysMenuServiceImpl implements SysMenuService {
                     List<String> identifierList = permissionList.stream().map(SysPermission::getIdentifier)
                             .collect(Collectors.toList());
                     return menuRepository.findAll().collectList()
-                            .map(list -> list.stream().filter(menu -> identifierList.contains(menu.getPermission())
-                                            || StringUtils.isEmpty(menu.getPermission()))
+                            .map(list -> list.stream().filter(menu -> {
+                                        List<String> menuPermissionList = Arrays.asList(menu.getPermission().split(","));
+                                        return identifierList.containsAll(menuPermissionList)
+                                                || StringUtils.isEmpty(menu.getPermission());
+                                    })
                                     .collect(Collectors.toList()));
                 })
                 .map(menuList -> convertTree(menuList));
