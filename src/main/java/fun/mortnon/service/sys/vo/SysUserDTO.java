@@ -1,14 +1,11 @@
 package fun.mortnon.service.sys.vo;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysUser;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
-import java.awt.*;
 import java.time.Instant;
 import java.util.List;
 

@@ -4,8 +4,10 @@ import fun.mortnon.framework.aop.OperationLog;
 import fun.mortnon.framework.constants.LogConstants;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.vo.MortnonResult;
+import fun.mortnon.service.sys.ProfileService;
 import fun.mortnon.service.sys.SysMenuService;
 import fun.mortnon.service.sys.SysUserService;
+import fun.mortnon.service.sys.vo.ProfileDTO;
 import fun.mortnon.service.sys.vo.SysMenuTreeDTO;
 import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
@@ -37,11 +39,17 @@ import java.util.List;
 @Controller("/profile")
 public class ProfileController {
 
+    /**
+     * 用户 Profile 服务
+     */
+    @Inject
+    private ProfileService profileService;
+
+    /**
+     * 用户服务
+     */
     @Inject
     private SysUserService sysUserService;
-
-    @Inject
-    private SysMenuService sysMenuService;
 
     /**
      * 查询当前登录用户信息
@@ -49,22 +57,10 @@ public class ProfileController {
      * @param principal
      * @return
      */
-    @Get("/user")
-    public Mono<MortnonResult<SysUserDTO>> queryUser(@Nullable Principal principal) {
-        return sysUserService.getUserByUsername(principal.getName())
-                .map(SysUserDTO::convert)
+    @Get
+    public Mono<MortnonResult<ProfileDTO>> queryUser(@Nullable Principal principal) {
+        return profileService.queryProfile(principal)
                 .map(MortnonResult::success);
-    }
-
-    /**
-     * 查询当前登录用户菜单
-     *
-     * @param principal
-     * @return
-     */
-    @Get("/menus")
-    public Mono<MortnonResult<List<SysMenuTreeDTO>>> queryMenuTree(@Nullable Principal principal) {
-        return sysMenuService.queryUserMenu(principal).map(MortnonResult::success);
     }
 
     /**
