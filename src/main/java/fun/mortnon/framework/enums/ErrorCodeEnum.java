@@ -46,27 +46,32 @@ public enum ErrorCodeEnum {
     /**
      * 用户信息错误
      */
-    USER_INFO_ERROR("A0112", "User information error", "result.user.info.error.fail"),
+    USER_INFO_ERROR("A0113", "User information error", "result.user.info.error.fail"),
 
     /**
      * 两次输入密码不匹配
      */
-    PASSWORD_NOT_MATCH("A0113", "The two entered passwords do not match", "result.user.password.not.match.fail"),
+    PASSWORD_NOT_MATCH("A0114", "The two entered passwords do not match", "result.user.password.not.match.fail"),
 
     /**
      * 旧密码为空
      */
-    OLD_PASSWORD_IS_EMPTY("A0114", "Old password is empty", "result.user.password.empty.fail"),
+    OLD_PASSWORD_IS_EMPTY("A0115", "Old password is empty", "result.user.password.empty.fail"),
 
     /**
      * 默认用户禁止删除
      */
-    DEFAULT_USER_FORBID_DELETE("A0113", "Default user data can't be deleted", "result.user.default.cant.delete.fail"),
+    DEFAULT_USER_FORBID_DELETE("A0116", "Default user data can't be deleted", "result.user.default.cant.delete.fail"),
 
     /**
      * 默认用户禁止变更
      */
-    DEFAULT_USER_FORBID_UPDATE("A0114", "Changing default user is prohibited", "result.user.default.forbid.fail"),
+    DEFAULT_USER_FORBID_UPDATE("A0117", "Changing default user is prohibited", "result.user.default.forbid.fail"),
+
+    /**
+     * 上传失败
+     */
+    UPLOAD_FAIL("A0118", "Upload failed", "result.upload.fail"),
 
 
     /**
@@ -219,7 +224,9 @@ public enum ErrorCodeEnum {
     /**
      * 数据已被使用
      */
-    USED_DATA_ERROR("B0004", "data is used");
+    USED_DATA_ERROR("B0004", "data is used"),
+
+    FILE_CONTENT_ERROR("B0005", "File format is incorrect","result.file.content.error");
 
     ErrorCodeEnum(String errorCode, String description) {
         this.errorCode = errorCode;

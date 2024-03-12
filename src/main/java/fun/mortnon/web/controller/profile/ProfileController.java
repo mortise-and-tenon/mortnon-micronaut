@@ -20,16 +20,25 @@ import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Patch;
+import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
+import io.micronaut.http.multipart.StreamingFileUpload;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+
+import static io.micronaut.http.MediaType.MULTIPART_FORM_DATA;
+import static io.micronaut.http.MediaType.TEXT_PLAIN;
 
 
 /**
@@ -75,7 +84,8 @@ public class ProfileController {
      */
     @OperationLog(LogConstants.USER_UPDATE)
     @Patch
-    public Mono<MutableHttpResponse<MortnonResult<SysUserDTO>>> updateUser(@Nullable Principal principal, @Body UpdateUserCommand updateUserCommand) {
+    public Mono<MutableHttpResponse<MortnonResult<SysUserDTO>>> updateUser(@Nullable Principal principal,
+                                                                           @Body UpdateUserCommand updateUserCommand) {
         return profileService.updateProfile(principal, updateUserCommand)
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok);
@@ -100,5 +110,24 @@ public class ProfileController {
         updatePasswordCommand.setId(0L);
         updatePasswordCommand.setUserName(userName);
         return sysUserService.updateSelfPassword(updatePasswordCommand).map(MortnonResult::success).map(HttpResponse::ok);
+    }
+
+    /**
+     * 上传头像
+     *
+     * @param file
+     * @return
+     */
+    @Post(value = "/avatar", consumes = MULTIPART_FORM_DATA)
+    public Mono<MutableHttpResponse<MortnonResult>> upload(@Nullable Principal principal, StreamingFileUpload file) {
+        return profileService.uploadAvatar(principal, file)
+                .map(path -> {
+                    if (StringUtils.isNotEmpty(path)) {
+                        return HttpResponse.ok(MortnonResult.success().setData(path));
+                    } else {
+                        return HttpResponse.ok(MortnonResult.fail(ErrorCodeEnum.UPLOAD_FAIL));
+                    }
+                });
+
     }
 }

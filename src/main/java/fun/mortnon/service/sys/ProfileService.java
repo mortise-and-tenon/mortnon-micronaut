@@ -4,6 +4,7 @@ import fun.mortnon.service.sys.vo.ProfileDTO;
 import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.UpdateUserCommand;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.http.multipart.StreamingFileUpload;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
@@ -31,4 +32,13 @@ public interface ProfileService {
      * @return
      */
     Mono<SysUserDTO> updateProfile(@Nullable Principal principal, UpdateUserCommand updateUserCommand);
+
+    /**
+     * 上传头像
+     *
+     * @param principal
+     * @param file
+     * @return
+     */
+    Mono<String> uploadAvatar(Principal principal, StreamingFileUpload file);
 }
