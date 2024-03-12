@@ -2,6 +2,7 @@ package fun.mortnon.web.controller.profile;
 
 import fun.mortnon.framework.aop.OperationLog;
 import fun.mortnon.framework.constants.LogConstants;
+import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.sys.ProfileService;
@@ -11,12 +12,14 @@ import fun.mortnon.service.sys.vo.ProfileDTO;
 import fun.mortnon.service.sys.vo.SysMenuTreeDTO;
 import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
+import fun.mortnon.web.controller.user.command.UpdateUserCommand;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
@@ -64,6 +67,21 @@ public class ProfileController {
     }
 
     /**
+     * 更新用户基本信息
+     *
+     * @param principal
+     * @param updateUserCommand
+     * @return
+     */
+    @OperationLog(LogConstants.USER_UPDATE)
+    @Patch
+    public Mono<MutableHttpResponse<MortnonResult<SysUserDTO>>> updateUser(@Nullable Principal principal, @Body UpdateUserCommand updateUserCommand) {
+        return profileService.updateProfile(principal, updateUserCommand)
+                .map(MortnonResult::success)
+                .map(HttpResponse::ok);
+    }
+
+    /**
      * 修改当前登录用户密码
      *
      * @param authentication
@@ -71,11 +89,11 @@ public class ProfileController {
      * @return
      */
     @OperationLog(LogConstants.USER_PASSWORD_UPDATE)
-    @Secured(SecurityRule.IS_AUTHENTICATED)
     @Put("/password")
-    public Mono<MutableHttpResponse<MortnonResult>> updateUserPassword(Authentication authentication, @Body @NotNull UpdatePasswordCommand updatePasswordCommand) {
+    public Mono<MutableHttpResponse<MortnonResult>> updateUserPassword(Authentication authentication,
+                                                                       @Body @NotNull UpdatePasswordCommand updatePasswordCommand) {
         if (null == authentication) {
-            return Mono.error(ParameterException.create("auth is null."));
+            return Mono.error(ParameterException.create(ErrorCodeEnum.AUTH_EMPTY));
         }
 
         String userName = authentication.getName();

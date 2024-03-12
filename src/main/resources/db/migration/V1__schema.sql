@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
 
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `order`, `url`, `icon`, `permission`)
 VALUES
-	(1, '首页', 0, 1, '/', 'home', ''),
+	(1, '首页', 0, 1, '/home', 'home', ''),
 	(2, '系统管理', 0, 1, '/system', 'system', ''),
 	(3, '用户管理', 2, 1, '/system/user', 'user', 'USER_QUERY,PROJECT_QUERY'),
 	(4, '角色管理', 2, 2, '/system/role', 'peoples', 'ROLE_QUERY'),

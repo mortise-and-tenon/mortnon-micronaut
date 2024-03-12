@@ -436,14 +436,14 @@ public class SysUserServiceImpl implements SysUserService {
         }
 
         if (!updatePasswordCommand.getPassword().equals(updatePasswordCommand.getRepeatPassword())) {
-            log.warn("The two entered passwords do not match");
+            log.warn("The two entered passwords do not match.");
             return Mono.error(ParameterException.create(ErrorCodeEnum.PASSWORD_NOT_MATCH));
         }
 
         return userRepository.existsByUserName(updatePasswordCommand.getUserName())
                 .flatMap(exists -> {
                     if (!exists) {
-                        log.warn("update password fail,user name [{}] is not exists.", updatePasswordCommand.getUserName());
+                        log.warn("Failed to change password, username {} does not exist.", updatePasswordCommand.getUserName());
                         return Mono.error(NotFoundException.create(ErrorCodeEnum.USER_NOT_EXISTS));
                     }
                     return userRepository.findByUserName(updatePasswordCommand.getUserName());

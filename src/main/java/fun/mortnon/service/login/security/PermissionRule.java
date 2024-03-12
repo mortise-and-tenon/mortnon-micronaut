@@ -1,7 +1,6 @@
 package fun.mortnon.service.login.security;
 
 import fun.mortnon.dal.sys.entity.SysApi;
-import fun.mortnon.dal.sys.entity.SysPermission;
 import fun.mortnon.dal.sys.entity.SysRolePermission;
 import fun.mortnon.dal.sys.repository.ApiRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
@@ -37,7 +36,6 @@ public class PermissionRule implements SecurityRule {
     private RoleRepository roleRepository;
     private PermissionRepository permissionRepository;
     private ApiRepository apiRepository;
-
     private RolePermissionRepository rolePermissionRepository;
 
     public PermissionRule(RoleRepository roleRepository, PermissionRepository permissionRepository,
@@ -50,7 +48,8 @@ public class PermissionRule implements SecurityRule {
     }
 
     @Override
-    public Publisher<SecurityRuleResult> check(HttpRequest<?> request, @Nullable RouteMatch<?> routeMatch, @Nullable Authentication authentication) {
+    public Publisher<SecurityRuleResult> check(HttpRequest<?> request, @Nullable RouteMatch<?> routeMatch,
+                                               @Nullable Authentication authentication) {
         final String path = request.getUri().getPath();
         final HttpMethod httpMethod = request.getMethod();
 

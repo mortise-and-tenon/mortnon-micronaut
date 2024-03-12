@@ -7,6 +7,7 @@ import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,6 +82,7 @@ public class SysUserDTO {
         setSex(sex);
         setStatus(status);
         setGmtCreate(gmtCreate);
+        projectRoles = new ArrayList<>();
     }
 
     public static SysUserDTO convert(SysUser sysUser) {

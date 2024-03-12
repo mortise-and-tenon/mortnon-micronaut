@@ -102,17 +102,17 @@ public enum ErrorCodeEnum {
     /**
      * 默认组织禁止删除
      */
-    DEFAULT_PROJECT_FORBID_DELETE("A0134", "Default department data can't be deleted", "result.project.default.cant.delete.fail"),
+    DEFAULT_PROJECT_FORBID_DELETE("A0135", "Default department data can't be deleted", "result.project.default.cant.delete.fail"),
 
     /**
      * 组织已被使用
      */
-    PROJECT_USED("A0135", "Department has already been used", "result.project.used.fail"),
+    PROJECT_USED("A0136", "Department has already been used", "result.project.used.fail"),
 
     /**
      * 子组织已被使用
      */
-    CHILD_PROJECT_USED("A0136", "Sub-departments in use", "result.project.child.delete.used.fail"),
+    CHILD_PROJECT_USED("A0137", "Sub-departments in use", "result.project.child.delete.used.fail"),
 
     /**
      * 角色不存在
@@ -170,6 +170,11 @@ public enum ErrorCodeEnum {
      * 用户名或密码错误
      */
     INVALID_USERNAME_OR_PASSWORD("A0210", "Invalid username or password", "result.login.userpwd.fail"),
+
+    /**
+     * 认证信息为空
+     */
+    AUTH_EMPTY("A0211", "Authentication information is empty", "result.auth.empty.fail"),
 
     /**
      * 用户登录过期
