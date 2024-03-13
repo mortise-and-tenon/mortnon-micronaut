@@ -79,12 +79,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
                     }
                     return permissionRepository.save(sysPermission);
                 })
-                .map(SysPermissionDTO::convert)
-                .map(sysPermissionDTO -> {
-                    sysPermissionDTO.setApi(createPermissionCommand.getApi());
-                    sysPermissionDTO.setMethod(createPermissionCommand.getMethod());
-                    return sysPermissionDTO;
-                });
+                .map(SysPermissionDTO::convert);
     }
 
     @Override

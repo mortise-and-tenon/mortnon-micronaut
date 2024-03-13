@@ -35,14 +35,9 @@ public class SysPermissionDTO {
     private String description;
 
     /**
-     * 适用 api
+     * 依赖的权限
      */
-    private String api;
-
-    /**
-     * api 方法
-     */
-    private HttpMethod method;
+    private String dependency;
 
     public static SysPermissionDTO convert(SysPermission sysPermission) {
         SysPermissionDTO sysPermissionDTO = new SysPermissionDTO();
@@ -50,6 +45,7 @@ public class SysPermissionDTO {
         sysPermissionDTO.setName(sysPermission.getName());
         sysPermissionDTO.setIdentifier(sysPermission.getIdentifier());
         sysPermissionDTO.setDescription(sysPermission.getDescription());
+        sysPermissionDTO.setDependency(sysPermission.getDependency());
         return sysPermissionDTO;
     }
 }

@@ -76,25 +76,26 @@ CREATE TABLE `sys_permission`(
 	`name` VARCHAR(64) NOT NULL                             COMMENT '权限名字',
 	`identifier` VARCHAR(64) NOT NULL                       COMMENT '权限标识符',
 	`description` VARCHAR(1024) NULL                        COMMENT '权限描述',
+	`dependency` VARCHAR(1024) DEFAULT ''                   COMMENT '关联的权限',
 	`gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
 	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
 
-
-INSERT INTO `sys_permission`(name,identifier,description)
-VALUES ('查询用户','USER_QUERY','查看用户数据'),
-    ('维护用户','USER_UPDATE','维护用户数据'),
-    ("维护用户分派","USER_ASSIGNMENT",'维护用户分派'),
-    ('查询角色','ROLE_QUERY','查询角色数据'),
-    ('维护角色','ROLE_UPDATE','维护角色数据'),
-    ('查询组织','PROJECT_QUERY','查询组织数据'),
-    ('维护组织','PROJECT_UPDATE','创建组织数据'),
-    ('查询菜单','MENU_QUERY','查询菜单数据'),
-    ('维护菜单','MENU_UPDATE','维护菜单数据'),
-    ('查看日志','LOG_QUERY','查看日志数据');
+INSERT INTO `sys_permission`(name,identifier,description,dependency)
+VALUES ('查询用户','USER_QUERY','查看用户数据',''),
+    ('维护用户','USER_UPDATE','维护用户数据','USER_QUERY'),
+    ("维护用户分派","USER_ASSIGNMENT",'维护用户分派',''),
+    ('查询角色','ROLE_QUERY','查询角色数据',''),
+    ('维护角色','ROLE_UPDATE','维护角色数据','ROLE_QUERY'),
+    ('查询组织','PROJECT_QUERY','查询组织数据',''),
+    ('维护组织','PROJECT_UPDATE','创建组织数据','PROJECT_QUERY'),
+    ('查询菜单','MENU_QUERY','查询菜单数据',''),
+    ('维护菜单','MENU_UPDATE','维护菜单数据','MENU_QUERY'),
+    ('查看日志','LOG_QUERY','查看日志数据','');
 
 -- 权限控制的API表
-CREATE TABLE IF NOT EXISTS `sys_api`(
+DROP TABLE IF EXISTS `sys_api`;
+CREATE TABLE `sys_api`(
 	`id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY  COMMENT 'API id',
 	`identifier` VARCHAR(64) NOT NULL                       COMMENT '对应的权限标识符',
 	`api` VARCHAR(1024) NOT NULL                            COMMENT '控制的 api',

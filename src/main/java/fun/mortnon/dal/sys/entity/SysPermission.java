@@ -32,4 +32,9 @@ public class SysPermission extends BaseEntity {
      * 权限描述
      */
     private String description;
+
+    /**
+     * 依赖的权限
+     */
+    private String dependency;
 }

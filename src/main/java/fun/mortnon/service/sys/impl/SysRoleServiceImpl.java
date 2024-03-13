@@ -1,5 +1,6 @@
 package fun.mortnon.service.sys.impl;
 
+import fun.mortnon.dal.sys.entity.SysPermission;
 import fun.mortnon.dal.sys.entity.SysRole;
 import fun.mortnon.dal.sys.entity.SysRolePermission;
 import fun.mortnon.dal.sys.entity.SysUser;
@@ -35,7 +36,11 @@ import reactor.core.publisher.Mono;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.micronaut.data.repository.jpa.criteria.PredicateSpecification.where;
@@ -78,31 +83,55 @@ public class SysRoleServiceImpl implements SysRoleService {
                     return roleRepository.save(sysRole);
                 })
                 .flatMap(role -> {
-                    List<SysRolePermission> rolePermissionList = new ArrayList<>();
-                    createRoleCommand.getPermissions().forEach(k -> {
-                        SysRolePermission rolePermission = new SysRolePermission();
-                        rolePermission.setRoleId(role.getId());
-                        rolePermission.setPermissionId(k);
-                        rolePermissionList.add(rolePermission);
-                    });
-
-                    SysRoleDTO roleData = SysRoleDTO.convert(role);
-
-                    return rolePermissionRepository.saveAll(rolePermissionList)
-                            .collectList()
-                            .flatMapMany(list ->
-                                    permissionRepository.findByIdIn(createRoleCommand.getPermissions())
-                            ).collectList()
-                            .map(list -> {
-                                if (list.size() != rolePermissionList.size()) {
-                                    log.warn("Failed to create role, permission data error.");
-                                    return Mono.error(ParameterException.create(ErrorCodeEnum.PERMISSION_ERROR));
+                    return permissionRepository.findByIdIn(createRoleCommand.getPermissions())
+                            .flatMap(permission -> {
+                                if (ObjectUtils.isEmpty(permission.getDependency())) {
+                                    return Mono.just(new HashSet<Long>());
                                 }
-                                List<SysPermissionDTO> pList = list.stream().map(k -> SysPermissionDTO.convert(k))
-                                        .collect(Collectors.toList());
-                                roleData.setPermissions(pList);
-                                return roleData;
-                            }).then(Mono.just(roleData));
+                                return permissionRepository.findByIdentifierIn(Arrays.asList(permission.getDependency().split(",")))
+                                        .map(SysPermission::getId)
+                                        .collect(Collectors.toSet());
+                            })
+                            .collectList()
+                            .map(list -> {
+                                Set<Long> set = new HashSet<>();
+                                list.forEach(item -> set.addAll(item));
+                                return set;
+                            })
+                            .map(extendSet -> {
+                                Set<Long> permissionSet = createRoleCommand.getPermissions().stream().collect(Collectors.toSet());
+                                permissionSet.addAll(extendSet);
+                                return permissionSet;
+                            })
+                            .map(permissionSet -> {
+                                List<SysRolePermission> rolePermissionList = new ArrayList<>();
+                                permissionSet.forEach(k -> {
+                                    SysRolePermission rolePermission = new SysRolePermission();
+                                    rolePermission.setRoleId(role.getId());
+                                    rolePermission.setPermissionId(k);
+                                    rolePermissionList.add(rolePermission);
+                                });
+                                return rolePermissionList;
+                            })
+                            .flatMap(rolePermissionList -> {
+                                SysRoleDTO roleData = SysRoleDTO.convert(role);
+
+                                return rolePermissionRepository.saveAll(rolePermissionList)
+                                        .collectList()
+                                        .flatMapMany(list ->
+                                                permissionRepository.findByIdIn(createRoleCommand.getPermissions())
+                                        ).collectList()
+                                        .map(list -> {
+                                            if (list.size() != rolePermissionList.size()) {
+                                                log.warn("Failed to create role, permission data error.");
+                                                return Mono.error(ParameterException.create(ErrorCodeEnum.PERMISSION_ERROR));
+                                            }
+                                            List<SysPermissionDTO> pList = list.stream().map(k -> SysPermissionDTO.convert(k))
+                                                    .collect(Collectors.toList());
+                                            roleData.setPermissions(pList);
+                                            return roleData;
+                                        }).then(Mono.just(roleData));
+                            });
                 });
 
     }
@@ -145,14 +174,37 @@ public class SysRoleServiceImpl implements SysRoleService {
                                     rolePermissionRepository.deleteByRoleId(updateRoleCommand.getId())
                             )
                             .flatMapMany(result -> {
-                                List<SysRolePermission> pList = updateRoleCommand.getPermissions().stream().map(k -> {
-                                    SysRolePermission sysRolePermission = new SysRolePermission();
-                                    sysRolePermission.setRoleId(updateRoleCommand.getId());
-                                    sysRolePermission.setPermissionId(k);
-                                    return sysRolePermission;
-                                }).collect(Collectors.toList());
-
-                                return rolePermissionRepository.saveAll(pList);
+                                return permissionRepository.findByIdIn(updateRoleCommand.getPermissions())
+                                        .flatMap(permission -> {
+                                            if (ObjectUtils.isEmpty(permission.getDependency())) {
+                                                return Mono.just(new HashSet<Long>());
+                                            }
+                                            return permissionRepository.findByIdentifierIn(Arrays.asList(permission.getDependency().split(",")))
+                                                    .map(SysPermission::getId)
+                                                    .collect(Collectors.toSet());
+                                        })
+                                        .collectList()
+                                        .map(list -> {
+                                            Set<Long> set = new HashSet<>();
+                                            list.forEach(item -> set.addAll(item));
+                                            return set;
+                                        })
+                                        .map(extendSet -> {
+                                            Set<Long> permissionSet = updateRoleCommand.getPermissions().stream().collect(Collectors.toSet());
+                                            permissionSet.addAll(extendSet);
+                                            return permissionSet;
+                                        })
+                                        .map(permissionSet -> {
+                                            List<SysRolePermission> rolePermissionList = new ArrayList<>();
+                                            permissionSet.forEach(k -> {
+                                                SysRolePermission rolePermission = new SysRolePermission();
+                                                rolePermission.setRoleId(role.getId());
+                                                rolePermission.setPermissionId(k);
+                                                rolePermissionList.add(rolePermission);
+                                            });
+                                            return rolePermissionList;
+                                        })
+                                        .flatMapMany(pList -> rolePermissionRepository.saveAll(pList));
                             })
                             .collectList()
                             .flatMapMany(rpList ->

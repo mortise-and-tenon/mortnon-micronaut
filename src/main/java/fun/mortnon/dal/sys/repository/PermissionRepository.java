@@ -24,6 +24,14 @@ public interface PermissionRepository extends ReactorPageableRepository<SysPermi
     Flux<SysPermission> findByIdIn(List<Long> ids);
 
     /**
+     * 按标识值查询所有权限
+     *
+     * @param identifiers
+     * @return
+     */
+    Flux<SysPermission> findByIdentifierIn(List<String> identifiers);
+
+    /**
      * 名字或标识符重复
      *
      * @param name
