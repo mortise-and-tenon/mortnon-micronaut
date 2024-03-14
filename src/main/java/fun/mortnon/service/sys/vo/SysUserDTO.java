@@ -1,6 +1,7 @@
 package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysUser;
+import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
@@ -68,29 +69,10 @@ public class SysUserDTO {
      */
     private List<ProjectRoleDTO> projectRoles;
 
-    public SysUserDTO() {
-
-    }
-
-    private SysUserDTO(Long id, String userName, String nickName, String email, String phone, String avatar, int sex, boolean status, Instant gmtCreate) {
-        setId(id);
-        setUserName(userName);
-        setNickName(nickName);
-        setEmail(email);
-        setPhone(phone);
-        setAvatar(avatar);
-        setSex(sex);
-        setStatus(status);
-        setGmtCreate(gmtCreate);
-        projectRoles = new ArrayList<>();
-    }
-
     public static SysUserDTO convert(SysUser sysUser) {
-        if (null == sysUser) {
-            return new SysUserDTO();
-        }
-
-        return new SysUserDTO(sysUser.getId(), sysUser.getUserName(), sysUser.getNickName(), sysUser.getEmail(),
-                sysUser.getPhone(), sysUser.getAvatar(), sysUser.getSex(), sysUser.isStatus(), sysUser.getGmtCreate());
+        SysUserDTO sysUserDTO = new SysUserDTO();
+        MortnonBeanUtils.copy(sysUser, sysUserDTO);
+        sysUserDTO.setProjectRoles(new ArrayList<>());
+        return sysUserDTO;
     }
 }

@@ -4,12 +4,14 @@ import fun.mortnon.dal.sys.entity.SysLog;
 import fun.mortnon.dal.sys.entity.log.LogLevel;
 import fun.mortnon.dal.sys.entity.log.LogResult;
 import fun.mortnon.framework.json.InstantSerializer;
+import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.context.MessageSource;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
@@ -59,6 +61,11 @@ public class SysLogDTO {
     private String request;
 
     /**
+     * 请求响应
+     */
+    private String message;
+
+    /**
      * 国际化转义后的操作结果
      */
     private String resultDesc;
@@ -89,21 +96,14 @@ public class SysLogDTO {
         }
 
         SysLogDTO sysLogDTO = new SysLogDTO();
-        sysLogDTO.setId(sysLog.getId());
-        sysLogDTO.setUserName(sysLog.getUserName());
+
+        MortnonBeanUtils.copy(sysLog, sysLogDTO);
+
         sysLogDTO.setIp(Optional.ofNullable(sysLog.getIp()).orElse(""));
         sysLogDTO.setProjectName(Optional.ofNullable(sysLog.getProjectName()).orElse(""));
-        sysLogDTO.setTime(sysLog.getTime());
-
-        sysLogDTO.setActionDesc(sysLog.getActionDesc());
-        sysLogDTO.setAction(sysLog.getAction());
-
-        sysLogDTO.setRequest(sysLog.getRequest());
-
         sysLogDTO.setResultDesc(i18n(messageSource, sysLog.getResult().getName(), lang));
-        sysLogDTO.setResult(sysLog.getResult());
         sysLogDTO.setLevelDesc(i18n(messageSource, sysLog.getLevel().getName(), lang));
-        sysLogDTO.setLevel(sysLog.getLevel());
+
 
         return sysLogDTO;
     }

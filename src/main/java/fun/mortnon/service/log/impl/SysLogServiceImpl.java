@@ -8,6 +8,7 @@ import fun.mortnon.dal.sys.specification.Specifications;
 import fun.mortnon.framework.properties.CommonProperties;
 import fun.mortnon.framework.utils.DateTimeUtils;
 import fun.mortnon.framework.utils.ExcelUtils;
+import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.framework.web.LogContextHolder;
 import fun.mortnon.service.log.SysLogBuilder;
 import fun.mortnon.service.log.SysLogService;
@@ -20,6 +21,7 @@ import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.server.types.files.SystemFile;
 import io.micronaut.security.token.reader.TokenResolver;
@@ -208,7 +210,7 @@ public class SysLogServiceImpl implements SysLogService {
     }
 
     @Override
-    public void buildLog(HttpRequest<Object> request, int responseCode) {
+    public void buildLog(HttpRequest<Object> request, HttpResponse response) {
         LogContextHolder.LogData logHolder = LogContextHolder.getLogHolder(request);
         String contextUserName = logHolder.getUserName();
         String action = logHolder.getAction();
@@ -217,10 +219,16 @@ public class SysLogServiceImpl implements SysLogService {
         //移除对应的缓存日志数据
         LogContextHolder.clearLogHolder(request);
 
+        int responseCode = response.code();
+
         SysLog sysLog = SysLogBuilder.build(request, responseCode, action, body);
         String actionDesc = messageSource.getMessage(action, MessageSource.MessageContext.of(new Locale(commonProperties.getLang()))).get();
         sysLog.setActionDesc(actionDesc);
 
+        if (response.getBody().get() instanceof MortnonResult) {
+            MortnonResult result = (MortnonResult) response.getBody().get();
+            sysLog.setMessage(result.getMessage());
+        }
 
         Mono.just(contextUserName)
                 .flatMap(currentUserName -> {

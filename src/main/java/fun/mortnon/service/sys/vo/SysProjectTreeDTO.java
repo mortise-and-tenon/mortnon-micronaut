@@ -1,15 +1,15 @@
 package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysProject;
+import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
-import org.apache.commons.collections4.CollectionUtils;
 
-import javax.validation.constraints.NotEmpty;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author dev2007
@@ -56,12 +56,8 @@ public class SysProjectTreeDTO {
 
     public static SysProjectTreeDTO convert(SysProject sysProject) {
         SysProjectTreeDTO sysProjectTreeDTO = new SysProjectTreeDTO();
-        sysProjectTreeDTO.setId(sysProject.getId());
-        sysProjectTreeDTO.setName(sysProject.getName());
-        sysProjectTreeDTO.setDescription(sysProject.getDescription() == null ? "" : sysProject.getDescription());
-        sysProjectTreeDTO.setOrder(sysProject.getOrder());
-        sysProjectTreeDTO.setStatus(sysProject.isStatus());
-        sysProjectTreeDTO.setTime(sysProject.getGmtCreate());
+        MortnonBeanUtils.copy(sysProject, sysProjectTreeDTO);
+        sysProjectTreeDTO.setDescription(Optional.ofNullable(sysProject.getDescription()).orElse(""));
         sysProjectTreeDTO.setChildren(new ArrayList<>());
         return sysProjectTreeDTO;
     }

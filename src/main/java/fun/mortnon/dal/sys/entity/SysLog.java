@@ -62,6 +62,11 @@ public class SysLog {
     private String request;
 
     /**
+     * 操作响应的消息
+     */
+    private String message;
+
+    /**
      * 操作结果
      */
     private LogResult result;

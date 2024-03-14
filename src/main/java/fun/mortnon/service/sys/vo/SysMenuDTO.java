@@ -1,13 +1,13 @@
 package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysMenu;
+import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
 import java.time.Instant;
-import java.util.ArrayList;
 
 /**
  * @author dev2007
@@ -64,20 +64,7 @@ public class SysMenuDTO {
 
     public static SysMenuDTO convert(SysMenu sysMenu) {
         SysMenuDTO sysMenuDTO = new SysMenuDTO();
-        sysMenuDTO.setId(sysMenu.getId());
-        sysMenuDTO.setName(sysMenu.getName());
-        sysMenuDTO.setUrl(sysMenu.getUrl());
-        sysMenuDTO.setIcon(sysMenu.getIcon());
-        sysMenuDTO.setOrder(sysMenu.getOrder());
-        sysMenuDTO.setStatus(sysMenu.isStatus());
-        sysMenuDTO.setGmtCreate(sysMenu.getGmtCreate());
-
-        String permission = sysMenu.getPermission();
-        sysMenuDTO.setPermission(permission);
-
-        sysMenuDTO.setParentId(sysMenu.getParentId());
-
-
+        MortnonBeanUtils.copy(sysMenu,sysMenuDTO);
         return sysMenuDTO;
     }
 }

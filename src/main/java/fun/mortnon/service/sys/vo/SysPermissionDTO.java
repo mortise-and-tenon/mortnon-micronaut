@@ -1,6 +1,7 @@
 package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysPermission;
+import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.serde.annotation.Serdeable;
@@ -41,11 +42,7 @@ public class SysPermissionDTO {
 
     public static SysPermissionDTO convert(SysPermission sysPermission) {
         SysPermissionDTO sysPermissionDTO = new SysPermissionDTO();
-        sysPermissionDTO.setId(sysPermission.getId());
-        sysPermissionDTO.setName(sysPermission.getName());
-        sysPermissionDTO.setIdentifier(sysPermission.getIdentifier());
-        sysPermissionDTO.setDescription(sysPermission.getDescription());
-        sysPermissionDTO.setDependency(sysPermission.getDependency());
+        MortnonBeanUtils.copy(sysPermission, sysPermissionDTO);
         return sysPermissionDTO;
     }
 }

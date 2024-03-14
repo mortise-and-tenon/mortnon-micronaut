@@ -23,10 +23,10 @@ public abstract class BaseExceptionHandler<T extends Throwable> implements Excep
 
     @Override
     public HttpResponse handle(HttpRequest request, T exception) {
-        HttpResponse httpResponse = handle(exception);
-        int code = httpResponse.getStatus().getCode();
-        sysLogService.buildLog(request, code);
-        return httpResponse;
+        HttpResponse response = handle(exception);
+        int code = response.getStatus().getCode();
+        sysLogService.buildLog(request, response);
+        return response;
     }
 
     /**

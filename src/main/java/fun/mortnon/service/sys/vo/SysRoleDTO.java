@@ -1,6 +1,7 @@
 package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysRole;
+import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
@@ -51,12 +52,7 @@ public class SysRoleDTO {
 
     public static SysRoleDTO convert(SysRole sysRole) {
         SysRoleDTO sysRoleDTO = new SysRoleDTO();
-        sysRoleDTO.setId(sysRole.getId());
-        sysRoleDTO.setName(sysRole.getName());
-        sysRoleDTO.setIdentifier(sysRole.getIdentifier());
-        sysRoleDTO.setDescription(sysRole.getDescription());
-        sysRoleDTO.setStatus(sysRole.isStatus());
-        sysRoleDTO.setGmtCreate(sysRole.getGmtCreate());
+        MortnonBeanUtils.copy(sysRole, sysRoleDTO);
         return sysRoleDTO;
     }
 }

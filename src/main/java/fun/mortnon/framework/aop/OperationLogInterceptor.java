@@ -139,10 +139,8 @@ public class OperationLogInterceptor implements MethodInterceptor<Object, Object
         return "";
     }
 
-    @NonNull
     private MutableHttpResponse<?> createLog(HttpRequest<Object> request, MutableHttpResponse<?> response) {
-        int code = response.getStatus().getCode();
-        operationLogService.buildLog(request, code);
+        operationLogService.buildLog(request, response);
         return response;
     }
 
