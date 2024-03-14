@@ -54,6 +54,11 @@ public class SysLogDTO {
     private String ip;
 
     /**
+     * 请求参数
+     */
+    private String request;
+
+    /**
      * 国际化转义后的操作结果
      */
     private String resultDesc;
@@ -92,6 +97,9 @@ public class SysLogDTO {
 
         sysLogDTO.setActionDesc(sysLog.getActionDesc());
         sysLogDTO.setAction(sysLog.getAction());
+
+        sysLogDTO.setRequest(sysLog.getRequest());
+
         sysLogDTO.setResultDesc(i18n(messageSource, sysLog.getResult().getName(), lang));
         sysLogDTO.setResult(sysLog.getResult());
         sysLogDTO.setLevelDesc(i18n(messageSource, sysLog.getLevel().getName(), lang));

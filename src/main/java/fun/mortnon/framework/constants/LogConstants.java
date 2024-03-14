@@ -40,6 +40,11 @@ public class LogConstants {
     public static final String USER_PASSWORD_UPDATE = "log.action.user.password.update";
 
     /**
+     * 变更用户状态
+     */
+    public static final String USER_STATUS_UPDATE = "log.cation.user.status.update";
+
+    /**
      * 创建组织操作
      */
     public static final String PROJECT_CREATE = "log.action.project.create";

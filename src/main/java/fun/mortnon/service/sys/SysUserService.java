@@ -7,6 +7,7 @@ import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.CreateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
+import fun.mortnon.web.controller.user.command.UpdateUserStatusCommand;
 import fun.mortnon.web.controller.user.command.UserPageSearch;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
@@ -103,6 +104,14 @@ public interface SysUserService {
      * @return
      */
     Mono<Boolean> updateUserPassword(UpdatePasswordCommand updatePasswordCommand);
+
+    /**
+     * 变更用户状态
+     *
+     * @param updateUserStatusCommand
+     * @return
+     */
+    Mono<Boolean> updateUserStatus(UpdateUserStatusCommand updateUserStatusCommand);
 
     /**
      * 修改用户自身密码

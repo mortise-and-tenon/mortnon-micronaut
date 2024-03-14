@@ -12,6 +12,7 @@ import fun.mortnon.service.sys.vo.SysUserDTO;
 import fun.mortnon.web.controller.user.command.CreateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
+import fun.mortnon.web.controller.user.command.UpdateUserStatusCommand;
 import fun.mortnon.web.controller.user.command.UserPageSearch;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.model.Pageable;
@@ -121,6 +122,20 @@ public class UserController {
     }
 
     /**
+     * 变更用户状态
+     *
+     * @param update
+     * @return
+     */
+    @OperationLog(LogConstants.USER_STATUS_UPDATE)
+    @Put("/status")
+    public Mono<MutableHttpResponse<MortnonResult>> changeStatus(@Body UpdateUserStatusCommand update) {
+        return sysUserService.updateUserStatus(update)
+                .map(MortnonResult::success)
+                .map(HttpResponse::ok);
+    }
+
+    /**
      * 修改其他用户密码
      *
      * @param id
@@ -131,6 +146,8 @@ public class UserController {
     @Put("/password/{id}")
     public Mono<MutableHttpResponse<MortnonResult>> updateUserPassword(@NotNull @Positive Long id, @Body @NotNull @Valid UpdatePasswordCommand updatePassword) {
         updatePassword.setId(id);
-        return sysUserService.updateUserPassword(updatePassword).map(MortnonResult::success).map(HttpResponse::ok);
+        return sysUserService.updateUserPassword(updatePassword)
+                .map(MortnonResult::success)
+                .map(HttpResponse::ok);
     }
 }

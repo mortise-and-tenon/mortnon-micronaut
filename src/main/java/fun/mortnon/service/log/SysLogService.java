@@ -6,6 +6,7 @@ import fun.mortnon.web.controller.log.command.LogPageSearch;
 import fun.mortnon.web.vo.login.MortnonDefaultPageable;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import io.micronaut.http.HttpRequest;
 import io.micronaut.http.server.types.files.StreamedFile;
 import io.micronaut.http.server.types.files.SystemFile;
 import reactor.core.publisher.Mono;
@@ -42,4 +43,12 @@ public interface SysLogService {
      * @return
      */
     Mono<SystemFile> exportFile(LogPageSearch pageSearch, String lang);
+
+    /**
+     * 生成日志
+     *
+     * @param request
+     * @param responseCode
+     */
+    void buildLog(HttpRequest<Object> request, int responseCode);
 }

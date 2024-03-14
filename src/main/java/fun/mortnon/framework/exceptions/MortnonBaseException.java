@@ -86,4 +86,5 @@ public class MortnonBaseException extends RuntimeException implements MortnonExc
     public String message() {
         return message;
     }
+
 }

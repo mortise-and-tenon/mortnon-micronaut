@@ -57,6 +57,11 @@ public class SysLog {
     private String ip;
 
     /**
+     * 操作请求数据
+     */
+    private String request;
+
+    /**
      * 操作结果
      */
     private LogResult result;
@@ -71,7 +76,7 @@ public class SysLog {
      */
     private Instant time;
 
-    public SysLog(){
+    public SysLog() {
 
     }
 }

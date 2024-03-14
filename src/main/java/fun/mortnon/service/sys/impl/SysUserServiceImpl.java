@@ -21,6 +21,7 @@ import fun.mortnon.web.controller.role.command.RolePageSearch;
 import fun.mortnon.web.controller.user.command.CreateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
 import fun.mortnon.web.controller.user.command.UpdateUserCommand;
+import fun.mortnon.web.controller.user.command.UpdateUserStatusCommand;
 import fun.mortnon.web.controller.user.command.UserPageSearch;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
@@ -421,6 +422,29 @@ public class SysUserServiceImpl implements SysUserService {
                     return userRepository.update(user);
                 })
                 .map(result -> result != null);
+    }
+
+    @Override
+    public Mono<Boolean> updateUserStatus(UpdateUserStatusCommand updateUserStatusCommand) {
+        if (ObjectUtils.isEmpty(updateUserStatusCommand.getUserId()) || updateUserStatusCommand.getUserId() <= 0) {
+            log.warn("Failed to change user status, user id is empty.");
+            return Mono.error(ParameterException.create(ErrorCodeEnum.USER_NOT_EXISTS));
+        }
+
+        return userRepository.existsById(updateUserStatusCommand.getUserId())
+                .flatMap(exist -> {
+                    if (!exist) {
+                        log.warn("Failed to change user status, user id {} is not exist.", updateUserStatusCommand.getUserId());
+                        return Mono.error(ParameterException.create(ErrorCodeEnum.USER_NOT_EXISTS));
+                    }
+
+                    return userRepository.findById(updateUserStatusCommand.getUserId());
+                })
+                .flatMap(user -> {
+                    user.setStatus(updateUserStatusCommand.isStatus());
+                    return userRepository.update(user);
+                })
+                .map(user -> user != null);
     }
 
     @Override

@@ -1,34 +1,36 @@
 package fun.mortnon.framework.aop;
 
-import fun.mortnon.dal.sys.entity.SysLog;
-import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.framework.properties.CommonProperties;
+import fun.mortnon.framework.web.LogContextHolder;
 import fun.mortnon.service.log.SysLogService;
-import fun.mortnon.service.log.SysLogBuilder;
 import fun.mortnon.service.sys.SysUserService;
 import fun.mortnon.web.vo.login.PasswordLoginCredentials;
 import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.context.MessageSource;
-import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.type.MutableArgumentValue;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.context.ServerRequestContext;
+import io.micronaut.json.tree.JsonArray;
+import io.micronaut.json.tree.JsonNode;
+import io.micronaut.json.tree.JsonObject;
 import io.micronaut.security.token.reader.TokenResolver;
 import io.micronaut.security.token.validator.TokenValidator;
+import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Locale;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link OperationLog} 注解的拦截器
@@ -59,6 +61,9 @@ public class OperationLogInterceptor implements MethodInterceptor<Object, Object
     @Inject
     private CommonProperties commonProperties;
 
+    @Inject
+    private ObjectMapper mapper;
+
     @Nullable
     @Override
     public Object intercept(MethodInvocationContext<Object, Object> context) {
@@ -67,66 +72,79 @@ public class OperationLogInterceptor implements MethodInterceptor<Object, Object
 
         Object result = context.proceed();
 
+        String body = getRequestBody(request);
+
+        String userName = context.getParameters().entrySet().stream().filter(entry -> {
+            MutableArgumentValue<?> value = entry.getValue();
+            return value.getValue() instanceof PasswordLoginCredentials;
+        }).map(entry -> {
+            PasswordLoginCredentials value = (PasswordLoginCredentials) entry.getValue().getValue();
+            return value.getUsername();
+        }).findAny().orElse("");
+
+        LogContextHolder.setLogHolder(request, new LogContextHolder.LogData(userName, action, body));
+
         if (result instanceof Mono) {
             Mono<MutableHttpResponse<?>> responsePublisher = (Mono<MutableHttpResponse<?>>) result;
-            return Mono.from(responsePublisher).flatMap(response -> afterPoint(context, request, response, action));
+            return Mono.from(responsePublisher).map(response -> createLog(request, response));
         }
 
         Flux<MutableHttpResponse<?>> responsePublisher = (Flux<MutableHttpResponse<?>>) result;
 
-        return Flux.from(responsePublisher).flatMap(response -> afterPoint(context, request, response, action));
+        return Flux.from(responsePublisher).map(response -> createLog(request, response));
     }
 
-    private Mono<? extends MutableHttpResponse<?>> afterPoint(MethodInvocationContext<Object, Object> context, HttpRequest<Object> request, MutableHttpResponse<?> response, String action) {
-        SysLog sysLog = SysLogBuilder.build(request, response, action);
-        String actionDesc = messageSource.getMessage(action, MessageSource.MessageContext.of(new Locale(commonProperties.getLang()))).get();
-        sysLog.setActionDesc(actionDesc);
+    @NonNull
+    private String getRequestBody(HttpRequest<Object> request) {
 
-        return Flux.fromIterable(context.getParameters().entrySet())
-                .filter(entry -> {
-                    MutableArgumentValue<?> value = entry.getValue();
-                    return value.getValue() instanceof PasswordLoginCredentials;
-                })
-                .map(entry -> {
-                    PasswordLoginCredentials value = (PasswordLoginCredentials) entry.getValue().getValue();
-                    return value.getUsername();
-                })
-                .collectList()
-                .flatMap(authNameList -> {
-                    if (CollectionUtils.isEmpty(authNameList)) {
-                        String token = tokenResolver.resolveToken(request).orElse("");
-                        if (StringUtils.isNotEmpty(token)) {
-                            return Mono.from(tokenValidator.validateToken(token, request))
-                                    .map(authentication -> {
-                                        sysLog.setUserName(authentication.getName());
-                                        return authentication.getName();
-                                    })
-                                    .flatMap(userName ->
-                                            sysUserService.queryUserProject(userName)
-                                                    .collect(Collectors.toSet())
-                                    )
-                                    .map(projectSet -> {
-                                        for (SysProject project : projectSet) {
-                                            sysLog.setProjectId(project.getId());
-                                            sysLog.setProjectName(project.getName());
-                                            break;
-                                        }
-                                        return sysLog;
-                                    });
-                        }
-                    } else {
-                        sysLog.setUserName(authNameList.get(0));
-                    }
+        JsonObject json = (JsonObject) request.getBody().get();
+        if (ObjectUtils.isEmpty(json)) {
+            return "";
+        }
 
-                    return Mono.just(sysLog);
-                })
-                .flatMap(logData -> {
-                    if (StringUtils.isEmpty(sysLog.getUserName())) {
-                        log.warn("no username,no operation log.");
-                        return Mono.just(response);
-                    }
+        List<String> paramPair = new ArrayList<>();
+        json.entries().forEach(entry -> {
+            String key = entry.getKey();
+            String value = convertJsonNode(entry.getValue());
 
-                    return operationLogService.createLog(logData).map(syslog -> response);
-                });
+            //密码数据不记录在操作日志中
+            if (key.contains("password")) {
+                value = "*****";
+            }
+            paramPair.add("\"" + key + "\" : " + value);
+        });
+
+        return "{" + String.join(",", paramPair) + "}";
     }
+
+
+    private String convertJsonNode(JsonNode node) {
+        if (node.isString()) {
+            return "\"" + node.getStringValue() + "\"";
+        }
+        if (node.isNumber()) {
+            return node.getNumberValue().toString();
+        }
+
+        if (node.isArray()) {
+            List<String> arrayList = new ArrayList<>();
+            node.values().forEach(item -> {
+                String value = convertJsonNode(item);
+                arrayList.add(value);
+            });
+
+            return "[" + String.join(",", arrayList) + "]";
+        }
+
+        return "";
+    }
+
+    @NonNull
+    private MutableHttpResponse<?> createLog(HttpRequest<Object> request, MutableHttpResponse<?> response) {
+        int code = response.getStatus().getCode();
+        operationLogService.buildLog(request, code);
+        return response;
+    }
+
+
 }

@@ -2,20 +2,28 @@ package fun.mortnon.service.log.impl;
 
 import cn.hutool.core.io.FileUtil;
 import fun.mortnon.dal.sys.entity.SysLog;
+import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.repository.LogRepository;
 import fun.mortnon.dal.sys.specification.Specifications;
+import fun.mortnon.framework.properties.CommonProperties;
 import fun.mortnon.framework.utils.DateTimeUtils;
 import fun.mortnon.framework.utils.ExcelUtils;
+import fun.mortnon.framework.web.LogContextHolder;
+import fun.mortnon.service.log.SysLogBuilder;
 import fun.mortnon.service.log.SysLogService;
 import fun.mortnon.service.log.vo.SysLogDTO;
+import fun.mortnon.service.sys.SysUserService;
 import fun.mortnon.web.controller.log.command.LogPageSearch;
 import io.micronaut.context.MessageSource;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
+import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.server.types.files.SystemFile;
+import io.micronaut.security.token.reader.TokenResolver;
+import io.micronaut.security.token.validator.TokenValidator;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +41,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static io.micronaut.data.repository.jpa.criteria.PredicateSpecification.where;
@@ -49,6 +58,17 @@ public class SysLogServiceImpl implements SysLogService {
 
     @Inject
     private MessageSource messageSource;
+    @Inject
+    private CommonProperties commonProperties;
+
+    @Inject
+    private TokenResolver tokenResolver;
+
+    @Inject
+    private TokenValidator tokenValidator;
+
+    @Inject
+    private SysUserService sysUserService;
 
     /**
      * 表格的表头名称（中文）
@@ -185,5 +205,60 @@ public class SysLogServiceImpl implements SysLogService {
             }
         }
         return query;
+    }
+
+    @Override
+    public void buildLog(HttpRequest<Object> request, int responseCode) {
+        LogContextHolder.LogData logHolder = LogContextHolder.getLogHolder(request);
+        String contextUserName = logHolder.getUserName();
+        String action = logHolder.getAction();
+        String body = logHolder.getBody();
+
+        //移除对应的缓存日志数据
+        LogContextHolder.clearLogHolder(request);
+
+        SysLog sysLog = SysLogBuilder.build(request, responseCode, action, body);
+        String actionDesc = messageSource.getMessage(action, MessageSource.MessageContext.of(new Locale(commonProperties.getLang()))).get();
+        sysLog.setActionDesc(actionDesc);
+
+
+        Mono.just(contextUserName)
+                .flatMap(currentUserName -> {
+                    if (StringUtils.isEmpty(currentUserName)) {
+                        String token = tokenResolver.resolveToken(request).orElse("");
+                        if (StringUtils.isNotEmpty(token)) {
+                            return Mono.from(tokenValidator.validateToken(token, request))
+                                    .map(authentication -> {
+                                        sysLog.setUserName(authentication.getName());
+                                        return authentication.getName();
+                                    })
+                                    .flatMap(userName ->
+                                            sysUserService.queryUserProject(userName)
+                                                    .collect(Collectors.toSet())
+                                    )
+                                    .map(projectSet -> {
+                                        for (SysProject project : projectSet) {
+                                            sysLog.setProjectId(project.getId());
+                                            sysLog.setProjectName(project.getName());
+                                            break;
+                                        }
+                                        return sysLog;
+                                    });
+                        }
+                    } else {
+                        sysLog.setUserName(currentUserName);
+                    }
+
+                    return Mono.just(sysLog);
+                })
+                .flatMap(logData -> {
+                    if (StringUtils.isEmpty(sysLog.getUserName())) {
+                        log.warn("No username, no operation log generated.");
+                        return Mono.empty();
+                    }
+
+                    return createLog(logData);
+                })
+                .subscribe();
     }
 }
