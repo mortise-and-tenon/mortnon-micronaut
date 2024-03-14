@@ -35,6 +35,11 @@ public class ResultBuilder {
         return MortnonResult.fail(errorCodeEnum, message);
     }
 
+    public MortnonResult buildWithData(ErrorCodeEnum errorCodeEnum, Object attachData) {
+        String message = messageSource.getMessage(errorCodeEnum.getI18n(), errorCodeEnum.getDescription(), new Locale(lang));
+        return MortnonResult.fail(errorCodeEnum, message, attachData);
+    }
+
     public MortnonResult build(ErrorCodeEnum errorCodeEnum, String i18nMessage) {
         String message = messageSource.getMessage(i18nMessage, i18nMessage, new Locale(lang));
         return MortnonResult.fail(errorCodeEnum, message);

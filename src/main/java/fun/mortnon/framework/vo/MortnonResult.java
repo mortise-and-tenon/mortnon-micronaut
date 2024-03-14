@@ -36,20 +36,17 @@ public class MortnonResult<T> {
 
     /**
      * 错误码
-     *
      */
     private String errorCode;
 
     /**
      * 错误描述
-     *
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String message;
 
     /**
      * 是否成功
-     *
      */
     private boolean success;
 
@@ -75,7 +72,7 @@ public class MortnonResult<T> {
         return result;
     }
 
-    public static <T> MortnonResult success(T data,String message) {
+    public static <T> MortnonResult success(T data, String message) {
         MortnonResult result = new MortnonResult();
         result.setData(data);
         result.setErrorCode(ErrorCodeEnum.SUCCESS.getErrorCode());
@@ -99,6 +96,15 @@ public class MortnonResult<T> {
         result.setErrorCode(errorCodeEnum.getErrorCode());
         result.setMessage(message);
         result.setSuccess(false);
+        return result;
+    }
+
+    public static MortnonResult fail(ErrorCodeEnum errorCodeEnum, String message, Object data) {
+        MortnonResult result = new MortnonResult();
+        result.setErrorCode(errorCodeEnum.getErrorCode());
+        result.setMessage(message);
+        result.setSuccess(false);
+        result.setData(data);
         return result;
     }
 }

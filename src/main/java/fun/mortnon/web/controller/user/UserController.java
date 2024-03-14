@@ -15,21 +15,27 @@ import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
 import fun.mortnon.web.controller.user.command.UpdateUserStatusCommand;
 import fun.mortnon.web.controller.user.command.UserPageSearch;
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.*;
+import io.micronaut.http.multipart.StreamingFileUpload;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.security.Principal;
 import java.util.List;
+
+import static io.micronaut.http.MediaType.MULTIPART_FORM_DATA;
 
 /**
  * 用户
@@ -147,6 +153,20 @@ public class UserController {
     public Mono<MutableHttpResponse<MortnonResult>> updateUserPassword(@NotNull @Positive Long id, @Body @NotNull @Valid UpdatePasswordCommand updatePassword) {
         updatePassword.setId(id);
         return sysUserService.updateUserPassword(updatePassword)
+                .map(MortnonResult::success)
+                .map(HttpResponse::ok);
+    }
+
+    /**
+     * 导入用户
+     *
+     * @param file
+     * @return
+     */
+    @OperationLog(LogConstants.USER_IMPORT)
+    @Post(value = "/import", consumes = MULTIPART_FORM_DATA)
+    public Mono<MutableHttpResponse<MortnonResult>> importUser(StreamingFileUpload file) {
+        return sysUserService.importUser(file)
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok);
     }

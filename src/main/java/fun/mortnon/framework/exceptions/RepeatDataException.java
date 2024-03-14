@@ -1,12 +1,15 @@
 package fun.mortnon.framework.exceptions;
 
 import fun.mortnon.framework.enums.ErrorCodeEnum;
+import lombok.Data;
 
 /**
  * @author dev2007
  * @date 2023/2/21
  */
 public class RepeatDataException extends MortnonBaseException {
+    private Object attachData;
+
     private RepeatDataException(ErrorCodeEnum errorCodeEnum, Throwable cause) {
         super(errorCodeEnum, cause);
     }
@@ -27,6 +30,12 @@ public class RepeatDataException extends MortnonBaseException {
         return new RepeatDataException(errorCodeEnum);
     }
 
+    public static RepeatDataException createWithData(ErrorCodeEnum errorCodeEnum, Object attachData) {
+        RepeatDataException repeatDataException = new RepeatDataException(errorCodeEnum);
+        repeatDataException.setAttachData(attachData);
+        return repeatDataException;
+    }
+
     public static RepeatDataException create(ErrorCodeEnum errorCodeEnum, String message) {
         return new RepeatDataException(errorCodeEnum, message);
     }
@@ -37,5 +46,13 @@ public class RepeatDataException extends MortnonBaseException {
 
     public static RepeatDataException create(Throwable cause) {
         return new RepeatDataException(ErrorCodeEnum.REPEAT_ERROR, cause);
+    }
+
+    public Object getAttachData() {
+        return attachData;
+    }
+
+    public void setAttachData(Object attachData) {
+        this.attachData = attachData;
     }
 }

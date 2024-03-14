@@ -5,6 +5,8 @@ import fun.mortnon.dal.sys.entity.SysLog;
 import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.repository.LogRepository;
 import fun.mortnon.dal.sys.specification.Specifications;
+import fun.mortnon.framework.enums.ErrorCodeEnum;
+import fun.mortnon.framework.exceptions.UntypedException;
 import fun.mortnon.framework.properties.CommonProperties;
 import fun.mortnon.framework.utils.DateTimeUtils;
 import fun.mortnon.framework.utils.ExcelUtils;
@@ -110,38 +112,42 @@ public class SysLogServiceImpl implements SysLogService {
 
     @Override
     public Mono<SystemFile> exportFile(LogPageSearch pageSearch, String lang) {
-        File tmpFile = FileUtil.createTempFile(new File("tmp"));
+        try {
+            File tmpFile = File.createTempFile("export_log", "tmp");
+            return queryLogs(pageSearch, lang)
+                    .map(pageData -> {
+                        List<SysLogDTO> contentList = pageData.getContent();
+                        Workbook workbook = new HSSFWorkbook();
+                        Sheet sheet = workbook.createSheet(lang.startsWith("zh") ? "操作日志" : "OPERATION LOGS");
+                        ExcelUtils.createHeader(sheet, Arrays.asList(lang.startsWith("zh") ? FILE_CELL_NAME_ZH : FILE_CELL_NAME_EN));
 
-        return queryLogs(pageSearch, lang)
-                .map(pageData -> {
-                    List<SysLogDTO> contentList = pageData.getContent();
-                    Workbook workbook = new HSSFWorkbook();
-                    Sheet sheet = workbook.createSheet(lang.startsWith("zh") ? "操作日志" : "OPERATION LOGS");
-                    ExcelUtils.createHeader(sheet, Arrays.asList(lang.startsWith("zh") ? FILE_CELL_NAME_ZH : FILE_CELL_NAME_EN));
+                        for (int index = 0; index < contentList.size(); index++) {
+                            Row row = sheet.createRow(index + 1);
+                            SysLogDTO rowContent = contentList.get(index);
+                            row.createCell(0).setCellValue(rowContent.getId());
+                            row.createCell(1).setCellValue(rowContent.getActionDesc());
+                            row.createCell(2).setCellValue(rowContent.getUserName());
+                            row.createCell(3).setCellValue(rowContent.getProjectName());
+                            row.createCell(4).setCellValue(rowContent.getIp());
+                            row.createCell(5).setCellValue(rowContent.getResultDesc());
+                            row.createCell(6).setCellValue(rowContent.getLevelDesc());
+                            row.createCell(7).setCellValue(DateTimeUtils.convertStr(rowContent.getTime()));
+                        }
+                        String fileName = "operlog_" + Instant.now().getEpochSecond() + ".xlsx";
 
-                    for (int index = 0; index < contentList.size(); index++) {
-                        Row row = sheet.createRow(index + 1);
-                        SysLogDTO rowContent = contentList.get(index);
-                        row.createCell(0).setCellValue(rowContent.getId());
-                        row.createCell(1).setCellValue(rowContent.getActionDesc());
-                        row.createCell(2).setCellValue(rowContent.getUserName());
-                        row.createCell(3).setCellValue(rowContent.getProjectName());
-                        row.createCell(4).setCellValue(rowContent.getIp());
-                        row.createCell(5).setCellValue(rowContent.getResultDesc());
-                        row.createCell(6).setCellValue(rowContent.getLevelDesc());
-                        row.createCell(7).setCellValue(DateTimeUtils.convertStr(rowContent.getTime()));
-                    }
-                    String fileName = "operlog_" + Instant.now().getEpochSecond() + ".xlsx";
+                        try (FileOutputStream outputStream = new FileOutputStream(tmpFile)) {
+                            workbook.write(outputStream);
+                        } catch (IOException e) {
+                            log.error("Failed to write to the operation log file,due to:", e);
+                        }
 
-                    try (FileOutputStream outputStream = new FileOutputStream(tmpFile)) {
-                        workbook.write(outputStream);
-                    } catch (IOException e) {
-                        log.error("Failed to write to the operation log file,due to:", e);
-                    }
-
-                    return new SystemFile(tmpFile, MediaType.MICROSOFT_EXCEL_OPEN_XML_TYPE).attach(fileName);
-                })
-                .doAfterTerminate(() -> tmpFile.delete());
+                        return new SystemFile(tmpFile, MediaType.MICROSOFT_EXCEL_OPEN_XML_TYPE).attach(fileName);
+                    })
+                    .doAfterTerminate(() -> tmpFile.delete());
+        } catch (IOException e) {
+            log.error("Unable to create temporary file.");
+            return Mono.error(UntypedException.create(ErrorCodeEnum.SYSTEM_ERROR));
+        }
     }
 
     /**
@@ -212,6 +218,11 @@ public class SysLogServiceImpl implements SysLogService {
     @Override
     public void buildLog(HttpRequest<Object> request, HttpResponse response) {
         LogContextHolder.LogData logHolder = LogContextHolder.getLogHolder(request);
+
+        if (ObjectUtils.isEmpty(logHolder)) {
+            return;
+        }
+
         String contextUserName = logHolder.getUserName();
         String action = logHolder.getAction();
         String body = logHolder.getBody();

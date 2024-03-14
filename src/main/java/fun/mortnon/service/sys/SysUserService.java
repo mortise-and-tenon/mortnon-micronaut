@@ -18,6 +18,8 @@ import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
 
 /**
  * @author dongfangzan
@@ -120,4 +122,12 @@ public interface SysUserService {
      * @return
      */
     Mono<Boolean> updateSelfPassword(UpdatePasswordCommand updatePasswordCommand);
+
+    /**
+     * 导入用户
+     *
+     * @param file
+     * @return
+     */
+    Mono<List<SysUserDTO>> importUser(StreamingFileUpload file);
 }

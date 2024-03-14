@@ -39,7 +39,7 @@ public class LogContextHolder {
     }
 
     public static LogData getLogHolder(HttpRequest request) {
-        return ACTION_HOLDER.getOrDefault(request, new LogData());
+        return ACTION_HOLDER.getOrDefault(request, null);
     }
 
     public static void clearLogHolder(HttpRequest request) {

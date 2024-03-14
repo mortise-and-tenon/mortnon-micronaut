@@ -13,11 +13,11 @@ import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.exceptions.NotFoundException;
 import fun.mortnon.framework.exceptions.ParameterException;
 import fun.mortnon.framework.exceptions.RepeatDataException;
+import fun.mortnon.framework.exceptions.UntypedException;
 import fun.mortnon.service.sys.PublicService;
 import fun.mortnon.service.sys.SysUserService;
 import fun.mortnon.service.sys.vo.ProjectRoleDTO;
 import fun.mortnon.service.sys.vo.SysUserDTO;
-import fun.mortnon.web.controller.role.command.RolePageSearch;
 import fun.mortnon.web.controller.user.command.CreateUserCommand;
 import fun.mortnon.web.controller.user.command.UpdatePasswordCommand;
 import fun.mortnon.web.controller.user.command.UpdateUserCommand;
@@ -27,6 +27,7 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
+import io.micronaut.http.multipart.StreamingFileUpload;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +36,20 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -478,5 +488,126 @@ public class SysUserServiceImpl implements SysUserService {
                     return userRepository.update(user);
                 })
                 .map(result -> result != null);
+    }
+
+    @Override
+    public Mono<List<SysUserDTO>> importUser(StreamingFileUpload file) {
+        try {
+            File tempFile = File.createTempFile("user_" + Instant.now().getNano(), "temp");
+            return Mono.from(file.transferTo(tempFile))
+                    .flatMap(result -> {
+                        if (result) {
+                            try {
+                                List<CreateUserCommand> list = readFile(tempFile);
+                                return saveUserList(list);
+                            } catch (Exception e) {
+                                log.error("Reading file exception.");
+                                return Mono.error(UntypedException.create(ErrorCodeEnum.SYSTEM_ERROR));
+                            }
+                        }
+                        return Mono.just(new ArrayList<>());
+                    });
+        } catch (IOException e) {
+            log.error("Unable to create temporary file.");
+            return Mono.error(UntypedException.create(ErrorCodeEnum.SYSTEM_ERROR));
+        }
+    }
+
+    private List<CreateUserCommand> readFile(File file) throws Exception {
+        List<CreateUserCommand> list = new ArrayList<>();
+
+        Workbook workbook = new XSSFWorkbook(file);
+        Sheet sheet = workbook.getSheetAt(0);
+        int index = 0;
+
+        DataFormatter dataFormatter = new DataFormatter();
+        for (Row row : sheet) {
+            index++;
+            if (index == 1) {
+                continue;
+            }
+
+            CreateUserCommand createUserCommand = new CreateUserCommand();
+            int cellIndex = 0;
+            for (Cell cell : row) {
+                String strValue = dataFormatter.formatCellValue(cell);
+                switch (cellIndex) {
+                    case 0:
+                        createUserCommand.setUserName(strValue);
+                        break;
+                    case 1:
+                        createUserCommand.setNickName(strValue);
+                        break;
+                    case 2:
+                        createUserCommand.setSex(strValue.equals("男") ? 0 : 1);
+                        break;
+                    case 3:
+                        createUserCommand.setPhone(strValue);
+                        break;
+                    case 4:
+                        createUserCommand.setEmail(strValue);
+                        break;
+                    default:
+                        break;
+                }
+                cellIndex++;
+            }
+            //初始密码：用户名+手机号后4位
+            String password = createUserCommand.getUserName() +
+                    (StringUtils.isNotEmpty(createUserCommand.getPhone()) ?
+                            createUserCommand.getPhone().substring(6) : "");
+            createUserCommand.setPassword(password);
+            createUserCommand.setRepeatPassword(password);
+            list.add(createUserCommand);
+        }
+
+        return list;
+    }
+
+    private Mono<List<SysUserDTO>> saveUserList(List<CreateUserCommand> createList) {
+        return Mono.just(createList)
+                .flatMap(list -> {
+                    List<String> userNameList = createList.stream().map(CreateUserCommand::getUserName).collect(Collectors.toList());
+                    return userRepository.existsByUserNameInList(userNameList)
+                            .flatMap(exists -> {
+                                if (exists) {
+                                    return userRepository.findByUserNameInList(userNameList)
+                                            .collectList()
+                                            .map(repeatList -> repeatList);
+                                }
+                                return Mono.just(new ArrayList<SysUser>());
+                            });
+                })
+                .flatMap(repeatList -> {
+                    if (CollectionUtils.isNotEmpty(repeatList)) {
+                        List<SysUserDTO> list = repeatList.stream().map(SysUserDTO::convert).collect(Collectors.toList());
+                        log.warn("Username already exists:{}", list);
+                        return Mono.error(RepeatDataException.createWithData(ErrorCodeEnum.USERNAME_ALREADY_EXISTS, list));
+                    }
+
+                    return Mono.just(true);
+                })
+                .flatMapMany(result -> {
+                    List<SysUser> userList = new ArrayList<>();
+                    createList.forEach(createUserCommand -> {
+                        SysUser sysUser = new SysUser();
+                        sysUser.setUserName(createUserCommand.getUserName());
+                        sysUser.setNickName(createUserCommand.getNickName());
+                        sysUser.setPassword(createUserCommand.getPassword());
+                        sysUser.setSex(createUserCommand.getSex());
+
+                        sysUser.setStatus(false);
+
+                        sysUser.setEmail(createUserCommand.getEmail());
+                        sysUser.setPhone(createUserCommand.getPhone());
+                        hashPassword(sysUser);
+
+                        userList.add(sysUser);
+                    });
+                    return userRepository.saveAll(userList);
+                })
+                .map(SysUserDTO::convert)
+                .collectList();
+
     }
 }

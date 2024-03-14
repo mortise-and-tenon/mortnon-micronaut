@@ -110,6 +110,7 @@ VALUES
     ('USER_QUERY','/users/**','GET'),
     ('USER_UPDATE','/users','POST'),
     ('USER_UPDATE','/users','PUT'),
+    ('USER_UPDATE','/users/**','POST'),
     ('USER_UPDATE','/users/**','PUT'),
     ('USER_UPDATE','/users/**','DELETE'),
     ('USER_ASSIGNMENT','/assignment/**','GET'),

@@ -8,6 +8,7 @@ import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.r2dbc.annotation.R2dbcRepository;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.data.repository.reactive.ReactorPageableRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -69,6 +70,22 @@ public interface UserRepository extends ReactorPageableRepository<SysUser, Long>
      * @return
      */
     Mono<Boolean> existsByIdEqualsOrUserNameEquals(Long id, String userName);
+
+    /**
+     * 查找用户名是否存在
+     *
+     * @param userName
+     * @return
+     */
+    Mono<Boolean> existsByUserNameInList(List<String> userName);
+
+    /**
+     * 查找列表中用户名的数据
+     *
+     * @param userName
+     * @return
+     */
+    Flux<SysUser> findByUserNameInList(List<String> userName);
 
     /**
      * 带条件的分页查询

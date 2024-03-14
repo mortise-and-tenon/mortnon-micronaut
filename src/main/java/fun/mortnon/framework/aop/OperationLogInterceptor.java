@@ -97,7 +97,7 @@ public class OperationLogInterceptor implements MethodInterceptor<Object, Object
     @NonNull
     private String getRequestBody(HttpRequest<Object> request) {
 
-        JsonObject json = (JsonObject) request.getBody().get();
+        JsonObject json = (JsonObject) request.getBody().orElse(null);
         if (ObjectUtils.isEmpty(json)) {
             return "";
         }

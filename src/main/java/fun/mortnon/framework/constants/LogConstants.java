@@ -40,9 +40,14 @@ public class LogConstants {
     public static final String USER_PASSWORD_UPDATE = "log.action.user.password.update";
 
     /**
+     * 用户导入
+     */
+    public static final String USER_IMPORT = "log.action.user.import";
+
+    /**
      * 变更用户状态
      */
-    public static final String USER_STATUS_UPDATE = "log.cation.user.status.update";
+    public static final String USER_STATUS_UPDATE = "log.action.user.status.update";
 
     /**
      * 创建组织操作

@@ -31,7 +31,7 @@ public enum ErrorCodeEnum {
     /**
      * 用户名校验失败
      */
-    USER_NAME_CHECK_FAILED("A0110", "username check failed"),
+    USER_NAME_CHECK_FAILED("A0110", "Username verification failed"),
 
     /**
      * 用户名已存在
@@ -209,7 +209,7 @@ public enum ErrorCodeEnum {
     /**
      * 系统异常
      */
-    SYSTEM_ERROR("B0001", "system error"),
+    SYSTEM_ERROR("B0001", "System exception", "result.system.error"),
 
     /**
      * 重复
@@ -226,7 +226,10 @@ public enum ErrorCodeEnum {
      */
     USED_DATA_ERROR("B0004", "data is used"),
 
-    FILE_CONTENT_ERROR("B0005", "File format is incorrect","result.file.content.error");
+    /**
+     * 文件异常
+     */
+    FILE_CONTENT_ERROR("B0005", "File format is incorrect", "result.file.content.error");
 
     ErrorCodeEnum(String errorCode, String description) {
         this.errorCode = errorCode;

@@ -20,6 +20,6 @@ public class RepeatDataExceptionHandler extends BaseExceptionHandler<RepeatDataE
 
     @Override
     HttpResponse handle(RepeatDataException exception) {
-        return HttpResponse.badRequest(resultBuilder.build(exception.getErrorCodeEnum()));
+        return HttpResponse.badRequest(resultBuilder.buildWithData(exception.getErrorCodeEnum(), exception.getAttachData()));
     }
 }
