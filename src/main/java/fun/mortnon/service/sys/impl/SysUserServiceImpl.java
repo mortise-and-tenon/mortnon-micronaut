@@ -501,8 +501,7 @@ public class SysUserServiceImpl implements SysUserService {
                                 List<CreateUserCommand> list = readFile(tempFile);
                                 return saveUserList(list);
                             } catch (Exception e) {
-                                log.error("Reading file exception.");
-                                return Mono.error(UntypedException.create(ErrorCodeEnum.SYSTEM_ERROR));
+                                return Mono.error(e);
                             }
                         }
                         return Mono.just(new ArrayList<>());
@@ -528,23 +527,44 @@ public class SysUserServiceImpl implements SysUserService {
             }
 
             CreateUserCommand createUserCommand = new CreateUserCommand();
+            createUserCommand.setProjectRoles(new ArrayList<>());
+            ProjectRoleDTO projectRoleDTO = new ProjectRoleDTO();
+            createUserCommand.getProjectRoles().add(projectRoleDTO);
             int cellIndex = 0;
+            int emptyCellIndex = -1;
+            boolean rowEmpty = true;
             for (Cell cell : row) {
                 String strValue = dataFormatter.formatCellValue(cell);
+                //有单元格数据不为空，当前行不为空行
+                if (StringUtils.isNotEmpty(strValue)) {
+                    rowEmpty = false;
+                }else{
+                    //记录必填但为空的单元格
+                    if (cellIndex == 0 || cellIndex == 1 || cellIndex == 2 || cellIndex == 3) {
+                        emptyCellIndex = cellIndex;
+                    }
+                }
+
                 switch (cellIndex) {
                     case 0:
                         createUserCommand.setUserName(strValue);
                         break;
                     case 1:
-                        createUserCommand.setNickName(strValue);
+                        projectRoleDTO.setProjectIdentifier(strValue);
                         break;
                     case 2:
-                        createUserCommand.setSex(strValue.equals("男") ? 0 : 1);
+                        projectRoleDTO.setRoleIdentifier(strValue);
                         break;
                     case 3:
-                        createUserCommand.setPhone(strValue);
+                        createUserCommand.setNickName(strValue);
                         break;
                     case 4:
+                        createUserCommand.setSex(strValue.equals("男") ? 0 : 1);
+                        break;
+                    case 5:
+                        createUserCommand.setPhone(strValue);
+                        break;
+                    case 6:
                         createUserCommand.setEmail(strValue);
                         break;
                     default:
@@ -552,6 +572,18 @@ public class SysUserServiceImpl implements SysUserService {
                 }
                 cellIndex++;
             }
+
+            //如果当前行数据全为空了，不再读取
+            if (rowEmpty) {
+                break;
+            }
+
+            //必填数据为空，提醒
+            if (emptyCellIndex != -1) {
+                log.warn("Required data is empty,check sheet cell:{}", emptyCellIndex);
+                throw ParameterException.create(ErrorCodeEnum.DATA_EMPTY);
+            }
+
             //初始密码：用户名+手机号后4位
             String password = createUserCommand.getUserName() +
                     (StringUtils.isNotEmpty(createUserCommand.getPhone()) ?
@@ -607,7 +639,39 @@ public class SysUserServiceImpl implements SysUserService {
                     return userRepository.saveAll(userList);
                 })
                 .map(SysUserDTO::convert)
-                .collectList();
+                .flatMap(userDTO -> {
+                    CreateUserCommand createUserCommand = createList.stream().filter(create -> create.getUserName().equals(userDTO.getUserName())).findFirst().get();
+                    return Flux.fromStream(createUserCommand.getProjectRoles().stream())
+                            .flatMap(projectRoleDTO -> {
+                                return projectRepository.existsByIdentifier(projectRoleDTO.getProjectIdentifier())
+                                        .flatMap(projectExists -> {
+                                            if (!projectExists) {
+                                                return Mono.error(NotFoundException.create(ErrorCodeEnum.PROJECT_NOT_EXIST));
+                                            }
+                                            return projectRepository.findByIdentifier(projectRoleDTO.getProjectIdentifier());
+                                        })
+                                        .flatMap(project -> {
+                                            projectRoleDTO.setProjectId(project.getId());
+                                            return roleRepository.existsByIdentifier(projectRoleDTO.getRoleIdentifier())
+                                                    .flatMap(roleExists -> {
+                                                        if (!roleExists) {
+                                                            return Mono.error(NotFoundException.create(ErrorCodeEnum.ROLE_NOT_EXIST));
+                                                        }
+                                                        return roleRepository.findByIdentifier(projectRoleDTO.getRoleIdentifier());
+                                                    });
+                                        })
+                                        .flatMap(role ->
+                                                publicService.saveAssignment(userDTO.getId(), projectRoleDTO.getProjectId(),
+                                                        role.getId())
+                                        );
+                            })
+                            .flatMap(assignment -> queryProjectRole(assignment))
+                            .collectList()
+                            .map(projectRoles -> {
+                                userDTO.setProjectRoles(projectRoles);
+                                return userDTO;
+                            });
+                }).collectList();
 
     }
 }

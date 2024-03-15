@@ -33,6 +33,11 @@ public class SysProjectDTO {
     private String name;
 
     /**
+     * 组织标识值
+     */
+    private String identifier;
+
+    /**
      * 组织描述
      */
     private String description;

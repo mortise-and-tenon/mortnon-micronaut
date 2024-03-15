@@ -25,12 +25,27 @@ public interface ProjectRepository extends ReactorPageableRepository<SysProject,
     Mono<Page<SysProject>> findAll(PredicateSpecification<SysProject> where, Pageable pageable);
 
     /**
+     * 按标识值查找
+     * @param identifier
+     * @return
+     */
+    Mono<SysProject> findByIdentifier(String identifier);
+
+    /**
      * 是否存在同名
      *
      * @param name
      * @return
      */
     Mono<Boolean> existsByName(String name);
+
+    /**
+     * 是否存在标识值相同
+     *
+     * @param identifier
+     * @return
+     */
+    Mono<Boolean> existsByIdentifier(String identifier);
 
     /**
      * 是否是其他组织同名

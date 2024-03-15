@@ -40,6 +40,7 @@ FROM DUAL WHERE NOT EXISTS(SELECT id FROM `sys_role`);
 CREATE TABLE IF NOT EXISTS `sys_project`(
 	`id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY  COMMENT '组织 id',
 	`name` VARCHAR(1024) NOT NULL                           COMMENT '组织名字',
+	`identifier` VARCHAR64 NOT NULL                         COMMENT '部门标识值',
 	`description` VARCHAR(1024) NULL                        COMMENT '组织描述',
 	`parent_id` BIGINT NULL                                 COMMENT '父组织 id',
 	`ancestors` VARCHAR(1024) NOT NULL                      COMMENT '先辈组织所有id',
@@ -49,9 +50,9 @@ CREATE TABLE IF NOT EXISTS `sys_project`(
 	`gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
 
-INSERT INTO `sys_project`(name,description,parent_id,ancestors)
-VALUES ('Mortnon科技有限公司','',0,""),
-    ('研究开发部','',1,"1");
+INSERT INTO `sys_project`(name,identifier,description,parent_id,ancestors)
+VALUES ('Mortnon科技有限公司','Root','',0,""),
+    ('研究开发部','RD','',1,"1");
 
 
 -- 用户、角色、组织关联表

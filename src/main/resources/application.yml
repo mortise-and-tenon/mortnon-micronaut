@@ -17,6 +17,11 @@ micronaut:
         http-method: GET
         access:
           - isAnonymous()
+      # 用户导入模板不鉴权
+      - pattern: /users/template/**
+        http-method: GET
+        access:
+          - isAnonymous()
     redirect:
       enabled: false
     endpoints:
@@ -45,6 +50,12 @@ micronaut:
         paths:
           - file:D:/uploadPath
         mapping: ${AVATAR_URL/**:/profile/avatar/**}
+      # 用户导入模板映射的 URL
+      user:
+        enabled: true
+        paths:
+          - classpath:template
+        mapping: /users/template/**
 netty:
   default:
     allocator:

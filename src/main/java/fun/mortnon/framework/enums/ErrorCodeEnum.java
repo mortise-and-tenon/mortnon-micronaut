@@ -229,7 +229,12 @@ public enum ErrorCodeEnum {
     /**
      * 文件异常
      */
-    FILE_CONTENT_ERROR("B0005", "File format is incorrect", "result.file.content.error");
+    FILE_CONTENT_ERROR("B0005", "File format is incorrect", "result.file.content.error"),
+
+    /**
+     * 必填数据为空
+     */
+    DATA_EMPTY("B0006", "Required data is empty", "result.file.upload.empty.fail");
 
     ErrorCodeEnum(String errorCode, String description) {
         this.errorCode = errorCode;

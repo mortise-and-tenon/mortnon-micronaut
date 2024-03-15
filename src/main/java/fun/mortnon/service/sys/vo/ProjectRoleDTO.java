@@ -29,6 +29,11 @@ public class ProjectRoleDTO {
     private String projectName;
 
     /**
+     * 组织标识值
+     */
+    private String projectIdentifier;
+
+    /**
      * 角色 id
      */
     private Long roleId;
@@ -37,4 +42,9 @@ public class ProjectRoleDTO {
      * 角色名字
      */
     private String roleName;
+
+    /**
+     * 角色标识值
+     */
+    private String roleIdentifier;
 }

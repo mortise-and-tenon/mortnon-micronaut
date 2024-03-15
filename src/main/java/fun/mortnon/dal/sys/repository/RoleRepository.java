@@ -26,6 +26,14 @@ public interface RoleRepository extends ReactorPageableRepository<SysRole, Long>
     Mono<SysRole> findByIdentifier(String identifier);
 
     /**
+     * 按标识值查找是否存在
+     *
+     * @param identifier
+     * @return
+     */
+    Mono<Boolean> existsByIdentifier(String identifier);
+
+    /**
      * 是否存在同名或同标识符的角色
      *
      * @param name
@@ -45,6 +53,7 @@ public interface RoleRepository extends ReactorPageableRepository<SysRole, Long>
 
     /**
      * 带条件的分页查询
+     *
      * @param where
      * @param pageable
      * @return
