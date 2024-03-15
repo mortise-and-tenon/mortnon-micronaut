@@ -4,7 +4,9 @@ import fun.mortnon.dal.sys.entity.SysUser;
 import fun.mortnon.framework.constants.LoginTypeConstants;
 import fun.mortnon.service.login.LoginService;
 import fun.mortnon.service.sys.SysUserService;
+import io.micronaut.security.authentication.AuthenticationFailureReason;
 import io.micronaut.security.authentication.AuthenticationRequest;
+import io.micronaut.security.authentication.AuthenticationResponse;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -33,19 +35,24 @@ public class PasswordLoginServiceImpl implements LoginService {
         String password = (String) authenticationRequest.getSecret();
 
         return sysUserService.getUserByUsername(userName)
-                .map(sysUser -> {
+                .flatMap(sysUser -> {
                     if (null == sysUser) {
-                        log.info("user {} is not exists.", userName);
-                        return false;
+                        log.info("User {} does not exist.", userName);
+                        return Mono.error(AuthenticationResponse.exception(AuthenticationFailureReason.USER_NOT_FOUND));
+                    }
+
+                    if (!sysUser.isStatus()) {
+                        log.info("User {} deactivated.", userName);
+                        return Mono.error(AuthenticationResponse.exception(AuthenticationFailureReason.USER_DISABLED));
                     }
 
                     boolean auth = auth(sysUser, password);
                     if (!auth) {
-                        log.info("user {} password is not match.", userName);
-                        return false;
+                        log.info("User {} password does not match.", userName);
+                        return Mono.error(AuthenticationResponse.exception(AuthenticationFailureReason.CREDENTIALS_DO_NOT_MATCH));
                     }
 
-                    return true;
+                    return Mono.just(true);
                 });
     }
 

@@ -236,9 +236,10 @@ public class SysLogServiceImpl implements SysLogService {
         String actionDesc = messageSource.getMessage(action, MessageSource.MessageContext.of(new Locale(commonProperties.getLang()))).get();
         sysLog.setActionDesc(actionDesc);
 
-        if (response.getBody().get() instanceof MortnonResult) {
-            MortnonResult result = (MortnonResult) response.getBody().get();
-            sysLog.setMessage(result.getMessage());
+        Object result = response.getBody().orElse(null);
+        if (ObjectUtils.isNotEmpty(result) && result instanceof MortnonResult) {
+            MortnonResult mortnonResult = (MortnonResult) response.getBody().get();
+            sysLog.setMessage(mortnonResult.getMessage());
         }
 
         Mono.just(contextUserName)

@@ -8,12 +8,16 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.AuthenticationResponse;
 import io.micronaut.security.config.SecurityConfigurationProperties;
 import io.micronaut.security.token.jwt.bearer.AccessRefreshTokenLoginHandler;
 import io.micronaut.security.token.jwt.generator.AccessRefreshTokenGenerator;
+import io.micronaut.security.token.jwt.render.AccessRefreshToken;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+
+import java.util.Optional;
 
 /**
  * micronaut.security.authentication=bearer 对应认证处理器
@@ -26,7 +30,7 @@ import jakarta.inject.Singleton;
 @Singleton
 public class JwtAuthLoginHandler extends AccessRefreshTokenLoginHandler {
     @Inject
-    private ResultBuilder resultBuilder;
+    private AuthLoginAssistant authLoginAssistant;
 
     /**
      * @param accessRefreshTokenGenerator AccessRefresh Token generator
@@ -37,6 +41,6 @@ public class JwtAuthLoginHandler extends AccessRefreshTokenLoginHandler {
 
     @Override
     public MutableHttpResponse<?> loginFailed(AuthenticationResponse authenticationFailed, HttpRequest<?> request) {
-        return HttpResponse.unauthorized().body(resultBuilder.build(ErrorCodeEnum.INVALID_USERNAME_OR_PASSWORD));
+        return authLoginAssistant.responseFail(authenticationFailed);
     }
 }

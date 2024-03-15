@@ -52,11 +52,11 @@ public class AuthenticationProviderUserPassword implements AuthenticationProvide
                         if (result) {
                             return sysUserService.queryUserRole((String) authenticationRequest.getIdentity()).collectList();
                         }
-                        return Mono.empty();
+                        return Mono.error(AuthenticationResponse.exception(AuthenticationFailureReason.UNKNOWN));
                     })
                     .block();
 
-             if(CollectionUtils.isEmpty(roleList)) {
+            if (CollectionUtils.isEmpty(roleList)) {
                 emitter.error(AuthenticationResponse.exception(AuthenticationFailureReason.CUSTOM));
             }
 

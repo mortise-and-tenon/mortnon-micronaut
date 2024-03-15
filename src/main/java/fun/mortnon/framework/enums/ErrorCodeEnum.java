@@ -182,6 +182,16 @@ public enum ErrorCodeEnum {
     AUTH_EMPTY("A0211", "Authentication information is empty", "result.auth.empty.fail"),
 
     /**
+     * 用户已停用
+     */
+    USER_FORBIDDEN("A0212", "result.login.user.forbidden.fail", "result.login.user.forbidden.fail"),
+
+    /**
+     * 用户异常
+     */
+    USER_DATA_ERROR("A0213", "User exception", "result.login.user.error.fail"),
+
+    /**
      * 用户登录过期
      */
     USER_LOGIN_EXPIRED("A0230", "user login time expired"),

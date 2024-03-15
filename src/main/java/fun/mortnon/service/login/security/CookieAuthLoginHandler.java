@@ -1,13 +1,10 @@
 package fun.mortnon.service.login.security;
 
-import fun.mortnon.framework.enums.ErrorCodeEnum;
-import fun.mortnon.framework.utils.ResultBuilder;
 import fun.mortnon.framework.vo.MortnonResult;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpRequest;
-import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.cookie.Cookie;
 import io.micronaut.security.authentication.AuthenticationResponse;
@@ -23,7 +20,6 @@ import io.micronaut.security.token.jwt.generator.AccessTokenConfiguration;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -36,11 +32,8 @@ import java.util.List;
 @Requires(property = SecurityConfigurationProperties.PREFIX + ".authentication", value = "cookie")
 @Singleton
 public class CookieAuthLoginHandler extends JwtCookieLoginHandler {
-    /**
-     * 响应内容处理工具
-     */
     @Inject
-    private ResultBuilder resultBuilder;
+    private AuthLoginAssistant authLoginAssistant;
 
     public CookieAuthLoginHandler(RedirectService redirectService, RedirectConfiguration redirectConfiguration,
                                   AccessTokenCookieConfiguration accessTokenCookieConfiguration,
@@ -61,7 +54,7 @@ public class CookieAuthLoginHandler extends JwtCookieLoginHandler {
      */
     @Override
     public MutableHttpResponse<?> loginFailed(AuthenticationResponse authenticationFailed, HttpRequest<?> request) {
-        return HttpResponse.unauthorized().body(resultBuilder.build(ErrorCodeEnum.INVALID_USERNAME_OR_PASSWORD));
+        return authLoginAssistant.responseFail(authenticationFailed);
     }
 
     /**
