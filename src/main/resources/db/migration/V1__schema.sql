@@ -83,7 +83,9 @@ CREATE TABLE `sys_permission`(
 );
 
 INSERT INTO `sys_permission`(name,identifier,description,dependency)
-VALUES ('查询用户','USER_QUERY','查看用户数据',''),
+VALUES
+    ('全局维护','GLOBAL_MAINTENANCE','维护系统全局配置',''),
+    ('查询用户','USER_QUERY','查看用户数据',''),
     ('维护用户','USER_UPDATE','维护用户数据','USER_QUERY'),
     ("维护用户分派","USER_ASSIGNMENT",'维护用户分派',''),
     ('查询角色','ROLE_QUERY','查询角色数据',''),
@@ -107,6 +109,8 @@ CREATE TABLE `sys_api`(
 
 INSERT INTO `sys_api`(identifier,api,method)
 VALUES
+    ('GLOBAL_MAINTENANCE','/system/**','GET'),
+    ('GLOBAL_MAINTENANCE','/system/**','PUT'),
     ('USER_QUERY','/users','GET'),
     ('USER_QUERY','/users/**','GET'),
     ('USER_UPDATE','/users','POST'),
@@ -191,5 +195,18 @@ VALUES
 	(5, '部门管理', 2, 3, '/system/project', 'tree', 'PROJECT_QUERY'),
 	(6, '菜单管理', 2, 4, '/system/menu', 'treetable', 'MENU_QUERY'),
 	(7, '日志管理', 2, 5, '/system/log', 'log', 'LOG_QUERY');
+
+-- 系统配置表
+CREATE TABLE IF NOT EXISTS `sys_config`(
+    `id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY                                  COMMENT 'id',
+    `captcha` ENUM('DISABLE','ARITHMETIC','OTHER') NOT NULL DEFAULT 'ARITHMETIC'            COMMENT '验证码配置',
+    `password_encrypt` TINYINT(1) NOT NULL DEFAULT 1                                        COMMENT '密码加密传输',
+    `double_factor` ENUM('DISABLE','EMAIL','PHONE','OTHER') NOT NULL DEFAULT 'DISABLE'      COMMENT '双因子认证',
+    `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
+    `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
+);
+
+INSERT INTO `sys_config`(`password_encrypt`)
+VALUES (true);
 
 COMMIT;

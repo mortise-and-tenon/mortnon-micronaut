@@ -1,6 +1,7 @@
 package fun.mortnon.service.login;
 
 import fun.mortnon.service.login.model.MortnonCaptcha;
+import reactor.core.publisher.Mono;
 
 /**
  * 验证码服务
@@ -14,14 +15,14 @@ public interface CaptchaService {
      *
      * @return
      */
-    boolean isEnabled();
+    Mono<Boolean> isEnabled();
 
     /**
      * 生成验证码
      *
      * @return
      */
-    MortnonCaptcha generateCaptcha();
+    Mono<MortnonCaptcha> generateCaptcha();
 
     /**
      * 验证码是否验证通过
@@ -30,5 +31,5 @@ public interface CaptchaService {
      * @param captchaCode 验证码值
      * @return true-验证通过，false-不通过
      */
-    boolean verifyCaptcha(String captchaKey, String captchaCode);
+    Mono<Boolean> verifyCaptcha(String captchaKey, String captchaCode);
 }

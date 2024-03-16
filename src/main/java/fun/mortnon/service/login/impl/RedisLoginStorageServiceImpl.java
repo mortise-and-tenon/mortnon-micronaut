@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 import java.time.Duration;
 
 import static fun.mortnon.service.login.enums.LoginConstants.LOGIN_TOKEN;
+import static fun.mortnon.service.login.enums.LoginConstants.RSA_CODE;
 import static fun.mortnon.service.login.enums.LoginConstants.VERIFY_CODE;
 
 /**
@@ -72,5 +73,28 @@ public class RedisLoginStorageServiceImpl implements LoginStorageService {
     @Override
     public String type() {
         return LoginConstants.REDIS;
+    }
+
+    @Override
+    public boolean saveRsaPublicKey(String publicKey, long expiresMinutes) {
+        return saveRsa("COMMON", publicKey, expiresMinutes);
+    }
+
+    @Override
+    public String getRsaPublicKey() {
+        return getRsaPrivateKey("COMMON");
+    }
+
+    @Override
+    public boolean saveRsa(String publicKey, String privateKey, long expiresMinutes) {
+        if (COMMAND_RESULT_OK.equalsIgnoreCase(commands.set(String.format(RSA_CODE, publicKey), privateKey))) {
+            return commands.expire(String.format(RSA_CODE, publicKey), Duration.ofMinutes(expiresMinutes));
+        }
+        return false;
+    }
+
+    @Override
+    public String getRsaPrivateKey(String publicKey) {
+        return commands.get(String.format(RSA_CODE, publicKey));
     }
 }

@@ -33,6 +33,6 @@ public class CaptchaController {
      */
     @Get
     public Mono<MortnonResult<MortnonCaptcha>> captcha() {
-        return Mono.just(ResultUtil.success(captchaService.generateCaptcha()));
+        return captchaService.generateCaptcha().map(MortnonResult::success);
     }
 }

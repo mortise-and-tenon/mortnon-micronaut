@@ -16,4 +16,9 @@ public class CommonProperties {
      * 语言
      */
     private String lang;
+
+    /**
+     * 为前端生成的 RSA 公钥有效时长（分钟）
+     */
+    private int rsaTtl;
 }

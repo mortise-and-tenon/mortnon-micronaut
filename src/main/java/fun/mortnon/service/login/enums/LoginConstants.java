@@ -34,6 +34,11 @@ public class LoginConstants {
     public static final String VERIFY_CODE = "verify:code:%s";
 
     /**
+     * RSA
+     */
+    public static final String RSA_CODE = "rsa:public:%s";
+
+    /**
      * 不合法的token状态码
      */
     public static final int SC_INVALID_TOKEN = 461;

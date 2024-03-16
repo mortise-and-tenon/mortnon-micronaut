@@ -90,10 +90,6 @@ jackson:
 
 mortnon:
   captcha:
-    # 是否启用登录验证码
-    enable: false
-    # 验证码类型。arithmetic：数学;其他字符：普通字母数字混合
-    type: arithmetic
     # 验证码有效时长（秒）
     expire-seconds: 600
   jwt:
@@ -102,4 +98,7 @@ mortnon:
     # 登录状态存储类型。Local：内存存储，Redis：redis存储
     login-storage-type: Redis
   common:
+    # 日志相关默认语言
     lang: zh
+    # 为前端生成的 RSA 公钥有效时长（分钟）
+    rsa-ttl: 30

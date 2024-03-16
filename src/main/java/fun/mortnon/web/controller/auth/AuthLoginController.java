@@ -4,6 +4,7 @@ import fun.mortnon.framework.aop.OperationLog;
 import fun.mortnon.framework.constants.LogConstants;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.utils.ResultBuilder;
+import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.login.CaptchaService;
 import fun.mortnon.web.vo.login.PasswordLoginCredentials;
 import io.micronaut.context.event.ApplicationEventPublisher;
@@ -41,12 +42,6 @@ import javax.validation.Valid;
 @Controller("/login")
 @Slf4j
 public class AuthLoginController extends LoginController {
-
-    /**
-     * 验证码服务
-     */
-    private CaptchaService captchaService;
-
     /**
      * 响应内容处理工具
      */
@@ -58,9 +53,8 @@ public class AuthLoginController extends LoginController {
      * @param eventPublisher The application event publisher
      */
     public AuthLoginController(Authenticator authenticator, LoginHandler loginHandler,
-                               ApplicationEventPublisher eventPublisher, CaptchaService captchaService, ResultBuilder resultBuilder) {
+                               ApplicationEventPublisher eventPublisher, ResultBuilder resultBuilder) {
         super(authenticator, loginHandler, eventPublisher);
-        this.captchaService = captchaService;
         this.resultBuilder = resultBuilder;
     }
 
@@ -80,12 +74,6 @@ public class AuthLoginController extends LoginController {
     @SingleResult
     public Publisher<MutableHttpResponse<?>> login(@Valid @Body PasswordLoginCredentials passwordLoginCredentials,
                                                    HttpRequest<?> request) {
-        //如果开启验证码，先校验验证码
-        if (!verifyCaptcha(passwordLoginCredentials)) {
-            log.info("Verification code failed.");
-            return Mono.just(HttpResponse.unauthorized().body(resultBuilder.build(ErrorCodeEnum.VERIFY_CODE_ERROR)));
-        }
-
         return Flux.from(authenticator.authenticate(request, passwordLoginCredentials))
                 .map(authenticationResponse -> {
                     if (authenticationResponse.isAuthenticated() && authenticationResponse.getAuthentication().isPresent()) {
@@ -98,20 +86,5 @@ public class AuthLoginController extends LoginController {
                     }
                 })
                 .switchIfEmpty(Mono.defer(() -> Mono.just(HttpResponse.unauthorized())));
-    }
-
-    /**
-     * 校验验证码
-     *
-     * @param passwordLoginCredentials
-     * @return
-     */
-    private boolean verifyCaptcha(PasswordLoginCredentials passwordLoginCredentials) {
-        //未启用验证码，直接忽略验证码校验
-        if (!captchaService.isEnabled()) {
-            return true;
-        }
-
-        return captchaService.verifyCaptcha(passwordLoginCredentials.getVerifyKey(), passwordLoginCredentials.getVerifyCode());
     }
 }

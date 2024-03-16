@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import fun.mortnon.framework.properties.CaptchaProperties;
+import fun.mortnon.framework.properties.CommonProperties;
 import fun.mortnon.service.login.LoginStorageService;
 import fun.mortnon.service.login.enums.LoginConstants;
 import io.micronaut.security.token.jwt.generator.AccessTokenConfigurationProperties;
@@ -29,9 +30,14 @@ public class LocalLoginStorageServiceImpl implements LoginStorageService {
     @Inject
     private CaptchaProperties captchaProperties;
 
+    @Inject
+    private CommonProperties commonProperties;
+
     private LoadingCache<String, String> tokenCache;
 
     private LoadingCache<String, String> captchaCache;
+
+    private LoadingCache<String, String> rsaCache;
 
     private final int MAX_CACHE_SIZE = 100;
 
@@ -47,6 +53,15 @@ public class LocalLoginStorageServiceImpl implements LoginStorageService {
                 });
         captchaCache = CacheBuilder.newBuilder()
                 .maximumSize(MAX_CACHE_SIZE).expireAfterWrite(Duration.ofSeconds(captchaProperties.getExpireSeconds()))
+                .build(new CacheLoader<String, String>() {
+                    @Override
+                    public String load(String s) throws Exception {
+                        return "";
+                    }
+                });
+
+        rsaCache = CacheBuilder.newBuilder()
+                .maximumSize(MAX_CACHE_SIZE).expireAfterWrite(Duration.ofMinutes(commonProperties.getRsaTtl()))
                 .build(new CacheLoader<String, String>() {
                     @Override
                     public String load(String s) throws Exception {
@@ -100,5 +115,30 @@ public class LocalLoginStorageServiceImpl implements LoginStorageService {
     @Override
     public String type() {
         return LoginConstants.LOCAL;
+    }
+
+    @Override
+    public boolean saveRsaPublicKey(String publicKey, long expiresMinutes) {
+        return saveRsa("COMMON", publicKey, expiresMinutes);
+    }
+
+    @Override
+    public String getRsaPublicKey() {
+        return getRsaPrivateKey("COMMON");
+    }
+
+    @Override
+    public boolean saveRsa(String publicKey, String privateKey, long expiresMinutes) {
+        rsaCache.put(publicKey, privateKey);
+        return true;
+    }
+
+    @Override
+    public String getRsaPrivateKey(String publicKey) {
+        try {
+            return captchaCache.get(publicKey);
+        } catch (ExecutionException e) {
+            return "";
+        }
     }
 }

@@ -9,6 +9,7 @@ import io.micronaut.security.authentication.AuthenticationFailureReason;
 import io.micronaut.security.authentication.AuthenticationResponse;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import reactor.core.publisher.Mono;
 
 /**
  * @author dev2007
@@ -31,6 +32,8 @@ public class AuthLoginAssistant {
                     return HttpResponse.unauthorized().body(resultBuilder.build(ErrorCodeEnum.INVALID_USERNAME_OR_PASSWORD));
                 case USER_DISABLED:
                     return HttpResponse.unauthorized().body(resultBuilder.build(ErrorCodeEnum.USER_FORBIDDEN));
+                case CUSTOM:
+                    return HttpResponse.unauthorized().body(resultBuilder.build(ErrorCodeEnum.VERIFY_CODE_ERROR));
                 default:
                     return HttpResponse.unauthorized().body(resultBuilder.build(ErrorCodeEnum.USER_DATA_ERROR));
 

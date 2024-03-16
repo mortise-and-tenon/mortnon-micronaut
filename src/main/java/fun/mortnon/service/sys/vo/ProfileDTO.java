@@ -15,9 +15,18 @@ import java.util.List;
 @Serdeable(naming = SnakeCaseStrategy.class)
 @Data
 public class ProfileDTO {
+    /**
+     * 用户信息
+     */
     private SysUserDTO user;
 
+    /**
+     * 用户权限信息
+     */
     private List<String> permission;
 
+    /**
+     * 用户菜单信息
+     */
     private List<SysMenuTreeDTO> menu;
 }

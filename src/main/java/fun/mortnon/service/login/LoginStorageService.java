@@ -61,4 +61,38 @@ public interface LoginStorageService {
      * @return
      */
     String type();
+
+    /**
+     * 缓存一个公钥，避免反复生成新的密钥
+     *
+     * @param publicKey
+     * @param expiresMinutes
+     * @return
+     */
+    boolean saveRsaPublicKey(String publicKey, long expiresMinutes);
+
+    /**
+     * 获取公钥
+     *
+     * @return
+     */
+    String getRsaPublicKey();
+
+    /**
+     * 保存 RSA 公私钥
+     *
+     * @param publicKey
+     * @param privateKey
+     * @param expiresMinutes
+     * @return
+     */
+    boolean saveRsa(String publicKey, String privateKey, long expiresMinutes);
+
+    /**
+     * 获取 RSA 私钥
+     *
+     * @param publicKey
+     * @return
+     */
+    String getRsaPrivateKey(String publicKey);
 }
