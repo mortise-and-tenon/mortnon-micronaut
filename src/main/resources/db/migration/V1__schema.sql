@@ -194,7 +194,9 @@ VALUES
 	(4, '角色管理', 2, 2, '/system/role', 'peoples', 'ROLE_QUERY'),
 	(5, '部门管理', 2, 3, '/system/project', 'tree', 'PROJECT_QUERY'),
 	(6, '菜单管理', 2, 4, '/system/menu', 'treetable', 'MENU_QUERY'),
-	(7, '日志管理', 2, 5, '/system/log', 'log', 'LOG_QUERY');
+	(7, '日志管理', 2, 5, '/system/log', 'log', 'LOG_QUERY'),
+	(8, '系统配置', 2, 6, '/system/config', 'log', ''),
+	(9, '安全设置', 8, 1, '/system/security', 'security', 'GLOBAL_MAINTENANCE');
 
 -- 系统配置表
 CREATE TABLE IF NOT EXISTS `sys_config`(

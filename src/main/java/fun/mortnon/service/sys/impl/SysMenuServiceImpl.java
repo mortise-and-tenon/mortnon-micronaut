@@ -29,7 +29,9 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.micronaut.data.repository.jpa.criteria.PredicateSpecification.where;
@@ -69,28 +71,26 @@ public class SysMenuServiceImpl implements SysMenuService {
      * @return
      */
     private List<SysMenuTreeDTO> convertTree(List<SysMenu> menuList) {
-        List<SysMenuTreeDTO> tree = new ArrayList<>();
-        menuList.forEach(node -> {
-            boolean result = bindToParent(tree, node);
-            if (!result) {
-                tree.add(SysMenuTreeDTO.convert(node));
-            }
-        });
-        return tree;
-    }
+        Map<Long, SysMenuTreeDTO> map = new HashMap<>();
+        List<SysMenuTreeDTO> nodeList = menuList.stream().map(SysMenuTreeDTO::convert).collect(Collectors.toList());
 
-    private boolean bindToParent(List<SysMenuTreeDTO> list, SysMenu node) {
-        for (SysMenuTreeDTO current : list) {
-            if (current.getId() == node.getParentId()) {
-                current.getChildren().add(SysMenuTreeDTO.convert(node));
-                return true;
-            }
-            if (current.getChildren().size() > 0) {
-                return bindToParent(current.getChildren(), node);
+        for (SysMenuTreeDTO node : nodeList) {
+            SysMenuTreeDTO parent = nodeList.stream().filter(parentNode -> parentNode.getId().equals(node.getParentId()))
+                    .findAny().orElse(null);
+            if (ObjectUtils.isNotEmpty(parent)) {
+                parent.getChildren().add(node);
             }
         }
-        return false;
+
+        List<SysMenuTreeDTO> tempTree = nodeList.stream()
+                .filter(node -> node.getParentId() == 0L || node.getChildren().size() > 0).collect(Collectors.toList());
+
+        List treeList = tempTree.stream().filter(node-> tempTree.stream().noneMatch(k-> k.getId().equals(node.getParentId())))
+                .collect(Collectors.toList());
+
+        return treeList;
     }
+
 
     /**
      * 组合过滤条件
@@ -132,23 +132,32 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public Mono<SysMenuDTO> createMenu(CreateMenuCommand createMenuCommand) {
-        return permissionRepository.existsByIdentifier(createMenuCommand.getPermission())
-                .flatMap(exists -> {
-                    if (!exists) {
-                        return Mono.error(ParameterException.create(ErrorCodeEnum.PERMISSION_ERROR));
-                    }
+        return Mono.just(createMenuCommand)
+                .map(command -> {
                     SysMenu sysMenu = new SysMenu();
                     sysMenu.setName(createMenuCommand.getName());
                     sysMenu.setOrder(createMenuCommand.getOrder());
                     sysMenu.setUrl(createMenuCommand.getUrl());
                     sysMenu.setIcon(createMenuCommand.getIcon());
                     sysMenu.setParentId(createMenuCommand.getParentId());
-                    sysMenu.setPermission(createMenuCommand.getPermission());
                     boolean status = ObjectUtils.isEmpty(createMenuCommand.getStatus()) ? true : createMenuCommand.getStatus();
                     sysMenu.setStatus(status);
-
-                    return menuRepository.save(sysMenu);
+                    return sysMenu;
                 })
+                .flatMap(sysMenu -> {
+                    if (StringUtils.isNotEmpty(createMenuCommand.getPermission())) {
+                        return permissionRepository.existsByIdentifier(createMenuCommand.getPermission())
+                                .flatMap(exists -> {
+                                    if (!exists) {
+                                        return Mono.error(ParameterException.create(ErrorCodeEnum.PERMISSION_ERROR));
+                                    }
+                                    sysMenu.setPermission(createMenuCommand.getPermission());
+                                    return Mono.just(sysMenu);
+                                });
+                    }
+                    return Mono.just(sysMenu);
+                })
+                .flatMap(sysMenu -> menuRepository.save(sysMenu))
                 .map(SysMenuDTO::convert);
     }
 
@@ -223,9 +232,12 @@ public class SysMenuServiceImpl implements SysMenuService {
                             .collect(Collectors.toList());
                     return menuRepository.findAll().collectList()
                             .map(list -> list.stream().filter(menu -> {
-                                        List<String> menuPermissionList = Arrays.asList(menu.getPermission().split(","));
-                                        return identifierList.containsAll(menuPermissionList)
-                                                || StringUtils.isEmpty(menu.getPermission());
+                                        if (StringUtils.isNotEmpty(menu.getPermission())) {
+                                            List<String> menuPermissionList = Arrays.asList(menu.getPermission().split(","));
+                                            return identifierList.containsAll(menuPermissionList)
+                                                    || StringUtils.isEmpty(menu.getPermission());
+                                        }
+                                        return true;
                                     })
                                     .collect(Collectors.toList()));
                 })

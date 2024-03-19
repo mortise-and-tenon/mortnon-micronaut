@@ -19,7 +19,7 @@ import java.util.List;
  * @date 2023/12/6
  */
 @Introspected
-@Serdeable
+@Serdeable(naming = SnakeCaseStrategy.class)
 @Data
 public class UpdateMenuCommand {
     /**
