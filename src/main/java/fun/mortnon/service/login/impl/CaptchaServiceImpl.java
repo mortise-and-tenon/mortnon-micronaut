@@ -70,7 +70,7 @@ public class CaptchaServiceImpl implements CaptchaService {
                     String code = "";
                     String imgBase64 = "";
 
-                    if (captchaType.equals(LoginConstants.CAPTCHA_TYPE_ARITHMETIC)) {
+                    if (captchaType.equals(CaptchaType.ARITHMETIC)) {
                         ShearCaptcha shearCaptcha = CaptchaUtil.createShearCaptcha(captchaProperties.getWidth(), captchaProperties.getHeight(),
                                 captchaProperties.getLength(), 4);
                         shearCaptcha.setGenerator(new MathGenerator());

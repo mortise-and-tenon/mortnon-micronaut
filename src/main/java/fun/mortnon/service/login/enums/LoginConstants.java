@@ -62,9 +62,4 @@ public class LoginConstants {
      * 中文
      */
     public static final String CAPTCHA_TYPE_CHINESE = "chinese";
-
-    /**
-     * 算术
-     */
-    public static final String CAPTCHA_TYPE_ARITHMETIC = "arithmetic";
 }
