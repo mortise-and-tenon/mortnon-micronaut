@@ -97,4 +97,39 @@ public class RedisLoginStorageServiceImpl implements LoginStorageService {
     public String getRsaPrivateKey(String publicKey) {
         return commands.get(String.format(RSA_CODE, publicKey));
     }
+
+    @Override
+    public int saveLock(String key, long checkMinutes) {
+        Long exists = commands.exists(key);
+        if (exists == 1) {
+            Long count = commands.incr(key);
+            commands.expire(key, Duration.ofMinutes(checkMinutes));
+            return count.intValue();
+        } else {
+            if (COMMAND_RESULT_OK.equalsIgnoreCase(commands.set(key, "0"))) {
+                commands.expire(key, Duration.ofMinutes(checkMinutes));
+                return 0;
+            }
+        }
+
+        return 0;
+    }
+
+    @Override
+    public int getLock(String key) {
+        return Integer.parseInt(commands.get(key));
+    }
+
+    @Override
+    public boolean lockLogin(String key, long lockSeconds) {
+        if (COMMAND_RESULT_OK.equalsIgnoreCase(commands.set(key, "lock"))) {
+            return commands.expire(key, Duration.ofSeconds(lockSeconds));
+        }
+        return false;
+    }
+
+    @Override
+    public long isLockLoginTimeExist(String key) {
+        return commands.ttl(key);
+    }
 }

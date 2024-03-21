@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author dev2007
@@ -32,6 +33,11 @@ public class ResultBuilder {
 
     public MortnonResult build(ErrorCodeEnum errorCodeEnum) {
         String message = messageSource.getMessage(errorCodeEnum.getI18n(), errorCodeEnum.getDescription(), new Locale(lang));
+        return MortnonResult.fail(errorCodeEnum, message);
+    }
+
+    public MortnonResult buildWithParameters(ErrorCodeEnum errorCodeEnum, Map<String, Object> parameters) {
+        String message = messageSource.getMessage(errorCodeEnum.getI18n(), errorCodeEnum.getDescription(), new Locale(lang), parameters);
         return MortnonResult.fail(errorCodeEnum, message);
     }
 

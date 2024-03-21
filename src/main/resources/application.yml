@@ -102,3 +102,5 @@ mortnon:
     lang: zh
     # 为前端生成的 RSA 公钥有效时长（分钟）
     rsa-ttl: 30
+    # 密码错误的检查周期（分钟）
+    check-duration: 3

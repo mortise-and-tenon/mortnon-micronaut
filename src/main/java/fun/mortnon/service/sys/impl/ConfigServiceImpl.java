@@ -56,6 +56,12 @@ public class ConfigServiceImpl implements ConfigService {
                     if (ObjectUtils.isNotEmpty(update.getDoubleFactor())) {
                         config.setDoubleFactor(update.getDoubleFactor());
                     }
+                    if (ObjectUtils.isNotEmpty(update.getTryCount())) {
+                        config.setTryCount(update.getTryCount());
+                    }
+                    if (ObjectUtils.isNotEmpty(update.getLockTime())) {
+                        config.setLockTime(update.getLockTime());
+                    }
 
                     return configRepository.update(config);
                 });

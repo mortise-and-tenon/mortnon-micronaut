@@ -95,4 +95,38 @@ public interface LoginStorageService {
      * @return
      */
     String getRsaPrivateKey(String publicKey);
+
+    /**
+     * 增加指定key的锁定前的错误计数
+     *
+     * @param key
+     * @param checkMinutes 锁定计数检查周期
+     * @return 返回当前计数
+     */
+    int saveLock(String key, long checkMinutes);
+
+    /**
+     * 读取当前
+     *
+     * @param key
+     * @return
+     */
+    int getLock(String key);
+
+    /**
+     * 添加锁定记录
+     *
+     * @param key
+     * @param lockSeconds
+     * @return
+     */
+    boolean lockLogin(String key, long lockSeconds);
+
+    /**
+     * 查询锁定剩余时长
+     *
+     * @param key
+     * @return -2:未锁定；正数：锁定剩余时长
+     */
+    long isLockLoginTimeExist(String key);
 }

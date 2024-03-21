@@ -7,6 +7,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.cookie.Cookie;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.AuthenticationResponse;
 import io.micronaut.security.config.RedirectConfiguration;
 import io.micronaut.security.config.RedirectService;
@@ -54,7 +55,17 @@ public class CookieAuthLoginHandler extends JwtCookieLoginHandler {
      */
     @Override
     public MutableHttpResponse<?> loginFailed(AuthenticationResponse authenticationFailed, HttpRequest<?> request) {
-        return authLoginAssistant.responseFail(authenticationFailed);
+        return authLoginAssistant.responseFail(authenticationFailed, request);
+    }
+
+    @Override
+    public MutableHttpResponse<?> loginSuccess(Authentication authentication, HttpRequest<?> request) {
+        MutableHttpResponse<?> interceptResponse = authLoginAssistant.interceptLogin(request);
+        if (null != interceptResponse) {
+            return interceptResponse;
+        }
+
+        return super.loginSuccess(authentication, request);
     }
 
     /**

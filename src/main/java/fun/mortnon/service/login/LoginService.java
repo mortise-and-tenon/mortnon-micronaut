@@ -1,6 +1,7 @@
 package fun.mortnon.service.login;
 
 import fun.mortnon.service.login.model.LoginUser;
+import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.AuthenticationRequest;
 import reactor.core.publisher.Mono;
 
@@ -17,4 +18,12 @@ public interface LoginService {
      * @return 是否认证通过
      */
     Mono<Boolean> authenticate(AuthenticationRequest<?, ?> authenticationRequest);
+
+    /**
+     * 登录异常下是否要锁定
+     *
+     * @param request
+     * @return 正数：锁定时长 <=0:锁定时长为0，无锁定
+     */
+    long interceptLogin(HttpRequest<?> request);
 }

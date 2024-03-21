@@ -195,7 +195,7 @@ VALUES
 	(5, '部门管理', 2, 3, '/system/project', 'tree', 'PROJECT_QUERY'),
 	(6, '菜单管理', 2, 4, '/system/menu', 'treetable', 'MENU_QUERY'),
 	(7, '日志管理', 2, 5, '/system/log', 'log', 'LOG_QUERY'),
-	(8, '系统配置', 2, 6, '/system/config', 'faWrench', ''),
+	(8, '系统配置', 2, 6, '/system/config', 'setting', ''),
 	(9, '安全设置', 8, 1, '/system/config/security', 'security', 'GLOBAL_MAINTENANCE');
 
 -- 系统配置表
@@ -203,6 +203,8 @@ CREATE TABLE IF NOT EXISTS `sys_config`(
     `id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY                                  COMMENT 'id',
     `captcha` ENUM('DISABLE','ARITHMETIC','OTHER') NOT NULL DEFAULT 'ARITHMETIC'            COMMENT '验证码配置',
     `password_encrypt` TINYINT(1) NOT NULL DEFAULT 1                                        COMMENT '密码加密传输',
+    `try_count` INT NOT NULL DEFAULT 0                                                      COMMENT '密码重试次数',
+    `lock_time` INT NOT NULL DEFAULT 1800                                                   COMMENT '锁定时间（秒）',
     `double_factor` ENUM('DISABLE','EMAIL','PHONE','OTHER') NOT NULL DEFAULT 'DISABLE'      COMMENT '双因子认证',
     `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
     `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'

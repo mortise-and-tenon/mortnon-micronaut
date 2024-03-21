@@ -7,6 +7,10 @@ import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+
 /**
  * 修改系统配置
  *
@@ -26,6 +30,21 @@ public class UpdateConfigCommand {
      * 是否密码加密传输
      */
     private Boolean passwordEncrypt;
+
+    /**
+     * 密码重试次数
+     */
+    @Positive
+    @Min(0)
+    @Max(10)
+    private Integer tryCount;
+
+    /**
+     * 锁定时长
+     */
+    @Positive
+    @Min(1)
+    private Integer lockTime;
 
     /**
      * 双因子类型

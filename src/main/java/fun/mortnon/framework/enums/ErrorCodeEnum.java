@@ -192,6 +192,11 @@ public enum ErrorCodeEnum {
     USER_DATA_ERROR("A0213", "User exception", "result.login.user.error.fail"),
 
     /**
+     * 登录锁定
+     */
+    LOGIN_LOCK("A0214", "Retry count exceeded, waiting for lock to be released", "result.login.userpwd.lock.fail"),
+
+    /**
      * 用户登录过期
      */
     USER_LOGIN_EXPIRED("A0230", "user login time expired"),

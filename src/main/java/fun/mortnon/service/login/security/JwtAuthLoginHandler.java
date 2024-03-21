@@ -1,8 +1,5 @@
 package fun.mortnon.service.login.security;
 
-import fun.mortnon.framework.enums.ErrorCodeEnum;
-import fun.mortnon.framework.utils.ResultBuilder;
-import fun.mortnon.framework.vo.MortnonResult;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpRequest;
@@ -40,7 +37,17 @@ public class JwtAuthLoginHandler extends AccessRefreshTokenLoginHandler {
     }
 
     @Override
+    public MutableHttpResponse<?> loginSuccess(Authentication authentication, HttpRequest<?> request) {
+        MutableHttpResponse<?> interceptResponse = authLoginAssistant.interceptLogin(request);
+        if (null != interceptResponse) {
+            return interceptResponse;
+        }
+
+        return super.loginSuccess(authentication, request);
+    }
+
+    @Override
     public MutableHttpResponse<?> loginFailed(AuthenticationResponse authenticationFailed, HttpRequest<?> request) {
-        return authLoginAssistant.responseFail(authenticationFailed);
+        return authLoginAssistant.responseFail(authenticationFailed, request);
     }
 }

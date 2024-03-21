@@ -40,6 +40,16 @@ public class SysAllConfigDTO {
     private boolean passwordEncrypt;
 
     /**
+     * 密码重试次数
+     */
+    private int tryCount;
+
+    /**
+     * 锁定时长
+     */
+    private int lockTime;
+
+    /**
      * 是否开启双因子认证
      */
     private DoubleFactorType doubleFactor;

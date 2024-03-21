@@ -11,6 +11,7 @@ import io.micronaut.security.token.jwt.generator.AccessTokenConfigurationPropert
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
@@ -38,6 +39,10 @@ public class LocalLoginStorageServiceImpl implements LoginStorageService {
     private LoadingCache<String, String> captchaCache;
 
     private LoadingCache<String, String> rsaCache;
+
+    private LoadingCache<String, String> lockCountCache;
+
+    private LoadingCache<String, String> lockCache;
 
     private final int MAX_CACHE_SIZE = 100;
 
@@ -139,6 +144,79 @@ public class LocalLoginStorageServiceImpl implements LoginStorageService {
             return captchaCache.get(publicKey);
         } catch (ExecutionException e) {
             return "";
+        }
+    }
+
+    @Override
+    public int saveLock(String key, long checkMinutes) {
+        if (ObjectUtils.isEmpty(lockCountCache)) {
+            refreshLockCache(checkMinutes);
+        } else {
+            if (lockCountCache.size() == 0) {
+                refreshLockCache(checkMinutes);
+            }
+        }
+
+        try {
+            String count = lockCountCache.get(key);
+            int newCount = Integer.parseInt(count) + 1;
+            lockCountCache.put(key, "" + newCount);
+            return newCount;
+        } catch (ExecutionException e) {
+            lockCountCache.put(key, "0");
+        }
+
+        return 0;
+    }
+
+    private void refreshLockCache(long checkMinutes) {
+        lockCountCache = CacheBuilder.newBuilder()
+                .maximumSize(MAX_CACHE_SIZE).expireAfterWrite(Duration.ofMinutes(checkMinutes))
+                .build(new CacheLoader<String, String>() {
+                    @Override
+                    public String load(String s) throws Exception {
+                        return "";
+                    }
+                });
+    }
+
+    @Override
+    public int getLock(String key) {
+        try {
+            return Integer.parseInt(lockCountCache.get(key));
+        } catch (ExecutionException e) {
+            return 0;
+        }
+    }
+
+    @Override
+    public boolean lockLogin(String key, long lockSeconds) {
+        if (ObjectUtils.isEmpty(lockCache)) {
+            lockCache = CacheBuilder.newBuilder()
+                    .maximumSize(MAX_CACHE_SIZE).expireAfterWrite(Duration.ofMinutes(lockSeconds))
+                    .build(new CacheLoader<String, String>() {
+                        @Override
+                        public String load(String s) throws Exception {
+                            return "";
+                        }
+                    });
+        }
+
+        lockCache.put(key, "lock");
+        return true;
+    }
+
+    @Override
+    public long isLockLoginTimeExist(String key) {
+        if (ObjectUtils.isEmpty(lockCache)) {
+            return -2;
+        }
+
+        try {
+            lockCache.get(key);
+            return 1800;
+        } catch (ExecutionException e) {
+            return -2;
         }
     }
 }

@@ -2,10 +2,15 @@ package fun.mortnon.service.login.impl;
 
 import fun.mortnon.dal.sys.entity.SysUser;
 import fun.mortnon.framework.constants.LoginTypeConstants;
+import fun.mortnon.framework.properties.CommonProperties;
+import fun.mortnon.framework.utils.IpUtil;
+import fun.mortnon.service.login.LoginFactory;
 import fun.mortnon.service.login.LoginService;
+import fun.mortnon.service.login.LoginStorageService;
 import fun.mortnon.service.sys.ConfigService;
 import fun.mortnon.service.sys.EncryptService;
 import fun.mortnon.service.sys.SysUserService;
+import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.AuthenticationFailureReason;
 import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
@@ -16,8 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import reactor.core.publisher.Mono;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.time.Duration;
 
 /**
  * @author dongfangzan
@@ -36,6 +40,15 @@ public class PasswordLoginServiceImpl implements LoginService {
 
     @Inject
     private EncryptService encryptService;
+
+    /**
+     * 登录工厂
+     */
+    @Inject
+    private LoginFactory loginFactory;
+
+    @Inject
+    private CommonProperties commonProperties;
 
     @Override
     public Mono<Boolean> authenticate(AuthenticationRequest<?, ?> authenticationRequest) {
@@ -78,5 +91,38 @@ public class PasswordLoginServiceImpl implements LoginService {
                     return sysUser.getPassword().equals(decryptPassword);
                 });
 
+    }
+
+    @Override
+    public long interceptLogin(HttpRequest<?> request) {
+        String ip = IpUtil.getRequestIp(request);
+        long lockTime = getStorageService().isLockLoginTimeExist(lockKey(ip));
+        //已经处于锁定状态
+        if (lockTime > 0) {
+            return lockTime;
+        }
+
+        return configService.queryConfig().map(config -> {
+            int newCount = getStorageService().saveLock(lockCountKey(ip), commonProperties.getCheckDuration());
+            if (newCount + 1 >= config.getTryCount()) {
+                getStorageService().lockLogin(lockKey(ip), config.getLockTime());
+                return config.getLockTime();
+            }
+            return 0;
+        }).block(Duration.ofSeconds(5));
+    }
+
+
+    private LoginStorageService getStorageService() {
+        return loginFactory.getConfigLoginStorageService();
+    }
+
+
+    private String lockCountKey(String ip) {
+        return String.format("lock-count-{}", ip);
+    }
+
+    private String lockKey(String ip) {
+        return String.format("lock-duration-{}", ip);
     }
 }

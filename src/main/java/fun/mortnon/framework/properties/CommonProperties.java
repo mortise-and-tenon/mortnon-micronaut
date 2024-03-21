@@ -21,4 +21,9 @@ public class CommonProperties {
      * 为前端生成的 RSA 公钥有效时长（分钟）
      */
     private int rsaTtl;
+
+    /**
+     * 密码错误的检测周期（分钟）
+     */
+    private int checkDuration;
 }
