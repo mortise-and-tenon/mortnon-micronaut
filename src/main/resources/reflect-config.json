@@ -1,6 +1,6 @@
 [
   {
-    "name": "com.h3c.cloudos.cloudkitty.common.LazyInitRollingFileAppender",
+    "name": "fun.mortnon.framework.log.LazyInitRollingFileAppender",
     "allDeclaredFields": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true
