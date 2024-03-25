@@ -103,4 +103,12 @@ public interface UserRepository extends ReactorPageableRepository<SysUser, Long>
      * @return
      */
     Mono<Long> deleteByIdInList(List<Long> userIdList);
+
+    /**
+     * 按用户id批量查询用户
+     *
+     * @param userIdList
+     * @return
+     */
+    Flux<SysUser> findByIdInList(List<Long> userIdList);
 }

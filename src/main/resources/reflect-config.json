@@ -76,5 +76,23 @@
     "allDeclaredFields": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true
+  },
+  {
+    "name": "com.sun.mail.smtp.SMTPTransport",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "javax.mail.Session",
+          "javax.mail.URLName"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "javax.activation.DataContentHandler"
+  },
+  {
+    "name": "javax.activation.MailcapCommandMap"
   }
 ]

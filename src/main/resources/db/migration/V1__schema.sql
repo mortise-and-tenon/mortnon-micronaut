@@ -213,4 +213,40 @@ CREATE TABLE IF NOT EXISTS `sys_config`(
 INSERT INTO `sys_config`(`password_encrypt`)
 VALUES (true);
 
+-- 邮箱服务器配置
+CREATE TABLE IF NOT EXISTS `sys_email_config`(
+    `id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY                                  COMMENT 'id',
+    `enabled` TINYINT(1) NOT NULL DEFAULT 0                                                 COMMENT '启用配置',
+    `debug` TINYINT(1) NOT NULL DEFAULT 0                                                   COMMENT '开启调试',
+    `host` VARCHAR(128)                                                                     COMMENT '邮箱服务器',
+    `port` INT                                                                              COMMENT '邮箱端口',
+    `connection_timeout` BIGINT NOT NULL DEFAULT 10000                                      COMMENT '连接超时',
+    `timeout` BIGINT NOT NULL DEFAULT 15000                                                 COMMENT '读取超时',
+    `https` ENUM('NONE','SSL','TLS') NOT NULL DEFAULT 'NONE'                                COMMENT '安全协议',
+    `auth` TINYINT(1) NOT NULL DEFAULT 1                                                    COMMENT '开启认证',
+    `email` VARCHAR(128)                                                                    COMMENT '发件邮箱',
+    `user_name` VARCHAR(128)                                                                COMMENT '用户名',
+    `password` VARCHAR(64)                                                                  COMMENT '用户密码',
+    `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
+    `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
+);
+
+INSERT INTO `sys_email_config`(`enabled`)
+VALUES (0);
+
+-- 消息模板配置
+CREATE TABLE IF NOT EXISTS `sys_template`(
+    `id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY                                  COMMENT 'id',
+    `name` VARCHAR(128) NOT NULL                                                            COMMENT '模板名称',
+    `subject` VARCHAR(128) NOT NULL                                                         COMMENT '主题',
+    `content` TEXT NOT NULL                                                                 COMMENT '内容',
+    `enabled` TINYINT(1) NOT NULL DEFAULT 1                                                 COMMENT '启用',
+    `system` TINYINT(1) NOT NULL DEFAULT 1                                                  COMMENT '系统预置',
+    `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
+    `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
+);
+
+INSERT INTO `sys_template`(`name`,`subject`,`content`)
+VALUES ('VERIFY_CODE','验证码通知','<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><p>您好，您的当前验证码为<strong>${code}</strong></p></body></html>');
+
 COMMIT;
