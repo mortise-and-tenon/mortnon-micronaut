@@ -7,6 +7,9 @@
       "pattern": "application.yml"
     },
     {
+      "pattern": "\\Qtemplate/usertemplate.xlsx\\E"
+    },
+    {
       "pattern": "\\QMETA-INF/javamail.charset.map\\E"
     },
     {
@@ -28,5 +31,25 @@
       "pattern": "\\QMETA-INF/mimetypes.default\\E"
     }
   ],
-  "bundles": []
+  "bundles": [
+    {
+      "name": "com.mysql.cj.LocalizedErrorMessages",
+      "locales": [
+        ""
+      ]
+    },
+    {
+      "name": "mortnon.i18n.messages",
+      "locales": [
+        "en",
+        "zh"
+      ]
+    },
+    {
+      "name": "sun.awt.resources.awt",
+      "classNames": [
+        "sun.awt.resources.awt"
+      ]
+    }
+  ]
 }

@@ -94,5 +94,23 @@
   },
   {
     "name": "javax.activation.MailcapCommandMap"
+  },
+  {
+    "name": "sun.awt.X11FontManager",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "sun.java2d.marlin.DMarlinRenderingEngine",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
   }
 ]

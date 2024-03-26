@@ -26,7 +26,7 @@ git clone https://gitee.com/mortise-and-tenon/mortnon-micronaut.git
 
 > 以下的编译没有依赖关系，自行选择最喜欢的。
 
-### 二、编译 Jar
+### 二、编译为 Jar
 
 > 直接编译一个 Jar，就可以运行项目了。
 
@@ -47,16 +47,41 @@ mvn clean -DskipTests package
 mvn clean -DskipTests package
 ```
 
-编译成功后，在源码所在文件夹的 `target` 目录中看到编译成功的 jar: `mortnon-micronaut-X.X.jar`，大小约 55M。
+编译成功后，在源码所在文件夹的 `target` 目录中看到编译成功的 jar: `mortnon-micronaut-X.X.jar`，大小约 55M，示例如下：
 
-### 三、编译 Native Image
+```bash
+-rw-r--r-- 1 root root   1218435 Mar 26 10:17 mortnon-micronaut-0.1.jar
+```
 
-**暂不支持**
+运行示例：
 
-> Micronaut 框架支持 GraalVM 的 Native Image 编译，可以将 Java 应用编译为当前机器对应的本地应用，应用容量更小，运行时性能更高、占用内存更小。
+```bash
+SERVER_PORT=8088 MYSQL_HOST=1.2.3.4 MYSQL_PORT=3307 MYSQL_USERNAME=root MYSQL_PASSWORD=mortnon_micronaut java -jar mortnon-micronaut-0.1.jar
+```
+
+### 三、编译为 Native Image
+
+> Micronaut 框架支持 GraalVM 的 Native Image 编译，可以将 Java 应用编译为当前机器对应的本地应用，运行时性能更高、占用内存更小。
+> 编译 Native Image 时，需要当前机器具有 8G 以上的内存，否则编译时容易因内存不够而失败。
+
+执行以下命令，会将源码编译为当前机器的本地应用。
 
 ```bash
 mvn package -Dpackaging=native-image
+```
+
+编译成功后，在源码所在文件夹的 `target` 目录中看到编译成功的应用和库，示例如下：
+
+```bash
+-rw-r--r-- 1 root root     38488 Mar 26 10:23 libawt_headless.so
+-rw-r--r-- 1 root root    899800 Mar 26 10:23 libawt.so
+-rw-r--r-- 1 root root    473880 Mar 26 10:23 libawt_xawt.so
+-rw-r--r-- 1 root root   2678152 Mar 26 10:23 libfontmanager.so
+-rw-r--r-- 1 root root    239976 Mar 26 10:23 libjavajpeg.so
+-rwxr-xr-x 1 root root      7704 Mar 26 10:23 libjava.so
+-rwxr-xr-x 1 root root      7704 Mar 26 10:23 libjvm.so
+-rw-r--r-- 1 root root    606056 Mar 26 10:23 liblcms.so
+-rwxr-xr-x 1 root root 169699048 Mar 26 10:23 mortnon-micronaut
 ```
 
 ### 四、编译 Docker 镜像
