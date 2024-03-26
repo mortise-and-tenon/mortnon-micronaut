@@ -8,7 +8,7 @@
         </encoder>
     </appender>
 
-    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="file" class="fun.mortnon.framework.log.LazyInitRollingFileAppender">
         <file>logs/${service}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>logs/${service}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
