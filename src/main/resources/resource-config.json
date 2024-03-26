@@ -29,15 +29,12 @@
     },
     {
       "pattern": "\\QMETA-INF/mimetypes.default\\E"
+    },
+    {
+      "pattern": "\\Qcom/mysql/cj/LocalizedErrorMessages.properties\\E"
     }
   ],
   "bundles": [
-    {
-      "name": "com.mysql.cj.LocalizedErrorMessages",
-      "locales": [
-        ""
-      ]
-    },
     {
       "name": "mortnon.i18n.messages",
       "locales": [
