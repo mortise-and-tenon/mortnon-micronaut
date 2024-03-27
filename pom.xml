@@ -30,7 +30,6 @@
         <hutool.version>5.8.18</hutool.version>
         <mysql.connector.version>8.0.32</mysql.connector.version>
         <poi.version>5.2.5</poi.version>
-        <micronaut.native-image.base-image-run>frolvlad/alpine-glibc:alpine-3.19</micronaut.native-image.base-image-run>
         <micronaut.native-image.args>-H:ReflectionConfigurationFiles=./classes/reflect-config.json -H:ResourceConfigurationFiles=./classes/resource-config.json</micronaut.native-image.args>
         <exec.mainClass>fun.mortnon.Application</exec.mainClass>
     </properties>
@@ -237,7 +236,6 @@
                 <groupId>io.micronaut.build</groupId>
                 <artifactId>micronaut-maven-plugin</artifactId>
                 <configuration>
-                    <baseImageRun>frolvlad/alpine-glibc:alpine-3.17</baseImageRun>
                     <testResourcesDependencies>
                         <dependency>
                             <groupId>io.micronaut.testresources</groupId>
