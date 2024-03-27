@@ -1,5 +1,6 @@
 package fun.mortnon.framework.properties;
 
+import fun.mortnon.service.login.enums.LoginConstants;
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Context;
 import lombok.Data;
@@ -10,8 +11,15 @@ import lombok.Data;
  */
 @Data
 @Context
-@ConfigurationProperties(value = "mortnon.common")
+@ConfigurationProperties(value = CommonProperties.PREFIX)
 public class CommonProperties {
+    public static final String PREFIX = "mortnon.common";
+
+    /**
+     * token 存储方式
+     */
+    private String storageType = LoginConstants.REDIS;
+
     /**
      * 语言
      */

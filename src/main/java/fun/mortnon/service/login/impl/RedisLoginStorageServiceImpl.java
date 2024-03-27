@@ -1,10 +1,13 @@
 package fun.mortnon.service.login.impl;
 
+import fun.mortnon.framework.properties.CommonProperties;
 import fun.mortnon.service.login.LoginStorageService;
 import fun.mortnon.service.login.enums.LoginConstants;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
+import io.micronaut.context.annotation.Requires;
+import io.micronaut.security.endpoints.LoginControllerConfigurationProperties;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -23,6 +26,7 @@ import static fun.mortnon.service.login.enums.LoginConstants.VERIFY_CODE;
  * @date 2023/2/10
  */
 @Singleton
+@Requires(property = CommonProperties.PREFIX + ".storage-type", notEquals = LoginConstants.LOCAL, defaultValue = LoginConstants.REDIS)
 @Named(LoginConstants.REDIS)
 @Slf4j
 public class RedisLoginStorageServiceImpl implements LoginStorageService {

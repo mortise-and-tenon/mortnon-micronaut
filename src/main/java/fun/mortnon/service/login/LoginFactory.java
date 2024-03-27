@@ -1,5 +1,6 @@
 package fun.mortnon.service.login;
 
+import fun.mortnon.framework.properties.CommonProperties;
 import fun.mortnon.framework.properties.JwtProperties;
 import fun.mortnon.service.login.enums.LoginConstants;
 import fun.mortnon.service.login.enums.LoginStorageType;
@@ -22,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LoginFactory {
 
     @Inject
-    private JwtProperties jwtProperties;
+    private CommonProperties commonProperties;
 
     private final Map<String, LoginService> loginServiceMap = new ConcurrentHashMap<>();
 
@@ -56,7 +57,7 @@ public class LoginFactory {
      * @return 登录存储服务
      */
     public LoginStorageService getConfigLoginStorageService() {
-        String loginStorageType = jwtProperties.getLoginStorageType();
-        return loginStorageServiceMap.get(LoginStorageType.getByType(loginStorageType).getCode());
+        String storageType = commonProperties.getStorageType();
+        return loginStorageServiceMap.get(LoginStorageType.getByType(storageType).getCode());
     }
 }

@@ -96,9 +96,9 @@ mortnon:
   jwt:
     # 服务端是否记录 token ，默认为 true
     consistency: true
-    # 登录状态存储类型。Local：内存存储，Redis：redis存储
-    login-storage-type: Redis
   common:
+    # 缓存存储类型。Local：内存存储，Redis：redis存储
+    storage-type: ${STORE_TYPE:Redis}
     # 日志相关默认语言
     lang: zh
     # 为前端生成的 RSA 公钥有效时长（分钟）
