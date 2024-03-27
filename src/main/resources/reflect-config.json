@@ -105,6 +105,15 @@
     ]
   },
   {
+    "name": "sun.awt.X11.XToolkit",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
     "name": "sun.awt.X11GraphicsEnvironment",
     "methods": [
       {
