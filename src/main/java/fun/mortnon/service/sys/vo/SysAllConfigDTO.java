@@ -3,7 +3,6 @@ package fun.mortnon.service.sys.vo;
 import fun.mortnon.dal.sys.entity.SysConfig;
 import fun.mortnon.dal.sys.entity.config.CaptchaType;
 import fun.mortnon.dal.sys.entity.config.DoubleFactorType;
-import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
@@ -62,7 +61,13 @@ public class SysAllConfigDTO {
 
     public static SysAllConfigDTO convert(SysConfig sysConfig) {
         SysAllConfigDTO sysConfigDTO = new SysAllConfigDTO();
-        MortnonBeanUtils.copy(sysConfig, sysConfigDTO);
+
+        sysConfigDTO.setCaptcha(sysConfig.getCaptcha());
+        sysConfigDTO.setDoubleFactor(sysConfig.getDoubleFactor());
+        sysConfigDTO.setPasswordEncrypt(sysConfig.isPasswordEncrypt());
+        sysConfigDTO.setTryCount(sysConfig.getTryCount());
+        sysConfigDTO.setLockTime(sysConfig.getLockTime());
+
         return sysConfigDTO;
     }
 }

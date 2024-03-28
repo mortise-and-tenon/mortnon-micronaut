@@ -1,7 +1,6 @@
 package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysConfig;
-import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
@@ -27,7 +26,9 @@ public class SysConfigDTO {
 
     public static SysConfigDTO convert(SysConfig sysConfig) {
         SysConfigDTO sysConfigDTO = new SysConfigDTO();
-        MortnonBeanUtils.copy(sysConfig, sysConfigDTO);
+
+        sysConfigDTO.setPasswordEncrypt(sysConfig.isPasswordEncrypt());
+
         return sysConfigDTO;
     }
 }

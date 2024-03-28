@@ -1,7 +1,6 @@
 package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysProject;
-import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.Data;
@@ -61,7 +60,14 @@ public class SysProjectTreeDTO {
 
     public static SysProjectTreeDTO convert(SysProject sysProject) {
         SysProjectTreeDTO sysProjectTreeDTO = new SysProjectTreeDTO();
-        MortnonBeanUtils.copy(sysProject, sysProjectTreeDTO);
+
+        sysProjectTreeDTO.setId(sysProject.getId());
+        sysProjectTreeDTO.setName(sysProject.getName());
+        sysProjectTreeDTO.setIdentifier(sysProject.getIdentifier());
+        sysProjectTreeDTO.setOrder(sysProject.getOrder());
+        sysProjectTreeDTO.setStatus(sysProject.isStatus());
+        sysProjectTreeDTO.setTime(sysProject.getGmtCreate());
+
         sysProjectTreeDTO.setDescription(Optional.ofNullable(sysProject.getDescription()).orElse(""));
         sysProjectTreeDTO.setChildren(new ArrayList<>());
         return sysProjectTreeDTO;

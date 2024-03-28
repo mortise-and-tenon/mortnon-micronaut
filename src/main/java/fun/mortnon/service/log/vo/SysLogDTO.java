@@ -4,14 +4,12 @@ import fun.mortnon.dal.sys.entity.SysLog;
 import fun.mortnon.dal.sys.entity.log.LogLevel;
 import fun.mortnon.dal.sys.entity.log.LogResult;
 import fun.mortnon.framework.json.InstantSerializer;
-import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.context.MessageSource;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
@@ -97,7 +95,14 @@ public class SysLogDTO {
 
         SysLogDTO sysLogDTO = new SysLogDTO();
 
-        MortnonBeanUtils.copy(sysLog, sysLogDTO);
+        sysLogDTO.setId(sysLog.getId());
+        sysLogDTO.setAction(sysLog.getAction());
+        sysLogDTO.setActionDesc(sysLog.getActionDesc());
+        sysLogDTO.setUserName(sysLog.getUserName());
+        sysLogDTO.setProjectName(sysLog.getProjectName());
+        sysLogDTO.setRequest(sysLog.getRequest());
+        sysLogDTO.setMessage(sysLog.getMessage());
+        sysLogDTO.setLevel(sysLog.getLevel());
 
         sysLogDTO.setIp(Optional.ofNullable(sysLog.getIp()).orElse(""));
         sysLogDTO.setProjectName(Optional.ofNullable(sysLog.getProjectName()).orElse(""));

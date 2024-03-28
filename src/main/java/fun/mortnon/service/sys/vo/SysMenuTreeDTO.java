@@ -1,13 +1,11 @@
 package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysMenu;
-import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,8 +23,17 @@ public class SysMenuTreeDTO extends SysMenuDTO {
 
     public static SysMenuTreeDTO convert(SysMenu sysMenu) {
         SysMenuTreeDTO sysMenuTreeDTO = new SysMenuTreeDTO();
-        MortnonBeanUtils.copy(sysMenu,sysMenuTreeDTO);
-        sysMenuTreeDTO.setChildren(new ArrayList<>());
+
+        sysMenuTreeDTO.setId(sysMenu.getId());
+        sysMenuTreeDTO.setParentId(sysMenu.getParentId());
+        sysMenuTreeDTO.setName(sysMenu.getName());
+        sysMenuTreeDTO.setUrl(sysMenu.getUrl());
+        sysMenuTreeDTO.setIcon(sysMenu.getIcon());
+        sysMenuTreeDTO.setPermission(sysMenu.getPermission());
+        sysMenuTreeDTO.setOrder(sysMenu.getOrder());
+        sysMenuTreeDTO.setStatus(sysMenu.isStatus());
+        sysMenuTreeDTO.setGmtCreate(sysMenu.getGmtCreate());
+
         return sysMenuTreeDTO;
     }
 }

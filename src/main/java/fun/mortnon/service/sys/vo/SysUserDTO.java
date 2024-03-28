@@ -1,7 +1,6 @@
 package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysUser;
-import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
@@ -71,7 +70,16 @@ public class SysUserDTO {
 
     public static SysUserDTO convert(SysUser sysUser) {
         SysUserDTO sysUserDTO = new SysUserDTO();
-        MortnonBeanUtils.copy(sysUser, sysUserDTO);
+
+        sysUserDTO.setId(sysUser.getId());
+        sysUserDTO.setUserName(sysUser.getUserName());
+        sysUserDTO.setNickName(sysUser.getNickName());
+        sysUserDTO.setEmail(sysUser.getEmail());
+        sysUserDTO.setPhone(sysUser.getPhone());
+        sysUserDTO.setAvatar(sysUser.getAvatar());
+        sysUserDTO.setSex(sysUser.getSex());
+        sysUserDTO.setStatus(sysUser.isStatus());
+        sysUserDTO.setGmtCreate(sysUser.getGmtCreate());
         sysUserDTO.setProjectRoles(new ArrayList<>());
         return sysUserDTO;
     }

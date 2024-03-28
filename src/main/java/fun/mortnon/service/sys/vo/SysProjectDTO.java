@@ -1,15 +1,11 @@
 package fun.mortnon.service.sys.vo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import fun.mortnon.dal.sys.entity.SysProject;
-import fun.mortnon.framework.utils.MortnonBeanUtils;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
-import org.apache.commons.lang3.ObjectUtils;
 
-import javax.validation.constraints.NotEmpty;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -64,7 +60,15 @@ public class SysProjectDTO {
 
     public static SysProjectDTO convert(SysProject sysProject) {
         SysProjectDTO sysProjectDTO = new SysProjectDTO();
-        MortnonBeanUtils.copy(sysProject, sysProjectDTO);
+
+        sysProjectDTO.setId(sysProject.getId());
+        sysProjectDTO.setName(sysProject.getName());
+        sysProjectDTO.setIdentifier(sysProject.getIdentifier());
+        sysProjectDTO.setParentId(sysProject.getParentId());
+        sysProjectDTO.setOrder(sysProject.getOrder());
+        sysProjectDTO.setStatus(sysProject.isStatus());
+        sysProjectDTO.setTime(sysProject.getGmtCreate());
+
         sysProjectDTO.setDescription(Optional.ofNullable(sysProject.getDescription()).orElse(""));
         return sysProjectDTO;
     }
