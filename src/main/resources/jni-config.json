@@ -442,6 +442,17 @@
     ]
   },
   {
+    "name":"sun.font.GlyphLayout$GVData",
+    "fields":[
+      {"name":"_count"},
+      {"name":"_flags"},
+      {"name":"_glyphs"},
+      {"name":"_indices"},
+      {"name":"_positions"}
+    ],
+    "methods":[{"name":"grow","parameterTypes":[] }]
+  },
+  {
     "name": "sun.font.GlyphList",
     "fields": [
       {
@@ -1053,6 +1064,13 @@
       {
         "name": "region"
       }
+    ]
+  },
+  {
+    "name":"sun.java2d.xr.XRSurfaceData",
+    "fields":[
+      {"name":"picture"},
+      {"name":"xid"}
     ]
   },
   {
