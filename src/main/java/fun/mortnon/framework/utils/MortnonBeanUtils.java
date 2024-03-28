@@ -15,7 +15,7 @@ public class MortnonBeanUtils {
         try {
             BeanUtils.copyProperties(dest, orig);
         } catch (Exception e) {
-            log.warn("Copying object properties exception.");
+            log.warn("Copying object properties exception.", e);
         }
     }
 }
