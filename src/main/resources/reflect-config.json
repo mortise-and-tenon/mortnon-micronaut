@@ -1,5 +1,10 @@
 [
   {
+    "name": "java.util.Calendar",
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
     "name": "fun.mortnon.framework.log.LazyInitRollingFileAppender",
     "allDeclaredFields": true,
     "allPublicConstructors": true,
@@ -141,33 +146,65 @@
     ]
   },
   {
-    "name":"com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
+    "name": "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
   },
   {
-    "name":"org.apache.commons.logging.LogFactory"
+    "name": "org.apache.commons.logging.LogFactory"
   },
   {
-    "name":"org.apache.commons.logging.impl.Jdk14Logger",
-    "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
+    "name": "org.apache.commons.logging.impl.Jdk14Logger",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
   },
   {
-    "name":"org.apache.commons.logging.impl.Log4JLogger"
+    "name": "org.apache.commons.logging.impl.Log4JLogger"
   },
   {
-    "name":"org.apache.commons.logging.impl.LogFactoryImpl",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
+    "name": "org.apache.commons.logging.impl.LogFactoryImpl",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
   },
   {
-    "name":"org.apache.commons.logging.impl.WeakHashtable",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
+    "name": "org.apache.commons.logging.impl.WeakHashtable",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
   },
   {
-    "name":"org.apache.logging.log4j.message.DefaultFlowMessageFactory",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
+    "name": "org.apache.logging.log4j.message.DefaultFlowMessageFactory",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
   },
   {
-    "name":"org.apache.logging.log4j.message.ReusableMessageFactory",
-    "methods":[{"name":"<init>","parameterTypes":[] }]
+    "name": "org.apache.logging.log4j.message.ReusableMessageFactory",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
   }
 ]
