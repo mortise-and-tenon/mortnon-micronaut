@@ -103,6 +103,7 @@ public class SysLogDTO {
         sysLogDTO.setRequest(sysLog.getRequest());
         sysLogDTO.setMessage(sysLog.getMessage());
         sysLogDTO.setLevel(sysLog.getLevel());
+        sysLogDTO.setTime(sysLog.getTime());
 
         sysLogDTO.setIp(Optional.ofNullable(sysLog.getIp()).orElse(""));
         sysLogDTO.setProjectName(Optional.ofNullable(sysLog.getProjectName()).orElse(""));

@@ -159,6 +159,10 @@ public class LocalLoginStorageServiceImpl implements LoginStorageService {
 
         try {
             String count = lockCountCache.get(key);
+            if(StringUtils.isEmpty(count)){
+                return 0;
+            }
+
             int newCount = Integer.parseInt(count) + 1;
             lockCountCache.put(key, "" + newCount);
             return newCount;
