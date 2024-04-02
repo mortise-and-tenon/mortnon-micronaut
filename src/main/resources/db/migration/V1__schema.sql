@@ -196,9 +196,10 @@ VALUES
 	(6, '菜单管理', 2, 4, '/system/menu', 'treetable', 'MENU_QUERY'),
 	(7, '日志管理', 2, 5, '/system/log', 'log', 'LOG_QUERY'),
 	(8, '系统配置', 2, 6, '/system/config', 'setting', ''),
-	(9, '安全设置', 8, 1, '/system/config/security', 'security', 'GLOBAL_MAINTENANCE'),
-	(10, '信息设置', 8, 2, '/system/config/message', 'message', ''),
-	(11, '邮箱设置', 10, 1, '/system/config/message/email', 'email', 'GLOBAL_MAINTENANCE');
+	(9, '安全设置', 8, 1, '/system/config/security', 'security', ''),
+	(10, '登录认证', 9, 1, '/system/config/security/login', 'lock', 'GLOBAL_MAINTENANCE'),
+	(11, '信息设置', 8, 2, '/system/config/message', 'message', ''),
+	(12, '电子邮件', 11, 1, '/system/config/message/email', 'mail', 'GLOBAL_MAINTENANCE');
 
 -- 系统配置表
 CREATE TABLE IF NOT EXISTS `sys_config`(
@@ -228,7 +229,7 @@ CREATE TABLE IF NOT EXISTS `sys_email_config`(
     `auth` TINYINT(1) NOT NULL DEFAULT 1                                                    COMMENT '开启认证',
     `email` VARCHAR(128)                                                                    COMMENT '发件邮箱',
     `user_name` VARCHAR(128)                                                                COMMENT '用户名',
-    `password` VARCHAR(512)                                                                  COMMENT '用户密码',
+    `password` VARCHAR(512)                                                                 COMMENT '用户密码',
     `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
     `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
