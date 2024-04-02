@@ -3,18 +3,14 @@ package fun.mortnon.service.login.impl;
 import fun.mortnon.framework.properties.CommonProperties;
 import fun.mortnon.service.login.LoginStorageService;
 import fun.mortnon.service.login.enums.LoginConstants;
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.security.endpoints.LoginControllerConfigurationProperties;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.PostConstruct;
 import java.time.Duration;
 
 import static fun.mortnon.service.login.enums.LoginConstants.LOGIN_TOKEN;

@@ -2,13 +2,22 @@ package fun.mortnon.service.sys.message.provider;
 
 import fun.mortnon.dal.sys.entity.message.SysEmailConfig;
 import fun.mortnon.dal.sys.repository.EmailConfigRepository;
+import fun.mortnon.framework.properties.CommonProperties;
+import fun.mortnon.service.sys.EncryptService;
 import fun.mortnon.service.sys.message.entity.Email;
+import fun.mortnon.web.controller.system.command.UpdateConfigCommand;
+import fun.mortnon.web.controller.system.command.message.TestEmailConfigCommand;
+import fun.mortnon.web.controller.system.command.message.UpdateEmailConfigCommand;
+import io.micronaut.core.util.StringUtils;
+import io.micronaut.runtime.context.scope.Refreshable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailConstants;
 
+import javax.annotation.PostConstruct;
 import javax.mail.Address;
 import javax.mail.Authenticator;
 import javax.mail.MessagingException;
@@ -25,12 +34,20 @@ import java.util.stream.Collectors;
  * @author dev2007
  * @date 2024/3/21
  */
-@Singleton
+@Refreshable(MailSender.REFRESH_PREFIX)
 @Slf4j
 public class MailSender {
+    public static final String REFRESH_PREFIX = "email";
     private static final String MAIL_SMTP_SSL_TRUST = "mail.smtp.ssl.trust";
 
+    @Inject
     private EmailConfigRepository emailConfigRepository;
+
+    @Inject
+    private CommonProperties commonProperties;
+
+    @Inject
+    private EncryptService encryptService;
 
     private Authenticator authenticator;
 
@@ -38,13 +55,12 @@ public class MailSender {
 
     private String emailFrom;
 
-    @Inject
-    public MailSender(EmailConfigRepository emailConfigRepository) {
-        this.emailConfigRepository = emailConfigRepository;
-        init();
-    }
 
-    public void send(Email email) {
+    public boolean send(Email email) {
+        if (ObjectUtils.isEmpty(session)) {
+            init();
+        }
+
         MimeMessage mimeMessage = new MimeMessage(session);
         try {
             mimeMessage.setFrom(emailFrom);
@@ -89,11 +105,62 @@ public class MailSender {
             Transport.send(mimeMessage);
         } catch (MessagingException e) {
             log.error("Exception in sending emails: ", e);
+            return false;
         }
+
+        return true;
+    }
+
+    public boolean sendTest(Email email, TestEmailConfigCommand testEmailConfigCommand) {
+        init(testEmailConfigCommand);
+        boolean result = send(email);
+        session = null;
+        return result;
     }
 
     private void init() {
-        SysEmailConfig config = emailConfigRepository.findById(1L).block(Duration.ofSeconds(3));
+        init(null);
+    }
+
+    private void init(TestEmailConfigCommand configCommand) {
+        SysEmailConfig config = new SysEmailConfig();
+
+        if (ObjectUtils.isEmpty(configCommand)) {
+            config = emailConfigRepository.findById(1L).block(Duration.ofSeconds(3));
+            String pwd = encryptService.decryptByRSA(config.getPassword(), commonProperties.getSecret());
+            config.setPassword(pwd);
+        } else {
+            if (StringUtils.isNotEmpty(configCommand.getHost())) {
+                config.setHost(configCommand.getHost());
+            }
+
+            if (ObjectUtils.isNotEmpty(configCommand.getPort())) {
+                config.setPort(configCommand.getPort().toString());
+            }
+
+            config.setEnabled(configCommand.isEnabled());
+
+            if (ObjectUtils.isNotEmpty(configCommand.getConnectionTimeout())) {
+                config.setConnectionTimeout(configCommand.getConnectionTimeout());
+            }
+
+            if (ObjectUtils.isNotEmpty(configCommand.getTimeout())) {
+                config.setTimeout(configCommand.getTimeout());
+            }
+
+            if (StringUtils.isNotEmpty(configCommand.getEmail())) {
+                config.setEmail(configCommand.getEmail());
+            }
+
+            if (ObjectUtils.isNotEmpty(configCommand.getHttps())) {
+                config.setHttps(configCommand.getHttps());
+            }
+
+            config.setAuth(configCommand.isAuth());
+            config.setUserName(configCommand.getUserName());
+            config.setPassword(configCommand.getPassword());
+        }
+
         emailFrom = config.getEmail();
 
         Properties properties = new Properties();

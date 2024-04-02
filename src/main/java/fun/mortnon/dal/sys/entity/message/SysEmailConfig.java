@@ -17,8 +17,8 @@ public class SysEmailConfig extends BaseEntity {
     private String port;
     private boolean enabled;
     private boolean debug;
-    private int connectionTimeout;
-    private int timeout;
+    private Long connectionTimeout;
+    private Long timeout;
     private SmtpSecurity https;
     private boolean auth;
     private String email;

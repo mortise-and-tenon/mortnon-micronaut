@@ -6,6 +6,7 @@ import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +34,8 @@ public class SysMenuTreeDTO extends SysMenuDTO {
         sysMenuTreeDTO.setOrder(sysMenu.getOrder());
         sysMenuTreeDTO.setStatus(sysMenu.isStatus());
         sysMenuTreeDTO.setGmtCreate(sysMenu.getGmtCreate());
+
+        sysMenuTreeDTO.setChildren(new ArrayList<>());
 
         return sysMenuTreeDTO;
     }

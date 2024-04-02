@@ -4,6 +4,9 @@ import fun.mortnon.framework.message.entity.Message;
 import io.micronaut.context.event.ApplicationEvent;
 
 /**
+ * 消息事件
+ * 只能通过 ApplicationEventPublisher 发送消息后，就能自动处理消息发送逻辑
+ *
  * @author dev2007
  * @date 2024/3/22
  */

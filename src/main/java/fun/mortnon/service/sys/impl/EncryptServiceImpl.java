@@ -91,6 +91,11 @@ public class EncryptServiceImpl implements EncryptService {
             return "";
         }
 
+        return decryptByPrivateKey(content, privateKeyStr);
+    }
+
+    @Override
+    public String decryptByPrivateKey(String content, String privateKeyStr) {
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyStr));
         try {
             PrivateKey privateKey = keyFactory.generatePrivate(keySpec);

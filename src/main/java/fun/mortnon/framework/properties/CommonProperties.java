@@ -31,6 +31,11 @@ public class CommonProperties {
     private int rsaTtl;
 
     /**
+     * 公用 RSA 私钥，用于解密敏感数据传输，与前端公钥一对
+     */
+    private String secret;
+
+    /**
      * 密码错误的检测周期（分钟）
      */
     private int checkDuration;
