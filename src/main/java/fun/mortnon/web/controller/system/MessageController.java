@@ -14,6 +14,8 @@ import io.micronaut.http.annotation.Put;
 import jakarta.inject.Inject;
 import reactor.core.publisher.Mono;
 
+import java.security.Principal;
+
 /**
  * @author dev2007
  * @date 2024/3/21
@@ -53,8 +55,9 @@ public class MessageController {
      * @return
      */
     @Put("/email/code")
-    public Mono<MutableHttpResponse<MortnonResult<SysEmailConfigDTO>>> sendEmailCode(@Body TestEmailConfigCommand testEmailConfigCommand) {
-        return Mono.just(emailService.sendTestEmail(testEmailConfigCommand))
+    public Mono<MutableHttpResponse<MortnonResult<SysEmailConfigDTO>>> sendEmailCode(@Body TestEmailConfigCommand testEmailConfigCommand,
+                                                                                     Principal principal) {
+        return emailService.sendTestEmail(testEmailConfigCommand,principal.getName())
                 .map(MortnonResult::success)
                 .map(HttpResponse::ok);
     }

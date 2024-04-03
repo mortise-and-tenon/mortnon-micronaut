@@ -42,7 +42,8 @@ public interface EmailService {
      * 向邮箱配置邮箱发送验证码
      *
      * @param testEmailConfigCommand
+     * @param userName               当前登录用户的用户名
      * @return
      */
-    boolean sendTestEmail(TestEmailConfigCommand testEmailConfigCommand);
+    Mono<Boolean> sendTestEmail(TestEmailConfigCommand testEmailConfigCommand, String userName);
 }

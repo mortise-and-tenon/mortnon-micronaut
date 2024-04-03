@@ -102,6 +102,7 @@ public class SysLogDTO {
         sysLogDTO.setProjectName(sysLog.getProjectName());
         sysLogDTO.setRequest(sysLog.getRequest());
         sysLogDTO.setMessage(sysLog.getMessage());
+        sysLogDTO.setResult(sysLog.getResult());
         sysLogDTO.setLevel(sysLog.getLevel());
         sysLogDTO.setTime(sysLog.getTime());
 

@@ -239,7 +239,7 @@ public enum ErrorCodeEnum {
     /**
      * 数据已被使用
      */
-    USED_DATA_ERROR("B0004", "data is used"),
+    USED_DATA_ERROR("B0004", "The data has been used","result.data.used.fail"),
 
     /**
      * 文件异常

@@ -3,11 +3,14 @@ package fun.mortnon.service.sys.message;
 import freemarker.template.Configuration;
 import fun.mortnon.dal.sys.entity.SysTemplate;
 import fun.mortnon.dal.sys.entity.SysUser;
+import fun.mortnon.dal.sys.entity.config.DoubleFactorType;
 import fun.mortnon.dal.sys.repository.EmailConfigRepository;
 import fun.mortnon.dal.sys.repository.TemplateRepository;
 import fun.mortnon.dal.sys.repository.UserRepository;
 import fun.mortnon.framework.enums.ErrorCodeEnum;
+import fun.mortnon.framework.exceptions.NotFoundException;
 import fun.mortnon.framework.exceptions.ParameterException;
+import fun.mortnon.framework.exceptions.UsedException;
 import fun.mortnon.framework.properties.CommonProperties;
 import fun.mortnon.service.sys.ConfigService;
 import fun.mortnon.service.sys.EncryptService;
@@ -72,6 +75,9 @@ public class EmailServiceImpl implements EmailService {
     @Inject
     private EncryptService encryptService;
 
+    @Inject
+    private ConfigService configService;
+
     @Override
     public Mono<SysEmailConfigDTO> queryConfig() {
         return configRepository.findById(1L)
@@ -80,6 +86,19 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public Mono<SysEmailConfigDTO> saveEmailConfiguration(UpdateEmailConfigCommand configCommand) {
+        //停用邮箱，需要判断双因子是否使用了
+        if (!configCommand.isEnabled()) {
+            return configService.queryConfig()
+                    .flatMap(config -> {
+                        DoubleFactorType doubleFactor = config.getDoubleFactor();
+                        if (doubleFactor.equals(DoubleFactorType.EMAIL)) {
+                            return Mono.error(UsedException.create(ErrorCodeEnum.USED_DATA_ERROR));
+                        }
+                        return Mono.just(true);
+                    })
+                    .map(result -> new SysEmailConfigDTO());
+        }
+
         return emailConfigRepository.findById(1L)
                 .flatMap(config -> {
                     if (StringUtils.isNotEmpty(configCommand.getHost())) {
@@ -163,15 +182,11 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public boolean sendTestEmail(TestEmailConfigCommand testEmailConfigCommand) {
+    public Mono<Boolean> sendTestEmail(TestEmailConfigCommand testEmailConfigCommand, String userName) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(VERIFY_CODE_PARAMETER_CODE, testEmailConfigCommand.getCode());
 
         Email email = new Email();
-
-        List<String> emailList = new ArrayList<>();
-        emailList.add(testEmailConfigCommand.getEmail());
-        email.setTo(emailList);
 
         SysTemplate template = templateRepository.findByName(VERIFY_CODE_TEMPLATE).block(Duration.ofSeconds(3));
 
@@ -189,6 +204,18 @@ public class EmailServiceImpl implements EmailService {
             testEmailConfigCommand.setPassword(pwd);
         }
 
-        return mailSender.sendTest(email, testEmailConfigCommand);
+        List<String> emailList = new ArrayList<>();
+
+        return userRepository.findByUserName(userName)
+                .flatMap(user -> {
+                    if (StringUtils.isEmpty(user.getEmail())) {
+                        return Mono.error(NotFoundException.create(ErrorCodeEnum.USER_INFO_ERROR));
+                    }
+                    emailList.add(user.getEmail());
+                    email.setTo(emailList);
+
+                    return Mono.just(email);
+                })
+                .map(mail -> mailSender.sendTest(email, testEmailConfigCommand));
     }
 }
