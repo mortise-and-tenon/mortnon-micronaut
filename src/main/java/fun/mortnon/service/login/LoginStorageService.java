@@ -129,4 +129,23 @@ public interface LoginStorageService {
      * @return -2:未锁定；正数：锁定剩余时长
      */
     long isLockLoginTimeExist(String key);
+
+    /**
+     * 保存双因子验证码
+     *
+     * @param userName
+     * @param code
+     * @param expiresSecond
+     * @return
+     */
+    boolean saveDoubleFactorCode(String userName, String code, long expiresSecond);
+
+    /**
+     * 校验双因子验证码是否一致
+     *
+     * @param userName 用户名
+     * @param code     比较的验证码
+     * @return
+     */
+    boolean validateDoubleFactorCode(String userName, String code);
 }

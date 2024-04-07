@@ -18,6 +18,8 @@ import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 
+import static fun.mortnon.service.login.enums.LoginConstants.DOUBLE_FACTOR_CODE;
+
 /**
  * @author dongfangzan
  * @date 27.4.21 4:17 下午
@@ -44,6 +46,8 @@ public class LocalLoginStorageServiceImpl implements LoginStorageService {
 
     private LoadingCache<String, String> lockCache;
 
+    private LoadingCache<String, String> doubleFactorCache;
+
     private final int MAX_CACHE_SIZE = 100;
 
     @PostConstruct
@@ -67,6 +71,15 @@ public class LocalLoginStorageServiceImpl implements LoginStorageService {
 
         rsaCache = CacheBuilder.newBuilder()
                 .maximumSize(MAX_CACHE_SIZE).expireAfterWrite(Duration.ofMinutes(commonProperties.getRsaTtl()))
+                .build(new CacheLoader<String, String>() {
+                    @Override
+                    public String load(String s) throws Exception {
+                        return "";
+                    }
+                });
+
+        doubleFactorCache = CacheBuilder.newBuilder()
+                .maximumSize(MAX_CACHE_SIZE).expireAfterWrite(Duration.ofSeconds(commonProperties.getDoubleFactorTtl()))
                 .build(new CacheLoader<String, String>() {
                     @Override
                     public String load(String s) throws Exception {
@@ -159,7 +172,7 @@ public class LocalLoginStorageServiceImpl implements LoginStorageService {
 
         try {
             String count = lockCountCache.get(key);
-            if(StringUtils.isEmpty(count)){
+            if (StringUtils.isEmpty(count)) {
                 return 0;
             }
 
@@ -221,6 +234,22 @@ public class LocalLoginStorageServiceImpl implements LoginStorageService {
             return 1800;
         } catch (ExecutionException e) {
             return -2;
+        }
+    }
+
+    @Override
+    public boolean saveDoubleFactorCode(String userName, String code, long expiresSecond) {
+        doubleFactorCache.put(String.format(DOUBLE_FACTOR_CODE, userName), code);
+        return true;
+    }
+
+    @Override
+    public boolean validateDoubleFactorCode(String userName, String code) {
+        try {
+            String storeCode = doubleFactorCache.get(String.format(DOUBLE_FACTOR_CODE, userName));
+            return code.equals(storeCode);
+        } catch (Exception e) {
+            return false;
         }
     }
 }

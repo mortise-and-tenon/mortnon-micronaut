@@ -8,6 +8,7 @@ import lombok.Data;
 
 /**
  * 认证数据
+ *
  * @author dongfangzan
  * @date 27.4.21 5:11 下午
  */
@@ -24,5 +25,10 @@ public class PasswordLoginCredentials extends UsernamePasswordCredentials {
      * 验证码
      */
     private String verifyCode;
+
+    /**
+     * 双因子验证码
+     */
+    private String code;
 
 }

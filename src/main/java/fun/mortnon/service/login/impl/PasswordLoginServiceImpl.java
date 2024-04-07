@@ -1,7 +1,10 @@
 package fun.mortnon.service.login.impl;
 
+import fun.mortnon.dal.sys.entity.SysConfig;
 import fun.mortnon.dal.sys.entity.SysUser;
+import fun.mortnon.dal.sys.entity.config.DoubleFactorType;
 import fun.mortnon.framework.constants.LoginTypeConstants;
+import fun.mortnon.framework.message.entity.MessageType;
 import fun.mortnon.framework.properties.CommonProperties;
 import fun.mortnon.framework.utils.IpUtil;
 import fun.mortnon.service.login.LoginFactory;
@@ -10,6 +13,9 @@ import fun.mortnon.service.login.LoginStorageService;
 import fun.mortnon.service.sys.ConfigService;
 import fun.mortnon.service.sys.EncryptService;
 import fun.mortnon.service.sys.SysUserService;
+import fun.mortnon.service.sys.message.MessageService;
+import fun.mortnon.web.vo.login.DoubleFactor;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.AuthenticationFailureReason;
 import io.micronaut.security.authentication.AuthenticationRequest;
@@ -19,9 +25,17 @@ import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static fun.mortnon.framework.constants.MessageConstants.VERIFY_CODE_PARAMETER_CODE;
+import static fun.mortnon.framework.constants.MessageConstants.VERIFY_CODE_TEMPLATE;
 
 /**
  * @author dongfangzan
@@ -49,6 +63,9 @@ public class PasswordLoginServiceImpl implements LoginService {
 
     @Inject
     private CommonProperties commonProperties;
+
+    @Inject
+    private MessageService messageService;
 
     @Override
     public Mono<Boolean> authenticate(AuthenticationRequest<?, ?> authenticationRequest) {
@@ -110,6 +127,40 @@ public class PasswordLoginServiceImpl implements LoginService {
             }
             return 0;
         }).block(Duration.ofSeconds(5));
+    }
+
+    @Override
+    public boolean generateDoubleFactorCode(DoubleFactor doubleFactor) {
+        SysConfig config = configService.queryConfig().block(Duration.ofSeconds(3));
+
+        DoubleFactorType factor = config.getDoubleFactor();
+        if (factor == DoubleFactorType.DISABLE) {
+            return true;
+        }
+
+        MessageType type = MessageType.EMAIL;
+        switch (factor) {
+            case EMAIL:
+                type = MessageType.EMAIL;
+                break;
+            default:
+                break;
+        }
+
+        String code = RandomStringUtils.randomAlphanumeric(6);
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(VERIFY_CODE_PARAMETER_CODE, code);
+
+        //缓存双因子验证码
+        getStorageService().saveDoubleFactorCode(doubleFactor.getUsername(), code, commonProperties.getDoubleFactorTtl());
+
+        return messageService.sendCode(type, doubleFactor.getUsername(), VERIFY_CODE_TEMPLATE, parameters);
+    }
+
+    @Override
+    public boolean verifyCode(String userName, String code) {
+        return getStorageService().validateDoubleFactorCode(userName, code);
     }
 
 

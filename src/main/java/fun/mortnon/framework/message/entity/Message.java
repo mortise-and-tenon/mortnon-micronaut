@@ -26,6 +26,11 @@ public class Message {
     private List<Long> receiveUsers;
 
     /**
+     * 接收消息的邮箱
+     */
+    private List<String> receiveMailBox;
+
+    /**
      * 消息主题（优先级高于模板）
      */
     private String subject;

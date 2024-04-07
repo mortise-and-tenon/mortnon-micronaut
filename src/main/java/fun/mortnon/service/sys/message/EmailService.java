@@ -30,13 +30,22 @@ public interface EmailService {
     Mono<SysEmailConfigDTO> saveEmailConfiguration(UpdateEmailConfigCommand configCommand);
 
     /**
-     * 发送邮件
+     * 向指定用户发送邮件
      *
      * @param toUsers
      * @param templateName
      * @param parameters
      */
-    void sendEmail(List<Long> toUsers, String templateName, Map<String, Object> parameters);
+    void sendEmailToUser(List<Long> toUsers, String templateName, Map<String, Object> parameters);
+
+    /**
+     * 向指定邮箱发送邮件
+     *
+     * @param toEmails
+     * @param templateName
+     * @param parameters
+     */
+    void sendEmailToInbox(List<String> toEmails, String templateName, Map<String, Object> parameters);
 
     /**
      * 向邮箱配置邮箱发送验证码

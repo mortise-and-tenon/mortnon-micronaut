@@ -1,13 +1,12 @@
 package fun.mortnon.service.login.security;
 
-import fun.mortnon.dal.sys.entity.SysProject;
 import fun.mortnon.dal.sys.entity.SysRole;
+import fun.mortnon.dal.sys.entity.config.DoubleFactorType;
 import fun.mortnon.framework.constants.LoginTypeConstants;
 import fun.mortnon.framework.constants.login.ClaimsProject;
 import fun.mortnon.service.login.CaptchaService;
 import fun.mortnon.service.login.LoginService;
-import fun.mortnon.service.login.enums.LoginType;
-import fun.mortnon.service.login.model.LoginUser;
+import fun.mortnon.service.sys.ConfigService;
 import fun.mortnon.service.sys.SysUserService;
 import fun.mortnon.web.vo.login.PasswordLoginCredentials;
 import io.micronaut.core.annotation.Nullable;
@@ -22,16 +21,21 @@ import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static fun.mortnon.framework.constants.login.ClaimsConstants.PROJECT;
 
 /**
+ * 用户认证逻辑
+ *
  * @author dev2007
  * @date 2023/2/7
  */
@@ -49,6 +53,9 @@ public class AuthenticationProviderUserPassword implements AuthenticationProvide
     @Inject
     private SysUserService sysUserService;
 
+    @Inject
+    private ConfigService configService;
+
     public AuthenticationProviderUserPassword(@Named(LoginTypeConstants.PASSWORD) LoginService loginService) {
         this.loginService = loginService;
     }
@@ -60,7 +67,15 @@ public class AuthenticationProviderUserPassword implements AuthenticationProvide
             List<SysRole> roleList = verifyCaptcha(authenticationRequest)
                     .flatMap(verify -> {
                         if (!verify) {
-                            log.info("Verification code failed.");
+                            log.info("Verification code verification failed. ");
+                            return Mono.error(AuthenticationResponse.exception(AuthenticationFailureReason.CUSTOM));
+                        }
+
+                        return verifyDoubleFactorCode(authenticationRequest);
+                    })
+                    .flatMap(verify -> {
+                        if (!verify) {
+                            log.info("Verification of two-factor verification code failed.");
                             return Mono.error(AuthenticationResponse.exception(AuthenticationFailureReason.CUSTOM));
                         }
 
@@ -72,7 +87,8 @@ public class AuthenticationProviderUserPassword implements AuthenticationProvide
                                     //认证失败
                                     return Mono.error(AuthenticationResponse.exception(AuthenticationFailureReason.CREDENTIALS_DO_NOT_MATCH));
                                 });
-                    }).block();
+                    })
+                    .block();
 
             if (CollectionUtils.isEmpty(roleList)) {
                 emitter.error(AuthenticationResponse.exception(AuthenticationFailureReason.UNKNOWN));
@@ -118,5 +134,28 @@ public class AuthenticationProviderUserPassword implements AuthenticationProvide
                     return Mono.just(true);
                 });
 
+    }
+
+    /**
+     * 校验双因子验证码
+     *
+     * @param authenticationRequest
+     * @return
+     */
+    private Mono<Boolean> verifyDoubleFactorCode(AuthenticationRequest<?, ?> authenticationRequest) {
+        return configService.queryConfig()
+                .map(config -> {
+                    DoubleFactorType doubleFactor = config.getDoubleFactor();
+                    if (doubleFactor == DoubleFactorType.DISABLE) {
+                        return true;
+                    }
+
+                    if (authenticationRequest instanceof PasswordLoginCredentials) {
+                        PasswordLoginCredentials passwordLoginCredentials = (PasswordLoginCredentials) authenticationRequest;
+                        return loginService.verifyCode(passwordLoginCredentials.getUsername(), passwordLoginCredentials.getCode());
+                    }
+
+                    return true;
+                });
     }
 }

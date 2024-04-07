@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.Duration;
 
+import static fun.mortnon.service.login.enums.LoginConstants.DOUBLE_FACTOR_CODE;
 import static fun.mortnon.service.login.enums.LoginConstants.LOGIN_TOKEN;
 import static fun.mortnon.service.login.enums.LoginConstants.RSA_CODE;
 import static fun.mortnon.service.login.enums.LoginConstants.VERIFY_CODE;
@@ -131,5 +132,25 @@ public class RedisLoginStorageServiceImpl implements LoginStorageService {
     @Override
     public long isLockLoginTimeExist(String key) {
         return commands.ttl(key);
+    }
+
+    @Override
+    public boolean saveDoubleFactorCode(String userName, String code, long expiresSecond) {
+        if (COMMAND_RESULT_OK.equalsIgnoreCase(commands.set(String.format(DOUBLE_FACTOR_CODE, userName), code))) {
+            return commands.expire(String.format(DOUBLE_FACTOR_CODE, userName), Duration.ofMinutes(expiresSecond));
+        }
+        return false;
+    }
+
+    @Override
+    public boolean validateDoubleFactorCode(String userName, String code) {
+        String key = String.format(DOUBLE_FACTOR_CODE, userName);
+        String storeCode = commands.get(key);
+        commands.del(key);
+        if (StringUtils.isNotEmpty(storeCode)) {
+            return storeCode.equals(code);
+        }
+
+        return false;
     }
 }

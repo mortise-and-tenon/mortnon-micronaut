@@ -103,6 +103,8 @@ mortnon:
     lang: zh
     # 为前端生成的 RSA 公钥有效时长（分钟）
     rsa-ttl: 30
+    # 双因子码有效时长（秒）
+    double-factor-ttl: 60
     # 公用的 RSA 公钥
     public-key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCN74zEheRhsnCRzj9FOJJ5/zXez0Pmbu1pu21/lyA5VT3QH7xSXnBCOwhiYDtTn0Bg1OQYD2wBNajdfJ2tGW1gVYTiR6vOe5blwe+dtYK8h0uvnQQtTDZ3TqE8VnEvb1xXy9a2zERujsdPIpZAJCrdGcSB/i4Mg8mc91dlY+MTNQIDAQAB
     # 公用的 RSA 私钥，用于非登录的敏感数据加密，与前端的公钥一对

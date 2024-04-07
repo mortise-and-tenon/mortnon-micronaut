@@ -127,7 +127,10 @@ public class MailSender {
 
         if (ObjectUtils.isEmpty(configCommand)) {
             config = emailConfigRepository.findById(1L).block(Duration.ofSeconds(3));
-            String pwd = encryptService.decryptByRSA(config.getPassword(), commonProperties.getSecret());
+            String pwd = encryptService.decryptByPrivateKey(config.getPassword(), commonProperties.getSecret());
+            if (StringUtils.isEmpty(pwd)) {
+                pwd = config.getPassword();
+            }
             config.setPassword(pwd);
         } else {
             if (StringUtils.isNotEmpty(configCommand.getHost())) {

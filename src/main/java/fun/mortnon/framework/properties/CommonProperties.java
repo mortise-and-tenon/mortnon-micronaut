@@ -31,6 +31,16 @@ public class CommonProperties {
     private int rsaTtl;
 
     /**
+     * 双因子验证码有效时长
+     */
+    private int doubleFactorTtl;
+
+    /**
+     * 公用 RSA 公钥
+     */
+    private String publicKey;
+
+    /**
      * 公用 RSA 私钥，用于解密敏感数据传输，与前端公钥一对
      */
     private String secret;

@@ -6,6 +6,8 @@ import fun.mortnon.framework.enums.ErrorCodeEnum;
 import fun.mortnon.framework.utils.ResultBuilder;
 import fun.mortnon.framework.vo.MortnonResult;
 import fun.mortnon.service.login.CaptchaService;
+import fun.mortnon.service.login.LoginService;
+import fun.mortnon.web.vo.login.DoubleFactor;
 import fun.mortnon.web.vo.login.PasswordLoginCredentials;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.async.annotation.SingleResult;
@@ -47,15 +49,19 @@ public class AuthLoginController extends LoginController {
      */
     private ResultBuilder resultBuilder;
 
+    private LoginService loginService;
+
     /**
      * @param authenticator  {@link Authenticator} collaborator
      * @param loginHandler   A collaborator which helps to build HTTP response depending on success or failure.
      * @param eventPublisher The application event publisher
      */
     public AuthLoginController(Authenticator authenticator, LoginHandler loginHandler,
-                               ApplicationEventPublisher eventPublisher, ResultBuilder resultBuilder) {
+                               ApplicationEventPublisher eventPublisher, ResultBuilder resultBuilder,
+                               LoginService loginService) {
         super(authenticator, loginHandler, eventPublisher);
         this.resultBuilder = resultBuilder;
+        this.loginService = loginService;
     }
 
     /**
@@ -86,5 +92,17 @@ public class AuthLoginController extends LoginController {
                     }
                 })
                 .switchIfEmpty(Mono.defer(() -> Mono.just(HttpResponse.unauthorized())));
+    }
+
+    /**
+     * 生成双因子验证码
+     *
+     * @param doubleFactor
+     * @return
+     */
+    @Post("/code")
+    public MutableHttpResponse<MortnonResult> doubleFactorCode(@Body DoubleFactor doubleFactor) {
+        loginService.generateDoubleFactorCode(doubleFactor);
+        return HttpResponse.ok(MortnonResult.success());
     }
 }

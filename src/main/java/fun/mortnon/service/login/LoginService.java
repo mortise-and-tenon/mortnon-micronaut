@@ -1,6 +1,7 @@
 package fun.mortnon.service.login;
 
 import fun.mortnon.service.login.model.LoginUser;
+import fun.mortnon.web.vo.login.DoubleFactor;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.AuthenticationRequest;
 import reactor.core.publisher.Mono;
@@ -26,4 +27,21 @@ public interface LoginService {
      * @return 正数：锁定时长 <=0:锁定时长为0，无锁定
      */
     long interceptLogin(HttpRequest<?> request);
+
+    /**
+     * 生成双因子验证码
+     *
+     * @param doubleFactor
+     * @return
+     */
+    boolean generateDoubleFactorCode(DoubleFactor doubleFactor);
+
+    /**
+     * 校验双因子验证码
+     *
+     * @param userName
+     * @param code
+     * @return
+     */
+    boolean verifyCode(String userName, String code);
 }

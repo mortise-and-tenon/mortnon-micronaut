@@ -39,6 +39,11 @@ public class LoginConstants {
     public static final String RSA_CODE = "rsa:public:%s";
 
     /**
+     * 双因子
+     */
+    public static final String DOUBLE_FACTOR_CODE = "double_factor:code:%s";
+
+    /**
      * 不合法的token状态码
      */
     public static final int SC_INVALID_TOKEN = 461;

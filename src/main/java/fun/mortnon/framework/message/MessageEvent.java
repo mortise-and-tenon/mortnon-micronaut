@@ -34,7 +34,7 @@ public class MessageEvent extends ApplicationEvent {
      * @param notice
      * @return
      */
-    public static MessageEvent publish(Message notice) {
+    public static MessageEvent create(Message notice) {
         return new MessageEvent(notice);
     }
 }

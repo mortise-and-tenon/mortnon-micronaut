@@ -158,7 +158,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendEmail(List<Long> toUsers, String templateName, Map<String, Object> parameters) {
+    public void sendEmailToUser(List<Long> toUsers, String templateName, Map<String, Object> parameters) {
         Email email = new Email();
         SysTemplate template = userRepository.findByIdInList(toUsers)
                 .map(SysUser::getEmail)
@@ -168,6 +168,24 @@ public class EmailServiceImpl implements EmailService {
                     email.setTo(emailList);
                     return templateRepository.findByName(templateName);
                 }).block(Duration.ofSeconds(3));
+
+        email.setSubject(template.getSubject());
+        try {
+            StringWriter stringWriter = new StringWriter();
+            templateConfiguration.getTemplate(templateName).process(parameters, stringWriter);
+            email.setContent(stringWriter.toString());
+        } catch (Exception e) {
+            log.warn("Abnormal in creating email content:", e);
+        }
+
+        mailSender.send(email);
+    }
+
+    @Override
+    public void sendEmailToInbox(List<String> toEmails, String templateName, Map<String, Object> parameters) {
+        Email email = new Email();
+        email.setTo(toEmails);
+        SysTemplate template = templateRepository.findByName(templateName).block(Duration.ofSeconds(3));
 
         email.setSubject(template.getSubject());
         try {

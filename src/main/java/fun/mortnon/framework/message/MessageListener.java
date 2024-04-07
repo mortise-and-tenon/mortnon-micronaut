@@ -8,6 +8,7 @@ import io.micronaut.context.event.ApplicationEventListener;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Set;
@@ -38,7 +39,11 @@ public class MessageListener implements ApplicationEventListener<MessageEvent> {
         messageTypes.forEach(notice -> {
             switch (notice) {
                 case EMAIL:
-                    emailService.sendEmail(message.getReceiveUsers(), message.getTemplateName(), message.getParameters());
+                    if (CollectionUtils.isNotEmpty(message.getReceiveUsers())) {
+                        emailService.sendEmailToUser(message.getReceiveUsers(), message.getTemplateName(), message.getParameters());
+                    } else if (CollectionUtils.isNotEmpty(message.getReceiveMailBox())) {
+                        emailService.sendEmailToInbox(message.getReceiveMailBox(), message.getTemplateName(), message.getParameters());
+                    }
                     break;
                 case SMS:
                 case ANNOUNCEMENT:

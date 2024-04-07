@@ -330,7 +330,13 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public Mono<SysUser> getUserByUsername(String userName) {
-        return userRepository.findByUserName(userName);
+        return userRepository.existsByUserName(userName)
+                .flatMap(exists -> {
+                    if (exists) {
+                        return userRepository.findByUserName(userName);
+                    }
+                    return Mono.just(new SysUser());
+                });
     }
 
     @Override
@@ -538,7 +544,7 @@ public class SysUserServiceImpl implements SysUserService {
                 //有单元格数据不为空，当前行不为空行
                 if (StringUtils.isNotEmpty(strValue)) {
                     rowEmpty = false;
-                }else{
+                } else {
                     //记录必填但为空的单元格
                     if (cellIndex == 0 || cellIndex == 1 || cellIndex == 2 || cellIndex == 3) {
                         emptyCellIndex = cellIndex;
