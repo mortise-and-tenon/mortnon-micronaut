@@ -1,6 +1,6 @@
-## Mornton 
+## Mortnon Micronaut
 
-Mornton 实现常见的 Java Web 项目所必需的特性，如 RBAC 等，支持响应式编程，支持 GraalVM Native Image 编译，性能极佳。
+Mortnon 实现常见的 Java Web 项目所必需的特性，如 RBAC 等，支持响应式编程，支持 GraalVM Native Image 编译，性能极佳。
 
 项目地址：
 - [GitHub](https://github.com/mortise-and-tenon/mortnon-micronaut)
@@ -8,7 +8,7 @@ Mornton 实现常见的 Java Web 项目所必需的特性，如 RBAC 等，支�
 
 ### Micronaut
 
-Mornton 基于 Micronaut 实现。
+Mortnon 基于 Micronaut 实现。
 
 - [User Guide](https://docs.micronaut.io/3.8.7/guide/index.html)
 - [API Reference](https://docs.micronaut.io/3.8.7/api/index.html)
