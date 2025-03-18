@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.io.StringWriter;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -77,6 +78,11 @@ public class EmailServiceImpl implements EmailService {
 
     @Inject
     private ConfigService configService;
+
+    @PostConstruct
+    public void init(){
+        templateConfiguration.setInterpolationSyntax(Configuration.SQUARE_BRACKET_INTERPOLATION_SYNTAX);
+    }
 
     @Override
     public Mono<SysEmailConfigDTO> queryConfig() {

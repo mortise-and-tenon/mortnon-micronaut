@@ -49,7 +49,7 @@ micronaut:
       images:
         enabled: true
         paths:
-          - file:D:/uploadPath
+          - file:/uploadPath
         mapping: ${AVATAR_URL/**:/profile/avatar/**}
       # 用户导入模板映射的 URL
       user:
@@ -80,6 +80,8 @@ flyway:
   datasources:
     default:
       enabled: true
+  placeholder-prefix: "@@{"
+  placeholder-suffix: "}@@"
 
 redis:
   # 如果使用 sentinel，REDIS_SCHEME 为 redis_sentinel，直连 redis REDIS_SCHEME 为 redis
@@ -92,7 +94,7 @@ jackson:
 mortnon:
   captcha:
     # 验证码有效时长（秒）
-    expire-seconds: 600
+    expire-seconds: 60
   jwt:
     # 服务端是否记录 token ，默认为 true
     consistency: true
