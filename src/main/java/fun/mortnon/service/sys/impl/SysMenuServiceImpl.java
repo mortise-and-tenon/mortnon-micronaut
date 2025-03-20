@@ -3,6 +3,7 @@ package fun.mortnon.service.sys.impl;
 import fun.mortnon.dal.sys.entity.SysMenu;
 import fun.mortnon.dal.sys.entity.SysPermission;
 import fun.mortnon.dal.sys.entity.SysRolePermission;
+import fun.mortnon.dal.sys.entity.config.MenuType;
 import fun.mortnon.dal.sys.repository.MenuRepository;
 import fun.mortnon.dal.sys.repository.PermissionRepository;
 import fun.mortnon.dal.sys.repository.RolePermissionRepository;
@@ -26,12 +27,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.micronaut.data.repository.jpa.criteria.PredicateSpecification.where;
@@ -71,24 +67,47 @@ public class SysMenuServiceImpl implements SysMenuService {
      * @return
      */
     private List<SysMenuTreeDTO> convertTree(List<SysMenu> menuList) {
-        Map<Long, SysMenuTreeDTO> map = new HashMap<>();
         List<SysMenuTreeDTO> nodeList = menuList.stream().map(SysMenuTreeDTO::convert).collect(Collectors.toList());
 
         for (SysMenuTreeDTO node : nodeList) {
             SysMenuTreeDTO parent = nodeList.stream().filter(parentNode -> parentNode.getId().equals(node.getParentId()))
                     .findAny().orElse(null);
-            if (ObjectUtils.isNotEmpty(parent)) {
+            if (Objects.nonNull(parent)) {
                 parent.getChildren().add(node);
             }
         }
 
         List<SysMenuTreeDTO> tempTree = nodeList.stream()
-                .filter(node -> node.getParentId() == 0L || node.getChildren().size() > 0).collect(Collectors.toList());
+                .filter(node -> node.getParentId() == 0L || !node.getChildren().isEmpty()).collect(Collectors.toList());
 
-        List treeList = tempTree.stream().filter(node-> tempTree.stream().noneMatch(k-> k.getId().equals(node.getParentId())))
+        List<SysMenuTreeDTO> treeList = tempTree.stream().filter(node -> tempTree.stream().noneMatch(k -> k.getId().equals(node.getParentId())))
                 .collect(Collectors.toList());
 
+
         return treeList;
+    }
+
+    /**
+     * 转换当前用户菜单
+     * 要排除用户无权限菜单后的空父级菜单
+     *
+     * @param menuList
+     * @return
+     */
+    private List<SysMenuTreeDTO> convertUserTree(List<SysMenu> menuList) {
+        List<SysMenuTreeDTO> treeList = convertTree(menuList);
+        // 递归移除空 children 节点
+        // 递归移除空 children 节点
+        treeList.removeIf(node -> removeEmptyChildren(node));
+        return treeList;
+    }
+
+    private boolean removeEmptyChildren(SysMenuTreeDTO node) {
+        if (node.getChildren().isEmpty() && node.getType().equals(MenuType.GROUP)) {
+            return true;
+        }
+        node.getChildren().removeIf(this::removeEmptyChildren);
+        return node.getChildren().isEmpty() && node.getType().equals(MenuType.GROUP);
     }
 
 
@@ -241,7 +260,7 @@ public class SysMenuServiceImpl implements SysMenuService {
                                     })
                                     .collect(Collectors.toList()));
                 })
-                .map(menuList -> convertTree(menuList));
+                .map(this::convertUserTree);
     }
 
 }

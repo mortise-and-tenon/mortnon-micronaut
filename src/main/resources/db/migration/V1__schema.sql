@@ -179,6 +179,7 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
     `parent_id` BIGINT DEFAULT 0 NOT NULL                   COMMENT '父菜单 id',
     `order` INT(4) DEFAULT 1                                COMMENT '菜单排序',
     `url` VARCHAR(200) NOT NULL                             COMMENT '菜单 url',
+    `type` ENUM('GROUP','LINK') DEFAULT 'LINK'              COMMENT '菜单类型',
     `icon` VARCHAR(100) NOT NULL DEFAULT ''                 COMMENT '菜单 图标',
     `permission` VARCHAR(200) DEFAULT NULL                  COMMENT '权限组',
     `status` TINYINT(1) DEFAULT 1                           COMMENT '菜单状态',
@@ -186,20 +187,20 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
     `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
 
-INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `order`, `url`, `icon`, `permission`)
+INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `order`, `url`, `type`, `icon`, `permission`)
 VALUES
-	(1, '首页', 0, 1, '/home', 'home', ''),
-	(2, '系统管理', 0, 1, '/system', 'system', ''),
-	(3, '用户管理', 2, 1, '/system/user', 'user', 'USER_QUERY'),
-	(4, '角色管理', 2, 2, '/system/role', 'peoples', 'ROLE_QUERY'),
-	(5, '部门管理', 2, 3, '/system/project', 'tree', 'PROJECT_QUERY'),
-	(6, '菜单管理', 2, 4, '/system/menu', 'treetable', 'MENU_QUERY'),
-	(7, '日志管理', 2, 5, '/system/log', 'log', 'LOG_QUERY'),
-	(8, '系统配置', 2, 6, '/system/config', 'setting', ''),
-	(9, '安全设置', 8, 1, '/system/config/security', 'security', ''),
-	(10, '登录认证', 9, 1, '/system/config/security/login', 'lock', 'GLOBAL_MAINTENANCE'),
-	(11, '信息设置', 8, 2, '/system/config/message', 'message', ''),
-	(12, '电子邮件', 11, 1, '/system/config/message/email', 'mail', 'GLOBAL_MAINTENANCE');
+	(1, '首页', 0, 1, '/home', 'LINK', 'home', ''),
+	(2, '系统管理', 0, 1, '/system', 'GROUP', 'system', ''),
+	(3, '用户管理', 2, 1, '/system/user', 'LINK', 'user', 'USER_QUERY'),
+	(4, '角色管理', 2, 2, '/system/role', 'LINK', 'peoples', 'ROLE_QUERY'),
+	(5, '部门管理', 2, 3, '/system/project', 'LINK', 'tree', 'PROJECT_QUERY'),
+	(6, '菜单管理', 2, 4, '/system/menu', 'LINK', 'treetable', 'MENU_QUERY'),
+	(7, '日志管理', 2, 5, '/system/log', 'LINK', 'log', 'LOG_QUERY'),
+	(8, '系统配置', 2, 6, '/system/config', 'GROUP', 'setting', ''),
+	(9, '安全设置', 8, 1, '/system/config/security', 'GROUP', 'security', ''),
+	(10, '登录认证', 9, 1, '/system/config/security/login', 'LINK', 'lock', 'GLOBAL_MAINTENANCE'),
+	(11, '信息设置', 8, 2, '/system/config/message', 'GROUP', 'message', ''),
+	(12, '电子邮件', 11, 1, '/system/config/message/email', 'LINK', 'mail', 'GLOBAL_MAINTENANCE');
 
 -- 系统配置表
 CREATE TABLE IF NOT EXISTS `sys_config`(
