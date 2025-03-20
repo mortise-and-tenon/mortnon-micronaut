@@ -40,7 +40,7 @@ FROM DUAL WHERE NOT EXISTS(SELECT id FROM `sys_role`);
 CREATE TABLE IF NOT EXISTS `sys_project`(
 	`id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY  COMMENT '组织 id',
 	`name` VARCHAR(1024) NOT NULL                           COMMENT '组织名字',
-	`identifier` VARCHAR64 NOT NULL                         COMMENT '部门标识值',
+	`identifier` VARCHAR(64) NOT NULL                         COMMENT '部门标识值',
 	`description` VARCHAR(1024) NULL                        COMMENT '组织描述',
 	`parent_id` BIGINT NULL                                 COMMENT '父组织 id',
 	`ancestors` VARCHAR(1024) NOT NULL                      COMMENT '先辈组织所有id',
@@ -179,6 +179,7 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
     `parent_id` BIGINT DEFAULT 0 NOT NULL                   COMMENT '父菜单 id',
     `order` INT(4) DEFAULT 1                                COMMENT '菜单排序',
     `url` VARCHAR(200) NOT NULL                             COMMENT '菜单 url',
+    `type` ENUM('GROUP','LINK') DEFAULT 'LINK'              COMMENT '菜单类型',
     `icon` VARCHAR(100) NOT NULL DEFAULT ''                 COMMENT '菜单 图标',
     `permission` VARCHAR(200) DEFAULT NULL                  COMMENT '权限组',
     `status` TINYINT(1) DEFAULT 1                           COMMENT '菜单状态',
@@ -186,28 +187,28 @@ CREATE TABLE IF NOT EXISTS `sys_menu`(
     `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
 );
 
-INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `order`, `url`, `icon`, `permission`)
+INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `order`, `url`, `type`, `icon`, `permission`)
 VALUES
-	(1, '首页', 0, 1, '/home', 'home', ''),
-	(2, '系统管理', 0, 1, '/system', 'system', ''),
-	(3, '用户管理', 2, 1, '/system/user', 'user', 'USER_QUERY'),
-	(4, '角色管理', 2, 2, '/system/role', 'peoples', 'ROLE_QUERY'),
-	(5, '部门管理', 2, 3, '/system/project', 'tree', 'PROJECT_QUERY'),
-	(6, '菜单管理', 2, 4, '/system/menu', 'treetable', 'MENU_QUERY'),
-	(7, '日志管理', 2, 5, '/system/log', 'log', 'LOG_QUERY'),
-	(8, '系统配置', 2, 6, '/system/config', 'setting', ''),
-	(9, '安全设置', 8, 1, '/system/config/security', 'security', ''),
-	(10, '登录认证', 9, 1, '/system/config/security/login', 'lock', 'GLOBAL_MAINTENANCE'),
-	(11, '信息设置', 8, 2, '/system/config/message', 'message', ''),
-	(12, '电子邮件', 11, 1, '/system/config/message/email', 'mail', 'GLOBAL_MAINTENANCE');
+	(1, '首页', 0, 1, '/home', 'LINK', 'home', ''),
+	(2, '系统管理', 0, 1, '/system', 'GROUP', 'system', ''),
+	(3, '用户管理', 2, 1, '/system/user', 'LINK', 'user', 'USER_QUERY'),
+	(4, '角色管理', 2, 2, '/system/role', 'LINK', 'peoples', 'ROLE_QUERY'),
+	(5, '部门管理', 2, 3, '/system/project', 'LINK', 'tree', 'PROJECT_QUERY'),
+	(6, '菜单管理', 2, 4, '/system/menu', 'LINK', 'treetable', 'MENU_QUERY'),
+	(7, '日志管理', 2, 5, '/system/log', 'LINK', 'log', 'LOG_QUERY'),
+	(8, '系统配置', 2, 6, '/system/config', 'GROUP', 'setting', ''),
+	(9, '安全设置', 8, 1, '/system/config/security', 'GROUP', 'security', ''),
+	(10, '登录认证', 9, 1, '/system/config/security/login', 'LINK', 'lock', 'GLOBAL_MAINTENANCE'),
+	(11, '信息设置', 8, 2, '/system/config/message', 'GROUP', 'message', ''),
+	(12, '电子邮件', 11, 1, '/system/config/message/email', 'LINK', 'mail', 'GLOBAL_MAINTENANCE');
 
 -- 系统配置表
 CREATE TABLE IF NOT EXISTS `sys_config`(
     `id` BIGINT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY                                  COMMENT 'id',
-    `captcha` ENUM('DISABLE','ARITHMETIC','OTHER') NOT NULL DEFAULT 'ARITHMETIC'            COMMENT '验证码配置',
+    `captcha` ENUM('DISABLE','ARITHMETIC','OTHER') NOT NULL DEFAULT 'OTHER'                 COMMENT '验证码配置',
     `password_encrypt` TINYINT(1) NOT NULL DEFAULT 1                                        COMMENT '密码加密传输',
-    `try_count` INT NOT NULL DEFAULT 0                                                      COMMENT '密码重试次数',
-    `lock_time` INT NOT NULL DEFAULT 1800                                                   COMMENT '锁定时间（秒）',
+    `try_count` INT NOT NULL DEFAULT 5                                                      COMMENT '密码重试次数',
+    `lock_time` INT NOT NULL DEFAULT 180                                                    COMMENT '锁定时间（秒）',
     `double_factor` ENUM('DISABLE','EMAIL','PHONE','OTHER') NOT NULL DEFAULT 'DISABLE'      COMMENT '双因子认证',
     `gmt_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP                                COMMENT '创建时间',
     `gmt_modify` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP    COMMENT '修改时间'
@@ -250,6 +251,6 @@ CREATE TABLE IF NOT EXISTS `sys_template`(
 );
 
 INSERT INTO `sys_template`(`name`,`subject`,`content`)
-VALUES ('VERIFY_CODE','验证码通知','<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><p>您好，您的当前验证码为<strong>${code}</strong></p></body></html>');
+VALUES ('VERIFY_CODE','验证码通知','<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><p>您好，您的当前验证码为<strong>#{code}</strong></p></body></html>');
 
 COMMIT;

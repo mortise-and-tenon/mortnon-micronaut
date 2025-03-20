@@ -29,6 +29,7 @@ public class SysMenuTreeDTO extends SysMenuDTO {
         sysMenuTreeDTO.setParentId(sysMenu.getParentId());
         sysMenuTreeDTO.setName(sysMenu.getName());
         sysMenuTreeDTO.setUrl(sysMenu.getUrl());
+        sysMenuTreeDTO.setType(sysMenu.getType());
         sysMenuTreeDTO.setIcon(sysMenu.getIcon());
         sysMenuTreeDTO.setPermission(sysMenu.getPermission());
         sysMenuTreeDTO.setOrder(sysMenu.getOrder());

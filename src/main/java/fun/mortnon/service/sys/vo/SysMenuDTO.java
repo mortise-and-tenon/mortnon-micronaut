@@ -1,6 +1,7 @@
 package fun.mortnon.service.sys.vo;
 
 import fun.mortnon.dal.sys.entity.SysMenu;
+import fun.mortnon.dal.sys.entity.config.MenuType;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 import io.micronaut.serde.config.naming.SnakeCaseStrategy;
@@ -35,6 +36,11 @@ public class SysMenuDTO {
      * 菜单 url
      */
     private String url;
+
+    /**
+     * 菜单类型
+     */
+    private MenuType type;
 
     /**
      * 菜单图标

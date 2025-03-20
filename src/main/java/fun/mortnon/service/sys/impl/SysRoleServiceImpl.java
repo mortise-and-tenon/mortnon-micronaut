@@ -83,6 +83,9 @@ public class SysRoleServiceImpl implements SysRoleService {
                     return roleRepository.save(sysRole);
                 })
                 .flatMap(role -> {
+                    if(CollectionUtils.isEmpty(createRoleCommand.getPermissions())){
+                        return Mono.just(SysRoleDTO.convert(role));
+                    }
                     return permissionRepository.findByIdIn(createRoleCommand.getPermissions())
                             .flatMap(permission -> {
                                 if (ObjectUtils.isEmpty(permission.getDependency())) {

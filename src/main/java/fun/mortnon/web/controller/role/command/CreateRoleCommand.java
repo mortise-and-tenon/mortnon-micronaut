@@ -39,7 +39,6 @@ public class CreateRoleCommand {
     /**
      * 权限 id 列表
      */
-    @NotNull
     private List<Long> permissions;
 
     /**
